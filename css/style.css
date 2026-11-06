@@ -309,18 +309,6 @@ main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
 }
 
 /* Header link, stats and filters */
-.star-link {
-  margin-left: auto;
-  padding: 5px 12px;
-  border: 1.5px solid var(--line);
-  border-radius: 99px;
-  font-size: .86rem;
-  font-weight: 650;
-  color: var(--ink);
-  text-decoration: none;
-}
-.star-link:hover { border-color: var(--accent); color: var(--accent); }
-
 .stats-strip {
   display: flex;
   flex-wrap: wrap;
@@ -360,7 +348,6 @@ main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
 #search { flex: 1 1 240px; min-width: 0; }
 #rating-input { width: 110px; font-size: 1.15rem; font-weight: 700; }
 
-.opening-grid { max-height: 620px; overflow-y: auto; padding: 2px; scrollbar-gutter: stable; }
 .opening-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .tag { padding: 1px 7px; font-size: .72rem; background: var(--surface-2); color: var(--muted); border-radius: 99px; }
 .badge-easy { background: var(--good-soft); color: var(--good); }
@@ -368,12 +355,13 @@ main { max-width: 1120px; margin: 0 auto; padding: 8px 16px 32px; }
 .badge-hard { background: var(--bad-soft); color: var(--bad); }
 .empty { padding: 16px 4px; }
 
-.rating-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+.rating-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+#rating-slider { flex: 1; min-width: 0; height: 28px; accent-color: var(--accent); cursor: pointer; }
+.scale-chips { margin-bottom: 12px; }
 .range-summary { margin-top: 12px; font-weight: 550; }
 
 .start-note { margin-top: 6px; font-size: .84rem; color: var(--muted); text-align: center; }
 
 @media (max-width: 640px) {
-  .star-link { margin-left: 0; }
-  .opening-grid { max-height: 480px; }
+  .start-bar { padding-bottom: 6px; }
 }

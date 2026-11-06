@@ -20,6 +20,8 @@ const MODE_OPTIONS = [
 ];
 const STYLES = ['Aggressive', 'Solid', 'Gambit', 'Tricky', 'Positional'];
 const ALL = 'all';
+const MIN_RATING = 100;
+const MAX_RATING = 3500;
 
 const $ = (id) => document.getElementById(id);
 
@@ -227,6 +229,7 @@ function rangeLabel(range) {
 
 function renderRating() {
   $('rating-input').value = state.rating;
+  $('rating-slider').value = state.rating;
   $('scale-options').replaceChildren(
     ...SCALES.map((scale) => chip(scale.label, state.scale === scale.id, () => {
       state.scale = scale.id;
@@ -245,12 +248,18 @@ function renderRating() {
       },
     })),
   );
+  renderRatingSummary();
+}
+
+function renderRatingSummary() {
   const range = currentRange();
   const lichess = state.scale === 'lichess' ? '' : ` (${range.low}–${range.high} on Lichess)`;
   $('range-summary').textContent = `You'll face opponents rated ${rangeLabel(range)}${lichess}. Each game draws a new one, who plays a blend of what real players at that rating actually play.`;
+  const scaleName = SCALES.find((item) => item.id === state.scale).label;
+  const games = state.meta.games.toLocaleString('en');
   $('band-note').textContent = state.scale === 'lichess'
-    ? `Built from ${state.meta.games.toLocaleString('en')} real rated Lichess games (blitz, rapid and classical).`
-    : `Built from ${state.meta.games.toLocaleString('en')} real rated Lichess games. There is no official conversion from ${SCALES.find((item) => item.id === state.scale).label}, so this is a rough estimate: use Easier or Harder if it feels off.`;
+    ? `Built from ${games} real rated Lichess games (blitz, rapid and classical).`
+    : `Built from ${games} real rated Lichess games. There is no official conversion from ${scaleName}, so this is a rough estimate: use Easier or Harder if it feels off.`;
 }
 
 function renderModes() {
@@ -648,14 +657,20 @@ async function main() {
     renderOpeningGrid();
     renderStartBar();
   });
-  $('rating-input').addEventListener('input', (event) => {
-    const value = Number(event.target.value);
-    if (!Number.isFinite(value) || value < 100 || value > 3500) return;
+  const setRating = (value) => {
+    if (!Number.isFinite(value) || value < MIN_RATING || value > MAX_RATING) return;
     state.rating = value;
-    const range = currentRange();
-    $('start-range').textContent = rangeLabel(range);
-    const lichess = state.scale === 'lichess' ? '' : ` (${range.low}–${range.high} on Lichess)`;
-    $('range-summary').textContent = `You'll face opponents rated ${rangeLabel(range)}${lichess}. Each game draws a new one, who plays a blend of what real players at that rating actually play.`;
+    renderRatingSummary();
+    renderStartBar();
+  };
+  $('rating-input').addEventListener('input', (event) => {
+    setRating(Number(event.target.value));
+    $('rating-slider').value = state.rating;
+  });
+  $('rating-input').addEventListener('blur', () => { $('rating-input').value = state.rating; });
+  $('rating-slider').addEventListener('input', (event) => {
+    setRating(Number(event.target.value));
+    $('rating-input').value = state.rating;
   });
   $('adaptive').addEventListener('change', (event) => { state.adaptive = event.target.checked; });
   $('hint').addEventListener('click', requestHint);

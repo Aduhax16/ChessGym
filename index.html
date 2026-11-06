@@ -18,7 +18,6 @@
   <header class="site-header">
     <a class="brand" href="./">ChessGym</a>
     <p class="tagline">Train your openings against what real people at your rating actually play</p>
-    <a class="star-link" href="https://github.com/Aduhax16/ChessGym" target="_blank" rel="noopener noreferrer">★ Star on GitHub</a>
   </header>
 
   <main>
@@ -33,6 +32,18 @@
       <section class="step">
         <h2>Which colour do you want to play?</h2>
         <div id="color-options" class="options options-2"></div>
+      </section>
+
+      <section class="step">
+        <h2><label for="rating-input">What's your rating?</label></h2>
+        <div class="rating-row">
+          <input id="rating-input" type="number" inputmode="numeric" min="100" max="3500" step="25">
+          <input id="rating-slider" type="range" min="400" max="2800" step="25" aria-label="Your rating">
+        </div>
+        <div id="scale-options" class="chips scale-chips"></div>
+        <div id="level-options" class="options options-4"></div>
+        <p id="range-summary" class="range-summary"></p>
+        <p id="band-note" class="note"></p>
       </section>
 
       <section class="step">
@@ -53,17 +64,6 @@
           </div>
         </div>
         <div id="opening-options" class="opening-grid"></div>
-      </section>
-
-      <section class="step">
-        <h2>What's your rating?</h2>
-        <div class="rating-row">
-          <input id="rating-input" type="number" inputmode="numeric" min="100" max="3500" step="25" aria-label="Your rating">
-          <div id="scale-options" class="chips"></div>
-        </div>
-        <div id="level-options" class="options options-4"></div>
-        <p id="range-summary" class="range-summary"></p>
-        <p id="band-note" class="note"></p>
       </section>
 
       <section class="settings-grid">
