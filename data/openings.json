@@ -1,0 +1,673 @@
+{
+  "firstMoves": [
+    { "san": "e4", "label": "1.e4", "hint": "King's pawn: open, tactical chess" },
+    { "san": "d4", "label": "1.d4", "hint": "Queen's pawn: strategic battles" },
+    { "san": "c4", "label": "1.c4", "hint": "English: fight from the flank" },
+    { "san": "Nf3", "label": "1.Nf3", "hint": "Réti: flexible, decide later" },
+    { "san": "f4", "label": "1.f4", "hint": "Bird: grab e5 right away" },
+    { "san": "b3", "label": "1.b3", "hint": "Larsen: bishop on the long diagonal" },
+    { "san": "g3", "label": "1.g3", "hint": "Benko: quiet fianchetto" },
+    { "san": "b4", "label": "1.b4", "hint": "Polish: odd and annoying" },
+    { "san": "g4", "label": "1.g4", "hint": "Grob: pure chaos" }
+  ],
+  "openings": [
+    { "id": "italian", "name": "Italian Game: Giuoco Piano", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Bc5", "summary": "The bishop eyes f7. Develop naturally, castle fast and build slowly with c3 and d3.", "lines": [
+      { "name": "Giuoco Pianissimo", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 d6 O-O O-O Nbd2 a6 Bb3 Ba7 h3", "idea": "No rush: route the knight via f1 to g3 and break with d4 when you are ready." },
+      { "name": "Pianissimo with ...a6", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 a6 O-O d6 Bb3 Ba7 Nbd2 O-O h3", "idea": "Bb3 dodges ...Na5, and h3 takes g4 away from Black's pieces." },
+      { "name": "Early ...d6", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 d6 d4 exd4 cxd4 Bb6 Nc3 Nf6 O-O", "idea": "If Black delays ...Nf6, claim the full centre at once." }
+    ]},
+    { "id": "evans-gambit", "name": "Evans Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4", "summary": "Kasparov's surprise weapon. Give a pawn to win time for c3 and d4 and a huge attack.", "lines": [
+      { "name": "Accepted with ...Ba5", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Ba5 d4 exd4 O-O d6 cxd4 Bb6 Nc3", "idea": "Your centre and development are worth far more than the pawn." },
+      { "name": "Accepted with ...Be7", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Be7 d4 Na5 Be2 exd4 Qxd4", "idea": "Save the bishop, then use the queen in the centre to hit g7." },
+      { "name": "Declined", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bb6 a4 a6 Nc3 Nf6 Nd5", "idea": "a4 gains space with tempo threats, and Nd5 hits the b6 bishop." }
+    ]},
+    { "id": "fried-liver", "name": "Fried Liver Attack (Two Knights)", "color": "white", "difficulty": "Medium", "style": ["Aggressive", "Tricky"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5", "summary": "The most famous attack in club chess. Everyone falls for it at least once.", "lines": [
+      { "name": "Fried Liver", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 Nxf7 Kxf7 Qf3+ Ke6 Nc3", "idea": "Sacrifice the knight to drag the king out. Pile up on the pinned d5 knight." },
+      { "name": "Polerio Defence", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5 Bb5+ c6 dxc6 bxc6 Be2 h6 Nf3 e4 Ne5", "idea": "You keep an extra pawn. Stay calm: Black has activity, not a win." },
+      { "name": "Traxler Counterattack", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Bxf7+ Ke7 Bd5 Rf8 O-O d6 c3", "idea": "Do not get greedy with Nxf7. Take with the bishop and keep your king safe." },
+      { "name": "Fritz Variation", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nd4 c3 b5 Bf1 Nxd5 cxd4 Qxg5 Bxb5+", "idea": "Win a tempo on the knight and collect material on the way out." }
+    ]},
+    { "id": "two-knights-d3", "name": "Italian Game: Two Knights with d3", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Nf6 d3", "summary": "Skip the Fried Liver theory and get a calm, rich Italian structure.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d3 Bc5 c3 d6 O-O O-O Nbd2 a6 Bb3 Ba7 h3", "idea": "Same plan as the Pianissimo: Re1, Nf1 and Ng3." },
+      { "name": "With ...Be7", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d3 Be7 O-O O-O Re1 d6 c3 Na5 Bb5 a6 Ba4 b5 Bc2", "idea": "Keep your bishop when ...Na5 hunts it." },
+      { "name": "With ...d5", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d3 d5 exd5 Nxd5 O-O Be7 Re1 O-O Nxe5 Nxe5 Rxe5 Nb6 Bb3", "idea": "Black's e5 pawn is loose. Your rook on e1 makes Nxe5 work and you win it." }
+    ]},
+    { "id": "ruy-lopez", "name": "Ruy Lopez: Main Lines", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 e5 Nf3 Nc6 Bb5", "summary": "Five hundred years old and still a favourite of world champions. Slow pressure on e5.", "lines": [
+      { "name": "Closed", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 d6 c3 O-O h3", "idea": "c3 and h3 prepare d4 with no ...Bg4 pin. The bishop stays on the a2-g8 diagonal." },
+      { "name": "Open", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Nxe4 d4 b5 Bb3 d5 dxe5 Be6 c3", "idea": "No hurry to win the pawn back. Open lines while Black's king is still in the centre." },
+      { "name": "Berlin", "moves": "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Nxe4 d4 Nd6 Bxc6 dxc6 dxe5 Nf5 Qxd8+ Kxd8", "idea": "A queenless middlegame. Your kingside pawn majority is the long-term trump." },
+      { "name": "Classical", "moves": "e4 e5 Nf3 Nc6 Bb5 Bc5 c3 Nf6 d4 exd4 e5 Ne4 O-O d5", "idea": "c3 and d4 hit the c5 bishop and win central time." },
+      { "name": "Steinitz", "moves": "e4 e5 Nf3 Nc6 Bb5 d6 d4 exd4 Nxd4 Bd7 Nc3 Nf6 O-O Be7", "idea": "...d6 is passive, so open the centre and enjoy extra space." }
+    ]},
+    { "id": "ruy-exchange", "name": "Ruy Lopez: Exchange Variation", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6", "summary": "Fischer's pet line. Damage Black's pawns and steer for an endgame you can win on autopilot.", "lines": [
+      { "name": "Main line with ...f6", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6 dxc6 O-O f6 d4 exd4 Nxd4 c5 Nb3 Qxd1 Rxd1", "idea": "Trade queens. Your kingside majority can make a passed pawn, Black's cannot." },
+      { "name": "With ...Bg4", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6 dxc6 O-O Bg4 h3 h5 d3 Qf6 Nbd2", "idea": "Do not take on g4: the open h-file would help Black." },
+      { "name": "With ...Qd6", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6 dxc6 O-O Qd6 Na3 b5 c3", "idea": "Black wants ...O-O-O. Na3 and d4 keep the initiative." }
+    ]},
+    { "id": "scotch", "name": "Scotch Game", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 e5 Nf3 Nc6 d4", "summary": "Blow the centre open on move three. Active pieces and far less theory than the Ruy Lopez.", "lines": [
+      { "name": "Mieses", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5 Qe7 Qe2 Nd5 c4", "idea": "Double the pawns on c6, then kick the knight with e5 and c4." },
+      { "name": "Classical", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Bc4", "idea": "Be3 and c3 hold d4 against everything Black piles on it." },
+      { "name": "Early knight trade", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nxd4 Qxd4 d6 Bc4 Nf6 Nc3 Be7 O-O", "idea": "A centralised queen that cannot easily be chased. Develop with tempo." }
+    ]},
+    { "id": "scotch-gambit", "name": "Scotch Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive", "Tricky"], "prefix": "e4 e5 Nf3 Nc6 d4 exd4 Bc4", "summary": "Skip the recapture and aim straight at f7. Full of traps at club level.", "lines": [
+      { "name": "With ...Nf6", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 d5 Bb5 Ne4 Nxd4 Bd7 Bxc6 bxc6 O-O", "idea": "e5 kicks the knight and Bb5 keeps the pressure on c6." },
+      { "name": "With ...Bc5", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 c3 Nf6 e5 d5 Bb5 Ne4 cxd4 Bb4+ Bd2 Nxd2 Nbxd2", "idea": "c3 opens the position and you keep a strong pawn centre." }
+    ]},
+    { "id": "four-knights", "name": "Four Knights: Spanish", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Nc3 Nf6", "summary": "Classical, symmetrical and easy to play. Great for learning how to develop.", "lines": [
+      { "name": "Symmetrical", "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Bb5 Bb4 O-O O-O d3 d6 Bg5 Bxc3 bxc3", "idea": "The pin on f6 is annoying. Black copying you for long is risky." },
+      { "name": "Rubinstein", "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Bb5 Nd4 Nxd4 exd4 e5 dxc3 exf6 Qxf6 dxc3 Qe5+ Qe2", "idea": "Forcing play that leaves you with a small but safe plus." },
+      { "name": "With ...Bd6", "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Bb5 Bd6 O-O O-O d3 h6 Re1", "idea": "...Bd6 blocks Black's own d-pawn, so simply develop and play d4 later." }
+    ]},
+    { "id": "ponziani", "name": "Ponziani Opening", "color": "white", "difficulty": "Medium", "style": ["Tricky"], "prefix": "e4 e5 Nf3 Nc6 c3", "summary": "An old-school surprise. Prepare d4 at once and catch unprepared opponents.", "lines": [
+      { "name": "With ...Nf6", "moves": "e4 e5 Nf3 Nc6 c3 Nf6 d4 Nxe4 d5 Ne7 Nxe5 Ng6 Qd4 Qf6 Nxg6", "idea": "Gain time on the knights and use your space advantage." },
+      { "name": "With ...d5", "moves": "e4 e5 Nf3 Nc6 c3 d5 Qa4 f6 Bb5 Ne7 exd5 Qxd5 O-O", "idea": "Qa4 and Bb5 pin the c6 knight, so Black's e5 stays under fire." }
+    ]},
+    { "id": "vienna", "name": "Vienna Game", "color": "white", "difficulty": "Medium", "style": ["Aggressive", "Tricky"], "prefix": "e4 e5 Nc3", "summary": "A King's Gambit with better timing. Develop a knight first, then hit e5 with f4.", "lines": [
+      { "name": "Vienna Gambit", "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 Nf3 Be7 d4 O-O Bd3", "idea": "A big pawn on e5 cramps Black and your pieces aim at the king." },
+      { "name": "With ...Nc6", "moves": "e4 e5 Nc3 Nc6 f4 exf4 Nf3 g5 h4 g4 Ng5 h6 Nxf7", "idea": "The Hamppe-Allgaier: a wild piece sacrifice to expose the king." },
+      { "name": "With ...Bc5", "moves": "e4 e5 Nc3 Bc5 Nf3 d6 d4 exd4 Nxd4 Nf6 Bg5 h6 Bh4", "idea": "Grab the centre and pin the f6 knight." }
+    ]},
+    { "id": "kings-gambit", "name": "King's Gambit", "color": "white", "difficulty": "Hard", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 f4", "summary": "The romantic opening of the 1800s. Sacrifice a pawn to rip open the f-file.", "lines": [
+      { "name": "Kieseritzky", "moves": "e4 e5 f4 exf4 Nf3 g5 h4 g4 Ne5 Nf6 Bc4 d5 exd5 Bd6 d4", "idea": "h4 breaks the pawn chain and Ne5 plants a monster knight." },
+      { "name": "Fischer Defence", "moves": "e4 e5 f4 exf4 Nf3 d6 d4 g5 h4 g4 Ng1 Bh6 Nc3", "idea": "The knight's retreat is real: you will win back f4 and keep the centre." },
+      { "name": "Declined", "moves": "e4 e5 f4 Bc5 Nf3 d6 Nc3 Nf6 Bc4 Nc6 d3", "idea": "The c5 bishop stops you castling. Prepare Na4 to remove it." },
+      { "name": "Falkbeer", "moves": "e4 e5 f4 d5 exd5 exf4 Nf3 Nf6 Bc4 Nxd5 O-O", "idea": "Castle quickly and pressure the d5 knight along the open lines." }
+    ]},
+    { "id": "bishops-opening", "name": "Bishop's Opening", "color": "white", "difficulty": "Easy", "style": ["Tricky"], "prefix": "e4 e5 Bc4", "summary": "Bishop first keeps your f-pawn free and sidesteps the Petrov. Beloved by Philidor.", "lines": [
+      { "name": "Berlin Defence", "moves": "e4 e5 Bc4 Nf6 d3 c6 Nf3 d5 Bb3 Bd6 Nc3 O-O O-O", "idea": "Let Black take the centre, then undermine it from the sides." },
+      { "name": "Classical", "moves": "e4 e5 Bc4 Bc5 Nf3 d6 c3 Nf6 d4 exd4 cxd4 Bb4+ Nc3", "idea": "c3 and d4 win the centre and gain time on the bishop." },
+      { "name": "With ...Nc6", "moves": "e4 e5 Bc4 Nc6 Nf3 Nf6 d3 Bc5 O-O d6 c3", "idea": "Transposes into a comfortable Italian." }
+    ]},
+    { "id": "danish-gambit", "name": "Danish Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 d4 exd4 c3", "summary": "Give up two pawns for two raking bishops. A scary attack on move six.", "lines": [
+      { "name": "Double Gambit", "moves": "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 d5 Bxd5 Nf6 Bxf7+ Kxf7 Qxd8 Bb4+ Qd2 Bxd2+ Nxd2", "idea": "If Black returns material properly the game levels out. Everyone else gets mated." },
+      { "name": "Sörensen Defence", "moves": "e4 e5 d4 exd4 c3 d5 exd5 Qxd5 cxd4 Nc6 Nf3 Bg4 Be2 Bb4+ Nc3", "idea": "An isolated pawn but active pieces. Develop and use the d5 outpost." }
+    ]},
+    { "id": "center-game", "name": "Center Game", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 e5 d4 exd4 Qxd4", "summary": "Bring the queen out early and castle long. A provocative, unusual fight.", "lines": [
+      { "name": "Paulsen Attack", "moves": "e4 e5 d4 exd4 Qxd4 Nc6 Qe3 Nf6 Nc3 Bb4 Bd2 O-O O-O-O Re8 Qg3", "idea": "Qg3 prepares the attack on the kingside once you have castled long." }
+    ]},
+    { "id": "anti-petrov", "name": "Beating the Petrov & Stafford", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nf6 Nxe5", "summary": "Take on e5 with confidence. Know the Stafford traps and walk away a pawn up.", "lines": [
+      { "name": "Classical Petrov", "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4 d4 d5 Bd3 Nc6 O-O Be7 c4", "idea": "Hit the e4 knight's support with c4 and keep a small, lasting edge." },
+      { "name": "Stafford Gambit", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 c3 Ng4 d4", "idea": "Do not touch g4 with your bishop. d3 and Be2 defuse the Bxf2 tricks." },
+      { "name": "Damiano-style blunder", "moves": "e4 e5 Nf3 Nf6 Nxe5 Qe7 d4 d6 Nf3 Qxe4+ Be2", "idea": "Black wins the pawn back but falls behind. Develop with tempo." }
+    ]},
+    { "id": "anti-philidor", "name": "Beating the Philidor", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 e5 Nf3 d6", "summary": "Black plays passively from move two. Take space and keep it.", "lines": [
+      { "name": "Exchange", "moves": "e4 e5 Nf3 d6 d4 exd4 Nxd4 Nf6 Nc3 Be7 Bf4 O-O Qd2", "idea": "Set up Bf4, Qd2 and O-O-O. You have space and a free hand on the kingside." },
+      { "name": "Hanham", "moves": "e4 e5 Nf3 d6 d4 Nf6 Nc3 Nbd7 Bc4 Be7 O-O O-O a4", "idea": "a4 secures the bishop's home. Black is cramped, so avoid trades." }
+    ]},
+    { "id": "anti-latvian", "name": "Beating the Latvian Gambit", "color": "white", "difficulty": "Easy", "style": ["Tricky"], "prefix": "e4 e5 Nf3 f5", "summary": "Black's wildest second move. Learn the refutation and enjoy the extra tempo.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 f5 Nxe5 Qf6 d4 d6 Nc4 fxe4 Nc3 Qg6 f3", "idea": "f3 breaks the pawn chain. Your pieces all come out fast." },
+      { "name": "With ...Nc6", "moves": "e4 e5 Nf3 f5 Nxe5 Nc6 Qh5+ g6 Nxg6 Nf6 Qh4 hxg6 Qxh8", "idea": "Qh5+ and Nxg6 punish ...Nc6 at once, and you pick up the rook on h8." }
+    ]},
+    { "id": "anti-elephant", "name": "Beating the Elephant Gambit", "color": "white", "difficulty": "Easy", "style": ["Tricky"], "prefix": "e4 e5 Nf3 d5", "summary": "It looks scary but is unsound. Take the pawn and pin the e-file.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 d5 exd5 e4 Qe2 Nf6 d3 Qxd5 Nbd2 Be7 dxe4", "idea": "Qe2 pins the e-pawn. Bring your pieces out and you stay a pawn up." },
+      { "name": "With ...Bd6", "moves": "e4 e5 Nf3 d5 exd5 Bd6 d4 e4 Ne5 Nf6 Nc3 O-O Be2", "idea": "Ne5 lands in the centre and the d5 pawn stays yours." }
+    ]},
+    { "id": "open-sicilian", "name": "Open Sicilian", "color": "white", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "e4 c5 Nf3", "summary": "The critical try against 1...c5. Open the centre and go for the king.", "lines": [
+      { "name": "English Attack vs Najdorf", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be3 e5 Nb3 Be6 f3 Be7 Qd2 O-O O-O-O", "idea": "Castle long and storm with g4 and h4. Opposite-side castling is a race." },
+      { "name": "Yugoslav vs Dragon", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 Be3 Bg7 f3 O-O Qd2 Nc6 Bc4 Bd7 O-O-O", "idea": "Trade the dark bishop with Bh6 and open the h-file. Sac, sac, mate." },
+      { "name": "Against ...e5 (Sveshnikov)", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5 Ndb5 d6 Bg5 a6 Na3 b5 Nd5", "idea": "Black has a hole on d5, and your knight wants to live there forever." },
+      { "name": "Against ...e6", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6 Nc3 Qc7 Be3 a6 Bd3 Nf6 O-O", "idea": "Develop classically, then play f4 and Qe1-g3 to attack." },
+      { "name": "Against the Kan", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6 Nc3 Qc7 Bd3 Nf6 O-O", "idea": "A sturdy setup. The bishop on d3 points at the king." }
+    ]},
+    { "id": "alapin", "name": "Alapin Sicilian", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 c5 c3", "summary": "Skip mountains of Sicilian theory with one quiet pawn move, then build a big centre.", "lines": [
+      { "name": "With ...Nf6", "moves": "e4 c5 c3 Nf6 e5 Nd5 d4 cxd4 Nf3 Nc6 cxd4 d6 Bc4 Nb6 Bb5", "idea": "Gain space with tempo. Recapture on d4 with the pawn for a classical centre." },
+      { "name": "With ...d5", "moves": "e4 c5 c3 d5 exd5 Qxd5 d4 Nf6 Nf3 Bg4 Be2 e6 O-O Nc6 Be3", "idea": "Black's queen comes out early, so develop and hit it with c4 or Nc3." },
+      { "name": "With ...e6", "moves": "e4 c5 c3 e6 d4 d5 e5 Nc6 Nf3 Qb6 a3", "idea": "This is a French Advance structure. a3 and b4 expand with tempo." }
+    ]},
+    { "id": "smith-morra", "name": "Smith-Morra Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive"], "prefix": "e4 c5 d4 cxd4 c3", "summary": "A pawn for a lightning fast attack. The scourge of online blitz.", "lines": [
+      { "name": "Accepted", "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 d6 Bc4 e6 O-O Nf6 Qe2 Be7 Rd1", "idea": "Every piece on its best square, with rooks on c1 and d1. Watch the Nd5 and e5 breaks." },
+      { "name": "Declined with ...Nf6", "moves": "e4 c5 d4 cxd4 c3 Nf6 e5 Nd5 Nf3 Nc6 cxd4 d6 Bc4", "idea": "You get an Alapin with your bishop already active." },
+      { "name": "Declined with ...d3", "moves": "e4 c5 d4 cxd4 c3 d3 Bxd3 Nc6 Nf3 d6 c4", "idea": "Black gives the pawn back. c4 builds a Maroczy bind." }
+    ]},
+    { "id": "grand-prix", "name": "Grand Prix Attack", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 c5 Nc3", "summary": "A club player's favourite. Launch f4, f5 and go for mate without Sicilian theory.", "lines": [
+      { "name": "Main line", "moves": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Bc4 e6 f5 Nge7 fxe6 dxe6 d3", "idea": "Pry open the f-file. Your bishop on c4 and rook on f1 aim at f7." },
+      { "name": "With ...d6", "moves": "e4 c5 Nc3 d6 f4 Nc6 Nf3 g6 Bc4 Bg7 O-O e6 f5", "idea": "Same plan: open lines with f5 and swing the queen to e1 and h4." }
+    ]},
+    { "id": "closed-sicilian", "name": "Closed Sicilian", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 c5 Nc3 Nc6 g3", "summary": "Keep the centre shut and play on the kingside. Spassky's choice.", "lines": [
+      { "name": "Main line", "moves": "e4 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 d3 d6 f4 e6 Nf3 Nge7 O-O O-O", "idea": "Build slowly with f4 and Be3, then attack on the kingside." }
+    ]},
+    { "id": "rossolimo", "name": "Rossolimo & Moscow Sicilian", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 c5 Nf3", "summary": "The grandmaster way to avoid the Najdorf: Bb5 instead of d4.", "lines": [
+      { "name": "Rossolimo with ...g6", "moves": "e4 c5 Nf3 Nc6 Bb5 g6 O-O Bg7 Re1 e5 Bxc6 dxc6 d3 Qc7 Nc3", "idea": "Give up the bishop to wreck the pawns, then aim for f4 or Nd5." },
+      { "name": "Rossolimo with ...e6", "moves": "e4 c5 Nf3 Nc6 Bb5 e6 O-O Nge7 Re1 a6 Bf1 d5 exd5 Nxd5 d4", "idea": "Pull back the bishop to keep it, and open the centre with d4." },
+      { "name": "Moscow", "moves": "e4 c5 Nf3 d6 Bb5+ Bd7 Bxd7+ Qxd7 O-O Nc6 c3 Nf6 Re1 e6 d4", "idea": "Trade bishops and build a pawn centre with c3 and d4." },
+      { "name": "Against ...e6", "moves": "e4 c5 Nf3 e6 c3 d5 e5 Nc6 d4 Qb6 a3", "idea": "Avoid the open lines and steer for a French Advance structure." }
+    ]},
+    { "id": "caro-advance", "name": "Beating the Caro-Kann: Advance", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 c6 d4 d5 e5", "summary": "Grab space with e5 and aim for Black's bishop on f5.", "lines": [
+      { "name": "Short System", "moves": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 Nd7 O-O Ne7 Nbd2 h6 Nb3", "idea": "Quiet and strong. Nb3 keeps c5 under control and c3 holds the centre." },
+      { "name": "Against ...c5", "moves": "e4 c6 d4 d5 e5 c5 dxc5 e6 Be3 Nd7 Nf3 Nxc5 Be2", "idea": "Take the pawn and use the d4 square." }
+    ]},
+    { "id": "caro-exchange", "name": "Beating the Caro-Kann: Exchange", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 c6 d4 d5 exd5 cxd5 Bd3", "summary": "A Carlsbad structure with reversed colours: easy plans and a safe king.", "lines": [
+      { "name": "Main line", "moves": "e4 c6 d4 d5 exd5 cxd5 Bd3 Nc6 c3 Nf6 Bf4 Bg4 Qb3 Qd7 Nd2 e6 Ngf3", "idea": "Qb3 hits b7 and d5. You have the easier development." }
+    ]},
+    { "id": "caro-fantasy", "name": "Caro-Kann: Fantasy Variation", "color": "white", "difficulty": "Medium", "style": ["Aggressive", "Tricky"], "prefix": "e4 c6 d4 d5 f3", "summary": "One strange pawn move, instant chaos. Your e4 pawn stays and Black's plans fall apart.", "lines": [
+      { "name": "With ...dxe4", "moves": "e4 c6 d4 d5 f3 dxe4 fxe4 e5 Nf3 exd4 Bc4 Bb4+ c3", "idea": "Black's strike at d4 lets you gambit a pawn for very fast development." },
+      { "name": "With ...e6", "moves": "e4 c6 d4 d5 f3 e6 Nc3 Nf6 Be3 Bb4 Qd3", "idea": "Hold e4 solidly, and the f3 pawn turns out to be useful after all." },
+      { "name": "With ...g6", "moves": "e4 c6 d4 d5 f3 g6 Nc3 Bg7 Be3 Nf6 Qd2 O-O O-O-O", "idea": "Castle long and go for an attack with h4." }
+    ]},
+    { "id": "french-advance", "name": "Beating the French: Advance", "color": "white", "difficulty": "Easy", "style": ["Positional"], "prefix": "e4 e6 d4 d5 e5", "summary": "Lock the centre and squeeze. Black's light-squared bishop becomes a spectator.", "lines": [
+      { "name": "Main line", "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 a3 Bd7 b4 cxd4 cxd4", "idea": "a3 and b4 stake out queenside space. Hold d4 and attack on the kingside." },
+      { "name": "With ...Nh6", "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 a3 Nh6 b4 cxd4 cxd4 Nf5 Bb2", "idea": "Protect d4 with the bishop, then trade the f5 knight." }
+    ]},
+    { "id": "french-tarrasch", "name": "Beating the French: Tarrasch", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 e6 d4 d5 Nd2", "summary": "Nd2 avoids the Winawer pin and keeps your c-pawn free. Karpov's choice.", "lines": [
+      { "name": "Open with ...c5", "moves": "e4 e6 d4 d5 Nd2 c5 exd5 exd5 Ngf3 Nc6 Bb5 Bd6 dxc5 Bxc5 O-O Ne7 Nb3 Bd6", "idea": "Black has an isolated pawn. Blockade d4 and trade minor pieces." },
+      { "name": "With ...Nf6", "moves": "e4 e6 d4 d5 Nd2 Nf6 e5 Nfd7 Bd3 c5 c3 Nc6 Ne2 cxd4 cxd4", "idea": "A pawn chain with a kingside attack. Ne2 supports d4 and leaves f-file options." },
+      { "name": "Rubinstein with ...dxe4", "moves": "e4 e6 d4 d5 Nd2 dxe4 Nxe4 Nd7 Nf3 Ngf6 Nxf6+ Nxf6 Bd3", "idea": "You have free piece play and more central space." }
+    ]},
+    { "id": "anti-scandinavian", "name": "Beating the Scandinavian", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 d5", "summary": "Develop while chasing the queen around the board.", "lines": [
+      { "name": "...Qa5 main line", "moves": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Nf3 c6 Bc4 Bf5 Bd2 e6 Nd5 Qd8 Nxf6+ Qxf6", "idea": "Win tempi on the queen and take the bishop pair where possible." },
+      { "name": "...Qd6", "moves": "e4 d5 exd5 Qxd5 Nc3 Qd6 d4 Nf6 Nf3 a6 g3", "idea": "A fianchetto is best against the d6 queen setup." },
+      { "name": "Modern with ...Nf6", "moves": "e4 d5 exd5 Nf6 d4 Nxd5 Nf3 g6 c4 Nb6 Nc3 Bg7 h3", "idea": "Take the centre. Black's knight on b6 is badly placed." }
+    ]},
+    { "id": "anti-alekhine", "name": "Beating the Alekhine", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 Nf6 e5 Nd5", "summary": "Chase the knight, grab the space, and do not overextend.", "lines": [
+      { "name": "Modern", "moves": "e4 Nf6 e5 Nd5 d4 d6 Nf3 Bg4 Be2 e6 O-O Be7 c4 Nb6 Nc3 O-O", "idea": "Simple development beats Black's provocations. Your space is real." },
+      { "name": "With ...dxe5", "moves": "e4 Nf6 e5 Nd5 d4 d6 Nf3 dxe5 Nxe5 c6 Be2 Bf5 O-O Nd7 Nf3", "idea": "Black is solid but passive. You keep the extra space." }
+    ]},
+    { "id": "austrian-attack", "name": "Pirc: Austrian Attack", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 d6 d4 Nf6 Nc3 g6 f4", "summary": "Three pawns abreast roll at the king. The critical test of the Pirc.", "lines": [
+      { "name": "Main line", "moves": "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O Bd3 Na6 O-O c5 d5", "idea": "Close the centre with d5, then play Qe1-h4 and f5." },
+      { "name": "With ...c5", "moves": "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 c5 Bb5+ Bd7 e5", "idea": "A check first, then e5. Black is in real danger." }
+    ]},
+    { "id": "anti-modern", "name": "Beating the Modern Defence", "color": "white", "difficulty": "Easy", "style": ["Aggressive"], "prefix": "e4 g6", "summary": "Black gives you the whole centre. Take it with the 150 Attack.", "lines": [
+      { "name": "150 Attack", "moves": "e4 g6 d4 Bg7 Nc3 d6 Be3 a6 Qd2 b5 f3 Nd7 h4", "idea": "Named for the 150 BCF rating of the English players who used it. Be3, Qd2, h4." },
+      { "name": "With ...c6", "moves": "e4 g6 d4 Bg7 Nc3 c6 Be3 d5 Qd2 dxe4 Nxe4 Nf6 Nxf6+ Bxf6 O-O-O", "idea": "Castle long, then push h4." }
+    ]},
+    { "id": "queens-gambit", "name": "Queen's Gambit", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "d4 d5 c4", "summary": "Yes, the one from the show. Offer a pawn to take the centre, with lasting pressure.", "lines": [
+      { "name": "Declined", "moves": "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7 e3 O-O Nf3 h6 Bh4 b6 Bd3", "idea": "The pin on f6 hurts, and Black's c8 bishop is shut in." },
+      { "name": "Slav", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6 Bxc4 Bb4 O-O", "idea": "a4 stops ...b5, and you win back c4 with a lead in development." },
+      { "name": "Semi-Slav", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6 e3 Nbd7 Qc2 Bd6 Be2 O-O O-O", "idea": "Qc2 prepares the e4 break, your central plan." },
+      { "name": "Accepted", "moves": "d4 d5 c4 dxc4 Nf3 Nf6 e3 e6 Bxc4 c5 O-O a6 a4", "idea": "No hurry for the pawn: e3 and Bxc4 win it back with the centre in hand." },
+      { "name": "Albin Countergambit", "moves": "d4 d5 c4 e5 dxe5 d4 Nf3 Nc6 g3 Be6 Nbd2 Qd7 Bg2", "idea": "Give the pawn back if needed: the fianchetto hits the queenside." },
+      { "name": "Chigorin", "moves": "d4 d5 c4 Nc6 Nf3 Bg4 cxd5 Bxf3 gxf3 Qxd5 e3 e5 Nc3", "idea": "You get the bishop pair. Open the position for them." }
+    ]},
+    { "id": "catalan", "name": "Catalan Opening", "color": "white", "difficulty": "Hard", "style": ["Positional"], "prefix": "d4 Nf6 c4 e6 g3", "summary": "Kramnik's and Carlsen's weapon. The g2 bishop slowly crushes the queenside.", "lines": [
+      { "name": "Open", "moves": "d4 Nf6 c4 e6 g3 d5 Bg2 Be7 Nf3 O-O O-O dxc4 Qc2 a6 a4 Bd7 Qxc4", "idea": "Win the c4 pawn back and the long diagonal becomes a laser." },
+      { "name": "Bogo-style check", "moves": "d4 Nf6 c4 e6 g3 Bb4+ Bd2 Be7 Bg2 d5 Nf3 O-O O-O", "idea": "Black's bishop lost time returning home." },
+      { "name": "With ...c5", "moves": "d4 Nf6 c4 e6 g3 c5 Nf3 cxd4 Nxd4 d5 Bg2 e5 Nf3", "idea": "Black takes space, but you get great play on the long diagonal." }
+    ]},
+    { "id": "rubinstein-nimzo", "name": "Beating the Nimzo-Indian", "color": "white", "difficulty": "Hard", "style": ["Positional"], "prefix": "d4 Nf6 c4 e6 Nc3 Bb4 e3", "summary": "The Rubinstein: solid development and a real plan against the bishop pin.", "lines": [
+      { "name": "With ...O-O and ...d5", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 e3 O-O Bd3 d5 Nf3 c5 O-O Nc6 a3 Bxc3 bxc3", "idea": "You get the bishop pair and a central pawn mass." },
+      { "name": "With ...b6", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 e3 b6 Bd3 Bb7 Nf3 O-O O-O", "idea": "Develop first, then use the e4 break." },
+      { "name": "With ...c5", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 e3 c5 Bd3 Nc6 Nf3 d5 O-O", "idea": "Natural setup. The c3 knight stays pinned, not doubled, for now." }
+    ]},
+    { "id": "anti-kid", "name": "Beating the King's Indian", "color": "white", "difficulty": "Hard", "style": ["Positional"], "prefix": "d4 Nf6 c4 g6 Nc3 Bg7 e4", "summary": "Win the race: queenside attack against Black's kingside storm.", "lines": [
+      { "name": "Classical", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7 Ne1", "idea": "Close the centre, then push c5. Black races with ...f5." },
+      { "name": "With ...Nbd7", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nbd7 Re1 c6 Bf1", "idea": "Keep the tension: Black's e5 pawn and d6 pawn can become targets." },
+      { "name": "With ...c5", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 c5 O-O cxd4 Nxd4", "idea": "A Maroczy-type bind. You are squeezing, not attacking." }
+    ]},
+    { "id": "anti-grunfeld", "name": "Beating the Grünfeld", "color": "white", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "d4 Nf6 c4 g6 Nc3 d5", "summary": "Take the whole centre. Then find out if it was a good idea.", "lines": [
+      { "name": "Exchange", "moves": "d4 Nf6 c4 g6 Nc3 d5 cxd5 Nxd5 e4 Nxc3 bxc3 Bg7 Nf3 c5 Rb1 O-O Be2", "idea": "Rb1 pre-empts ...Bg4 trades and pressures b7. Keep your centre protected." }
+    ]},
+    { "id": "anti-benoni", "name": "Beating the Benoni & Benko", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "d4 Nf6 c4 c5 d5", "summary": "Black's dynamic counterattacks. Accept the pawn or crash through in the centre.", "lines": [
+      { "name": "Modern Benoni", "moves": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 d6 e4 g6 Nf3 Bg7 Be2 O-O O-O", "idea": "Your e5 break is the whole game. Prepare it with Nd2 and f4." },
+      { "name": "Benko Gambit", "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 bxa6 Bxa6 Nc3 d6 e4 Bxf1 Kxf1", "idea": "Take everything and your king is fine. You are a healthy pawn up." }
+    ]},
+    { "id": "london", "name": "London System", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4", "summary": "The same setup against almost everything: d4, Bf4, e3, Nf3, c3, Nbd2. Almost no theory.", "lines": [
+      { "name": "Against ...d5 and ...c5", "moves": "d4 d5 Bf4 Nf6 e3 c5 c3 Nc6 Nd2 e6 Ngf3 Bd6 Bg3 O-O Bd3", "idea": "If Black trades on g3 your structure is still rock solid. Aim for Ne5." },
+      { "name": "Against early ...e6", "moves": "d4 d5 Bf4 e6 e3 Nf6 Nf3 Bd6 Bg3 O-O Bd3 c5 c3 Nc6 Nbd2", "idea": "Bg3 preserves the bishop against ...Bd6." },
+      { "name": "Against ...Bf5", "moves": "d4 d5 Bf4 Bf5 e3 e6 Bd3 Bxd3 Qxd3 Nf6 Nf3 Bd6 Bg3 O-O Nbd2", "idea": "Simplify with Bd3. The trade leaves you well developed." },
+      { "name": "Against the King's Indian", "moves": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Be2 d6 h3 Nbd7 O-O", "idea": "h3 gives your bishop a retreat and stops ...Ng4 and ...Bg4." },
+      { "name": "Against ...e6 and ...c5", "moves": "d4 Nf6 Bf4 e6 e3 c5 c3 d5 Nd2 Nc6 Ngf3 Bd6 Bg3 O-O Bd3", "idea": "You end up in the same setup. That is the beauty of the system." },
+      { "name": "Against 1...e6", "moves": "d4 e6 Bf4 d5 e3 Nf6 Nf3 Bd6 Bg3 O-O Bd3 c5 c3 Nc6 Nbd2", "idea": "Move order does not matter. Pieces go to the same squares." },
+      { "name": "Against 1...g6", "moves": "d4 g6 Bf4 Bg7 e3 d6 Nf3 Nf6 Be2 O-O h3 Nbd7 O-O", "idea": "Same scheme: h3, castle, then c4 or Nbd2." }
+    ]},
+    { "id": "jobava-london", "name": "Jobava London", "color": "white", "difficulty": "Medium", "style": ["Aggressive", "Tricky"], "prefix": "d4 d5 Nc3", "summary": "The London's aggressive cousin. Nc3 and Bf4 set up Nb5 threats from move three.", "lines": [
+      { "name": "Main line", "moves": "d4 d5 Nc3 Nf6 Bf4 c5 e3 cxd4 exd4 a6 Nf3 Nc6 Bd3", "idea": "A symmetrical pawn structure, but your pieces land first. Ne5 and Qf3 come next." },
+      { "name": "With ...e6", "moves": "d4 d5 Nc3 Nf6 Bf4 e6 Nb5 Na6 e3 Be7 Nf3 O-O Bd3", "idea": "Nb5 forces Black's knight to the rim." },
+      { "name": "With ...Bf5", "moves": "d4 d5 Nc3 Bf5 Bf4 e6 e3 Nf6 Nb5 Na6 a3", "idea": "Keep the b5 knight there as a thorn." }
+    ]},
+    { "id": "veresov", "name": "Richter-Veresov Attack", "color": "white", "difficulty": "Medium", "style": ["Tricky"], "prefix": "d4 d5 Nc3 Nf6 Bg5", "summary": "Hit f6 and follow up with f3 and e4: a rarely prepared attacking setup.", "lines": [
+      { "name": "With ...Nbd7", "moves": "d4 d5 Nc3 Nf6 Bg5 Nbd7 Nf3 h6 Bh4 e6 e3 Be7 Bd3", "idea": "Develop, castle, then break with e4." },
+      { "name": "With ...Bf5", "moves": "d4 d5 Nc3 Nf6 Bg5 Bf5 f3 Nbd7 Nxd5 Nxd5 e4", "idea": "A tactical shot wins back the piece with a big centre." },
+      { "name": "With ...e6", "moves": "d4 d5 Nc3 Nf6 Bg5 e6 e4 dxe4 Nxe4 Be7 Bxf6 Bxf6 Nf3", "idea": "e4 at once gives you a free French-like position." }
+    ]},
+    { "id": "trompowsky", "name": "Trompowsky Attack", "color": "white", "difficulty": "Medium", "style": ["Tricky"], "prefix": "d4 Nf6 Bg5", "summary": "Black's second move is already an awkward decision. A favourite of Carlsen in rapid.", "lines": [
+      { "name": "With ...Ne4", "moves": "d4 Nf6 Bg5 Ne4 Bf4 c5 f3 Qa5+ c3 Nf6 d5", "idea": "Kick the knight and build a big centre with d5." },
+      { "name": "With ...e6", "moves": "d4 Nf6 Bg5 e6 e4 h6 Bxf6 Qxf6 Nc3 d6 Qd2", "idea": "Give up the bishop for development and a big pawn centre." },
+      { "name": "With ...d5", "moves": "d4 Nf6 Bg5 d5 Bxf6 exf6 e3 Bd6 c4 dxc4 Bxc4", "idea": "Black's doubled pawns restrict their bishops." },
+      { "name": "With ...c5", "moves": "d4 Nf6 Bg5 c5 d5 Qb6 Nc3 Qxb2 Bd2 Qb6 e4", "idea": "A gambit for a strong centre and fast development." }
+    ]},
+    { "id": "torre", "name": "Torre Attack", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 Nf6 Nf3", "summary": "Bg5 with no c4. Simple development with a quiet kingside attack in mind.", "lines": [
+      { "name": "With ...e6", "moves": "d4 Nf6 Nf3 e6 Bg5 h6 Bh4 c5 e3 Be7 Nbd2 b6 Bd3", "idea": "Hold the pin as long as you can and play c3 and e4." },
+      { "name": "With ...g6", "moves": "d4 Nf6 Nf3 g6 Bg5 Bg7 Nbd2 d6 c3 O-O e4", "idea": "e4 gives you a real centre with very little effort." },
+      { "name": "With ...d5", "moves": "d4 Nf6 Nf3 d5 Bg5 e6 e3 Be7 Bd3 O-O O-O", "idea": "A calm setup. Trade on f6 at the right moment." }
+    ]},
+    { "id": "colle", "name": "Colle-Zukertort System", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 d5 Nf3", "summary": "Set up, castle, and aim two bishops at the king. Easy to learn and dangerous.", "lines": [
+      { "name": "Zukertort setup", "moves": "d4 d5 Nf3 Nf6 e3 e6 Bd3 c5 b3 Nc6 O-O Bd6 Bb2 O-O Nbd2", "idea": "Plant a knight on e5, then swing a rook or queen over to the kingside." },
+      { "name": "Against ...Bg4", "moves": "d4 d5 Nf3 Nf6 e3 Bg4 c4 e6 Nc3 Nbd7 h3 Bh5", "idea": "With the bishop outside, c4 and Qb3 hit the weakened b7." },
+      { "name": "Against ...Bf5", "moves": "d4 d5 Nf3 Nf6 e3 Bf5 Bd3 e6 Bxf5 exf5 Qd3", "idea": "Trade the bishop and hit the doubled f-pawns with Qd3." }
+    ]},
+    { "id": "stonewall-attack", "name": "Stonewall Attack", "color": "white", "difficulty": "Easy", "style": ["Aggressive"], "prefix": "d4 d5 e3", "summary": "Pawns on c3, d4, e3, f4 and a fast attack with Bd3, Ne5. Beginners love it.", "lines": [
+      { "name": "Main line", "moves": "d4 d5 e3 Nf6 Bd3 c5 c3 Nc6 f4 Bg4 Nf3 e6 O-O Bd6", "idea": "Ne5 next, then Qe1-h4. Once the knight lands, the attack plays itself." },
+      { "name": "With ...e6", "moves": "d4 d5 e3 e6 Bd3 Nf6 f4 c5 c3 Nc6 Nf3 Bd6 O-O", "idea": "Black has not stopped the plan, so carry on with Ne5 and Qe1." }
+    ]},
+    { "id": "blackmar-diemer", "name": "Blackmar-Diemer Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive"], "prefix": "d4 d5 e4", "summary": "1.d4 for attackers. Give a pawn and go after the king on the f-file.", "lines": [
+      { "name": "Bogoljubov Defence", "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 g6 Bc4 Bg7 O-O O-O Qe1", "idea": "Qe1-h4 then Bh6. Your rook on f1 joins in." },
+      { "name": "Euwe Defence", "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 e6 Bg5 Be7 Bd3 O-O O-O", "idea": "Every piece is pointed at the kingside. Look for Ne5 and Qe1." },
+      { "name": "Ziegler Defence", "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 c6 Bc4 Bf5 O-O e6 Qe1", "idea": "Same recipe. Keep your rook on the f-file and press f7." },
+      { "name": "Lemberger Countergambit", "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 e5 dxe5 Qxd1+ Kxd1 Nfd7 Nd5 Kd8 Bg5+ f6 exf6 gxf6", "idea": "Take on e5, trade queens, then Nd5 and Bg5+ exploit the loose black king." }
+    ]},
+    { "id": "anti-dutch", "name": "Beating the Dutch", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "d4 f5 Nf3", "summary": "Fianchetto first and let Black overextend on the kingside.", "lines": [
+      { "name": "Classical", "moves": "d4 f5 Nf3 Nf6 g3 e6 Bg2 Be7 O-O O-O c4 d5 b3", "idea": "b3 and Ba3 trade Black's good bishop in the Stonewall." },
+      { "name": "Leningrad", "moves": "d4 f5 Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O c4 d6 Nc3", "idea": "Stop ...e5 for as long as you can with d5 and Qc2." }
+    ]},
+    { "id": "staunton-gambit", "name": "Staunton Gambit", "color": "white", "difficulty": "Medium", "style": ["Gambit", "Aggressive"], "prefix": "d4 f5 e4", "summary": "Punish the Dutch immediately by opening up the weakened king.", "lines": [
+      { "name": "Main line", "moves": "d4 f5 e4 fxe4 Nc3 Nf6 Bg5 g6 f3 exf3 Nxf3 Bg7 Bd3 O-O O-O", "idea": "Pour your pieces toward the kingside. Qd2 and Bh6 will follow." },
+      { "name": "With ...c6", "moves": "d4 f5 e4 fxe4 Nc3 Nf6 Bg5 c6 f3 exf3 Nxf3 d5 Bd3", "idea": "Black is solid but behind in development. Castle and play Ne5." }
+    ]},
+    { "id": "anti-englund", "name": "Beating the Englund Gambit", "color": "white", "difficulty": "Easy", "style": ["Tricky"], "prefix": "d4 e5 dxe5 Nc6 Nf3 Qe7", "summary": "A notorious blitz trap. Learn the one move that avoids Qc1 mate.", "lines": [
+      { "name": "Avoid the trap", "moves": "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Nc3 Bb4 Rb1 Qa3 Nd5", "idea": "Never Bc3?, Bb4 Qd2 Bxc3 Qxc3 Qc1 mate. Nc3 and Rb1 turn the tables." }
+    ]},
+    { "id": "reti", "name": "Réti Opening", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "Nf3 d5 c4", "summary": "Hypermodern chess. Attack the centre from afar and let Black overreach.", "lines": [
+      { "name": "With ...e6", "moves": "Nf3 d5 c4 e6 g3 Nf6 Bg2 Be7 O-O O-O b3 c5 Bb2 Nc6 e3", "idea": "A double fianchetto sweeps both long diagonals." },
+      { "name": "With ...c6", "moves": "Nf3 d5 c4 c6 b3 Nf6 g3 Bf5 Bg2 e6 Bb2 Nbd7 O-O", "idea": "The bishops look across the board at Black's position." },
+      { "name": "With ...d4", "moves": "Nf3 d5 c4 d4 e3 Nc6 exd4 Nxd4 Nxd4 Qxd4 Nc3", "idea": "Undermine the pawn, trade and gain time on the queen." },
+      { "name": "With ...dxc4", "moves": "Nf3 d5 c4 dxc4 e3 Nf6 Bxc4 e6 O-O c5 b3", "idea": "You win the pawn back and have a central majority." }
+    ]},
+    { "id": "kia", "name": "King's Indian Attack", "color": "white", "difficulty": "Easy", "style": ["Solid", "Aggressive"], "prefix": "Nf3", "summary": "Bobby Fischer's system. One setup against anything, then a kingside attack.", "lines": [
+      { "name": "Against ...d5 and ...c5", "moves": "Nf3 d5 g3 Nf6 Bg2 c5 O-O Nc6 d3 e5 Nbd2 Be7 e4 O-O", "idea": "Build with Re1 and e5, and push h4 and Nf1 to attack." },
+      { "name": "Against ...Bf5", "moves": "Nf3 d5 g3 Nf6 Bg2 Bf5 O-O e6 d3 h6 Nbd2 Be7 Qe1 O-O e4", "idea": "Qe1 prepares e4 with tempo on the bishop." },
+      { "name": "Against ...Nf6 and ...g6", "moves": "Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O d3 d6 e4", "idea": "A reversed King's Indian: keep the tension and prepare your break." },
+      { "name": "Against ...c5", "moves": "Nf3 c5 g3 Nc6 Bg2 g6 O-O Bg7 d3 d6 e4", "idea": "A closed Sicilian structure. Plan c3 and d4." },
+      { "name": "Against ...e6", "moves": "Nf3 e6 g3 d5 Bg2 Nf6 O-O Be7 d3 O-O Nbd2 c5 e4", "idea": "This is the classic French version of the KIA." }
+    ]},
+    { "id": "english", "name": "English Opening", "color": "white", "difficulty": "Medium", "style": ["Positional"], "prefix": "c4", "summary": "Control d5 from the side and aim the g2 bishop. Perfect if you prefer plans to theory.", "lines": [
+      { "name": "Reversed Sicilian", "moves": "c4 e5 Nc3 Nf6 Nf3 Nc6 g3 d5 cxd5 Nxd5 Bg2 Nb6 O-O Be7 d3", "idea": "It is a Sicilian with an extra tempo. The g2 bishop owns the diagonal." },
+      { "name": "With ...Bb4", "moves": "c4 e5 Nc3 Nf6 Nf3 Nc6 g3 Bb4 Bg2 O-O O-O e4 Ng5 Bxc3 bxc3 Re8 f3", "idea": "Give up the structure to gain the centre with f3 and the f-file." },
+      { "name": "Symmetrical", "moves": "c4 c5 Nf3 Nf6 Nc3 Nc6 g3 g6 Bg2 Bg7 O-O O-O d3 d6 a3", "idea": "You move first: a3 and b4 give you the queenside initiative." },
+      { "name": "Against ...Nf6 and ...e6", "moves": "c4 Nf6 Nc3 e6 Nf3 d5 d4 Be7 Bg5 O-O e3 h6 Bh4", "idea": "Transposes to a Queen's Gambit Declined if Black agrees." },
+      { "name": "Against the King's Indian", "moves": "c4 Nf6 Nc3 g6 g3 Bg7 Bg2 O-O Nf3 d6 O-O e5 d3", "idea": "Fianchetto and d3: control d5 and prepare Rb1 and b4." },
+      { "name": "Against 1...e6", "moves": "c4 e6 Nc3 d5 d4 Nf6 Nf3 Be7 Bg5 O-O e3 h6 Bh4", "idea": "Go into a Queen's Gambit with your pieces well placed." },
+      { "name": "Against 1...g6", "moves": "c4 g6 Nc3 Bg7 g3 d6 Bg2 e5 d3 Nf6 Nf3 O-O O-O", "idea": "Same scheme: g3, Bg2, d3, Nf3 and castle." },
+      { "name": "Against 1...c6", "moves": "c4 c6 Nf3 d5 e3 Nf6 Nc3 e6 d4 Nbd7 Qc2 Bd6 Be2 O-O O-O", "idea": "If Black goes Slav, set up e3, Qc2 and Be2." }
+    ]},
+    { "id": "birds", "name": "Bird's Opening", "color": "white", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "f4", "summary": "A reversed Dutch with an extra tempo: control e5 and swing to the kingside.", "lines": [
+      { "name": "Leningrad setup", "moves": "f4 d5 Nf3 Nf6 e3 g6 Be2 Bg7 O-O O-O d3 c5 Qe1", "idea": "Qe1-h4 starts your attack, and e4 is the break to prepare." },
+      { "name": "From's Gambit", "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 g5 g3 g4 Nh4", "idea": "Take the pawn but be careful. Do not fall for Qh4+ and mate on g3." },
+      { "name": "Against ...Nf6", "moves": "f4 Nf6 Nf3 g6 e3 Bg7 Be2 O-O O-O d6 d3", "idea": "A flexible setup. Plan Qe1 and e4." },
+      { "name": "Against ...c5", "moves": "f4 c5 Nf3 Nc6 e3 g6 Be2 Bg7 O-O d6 d3", "idea": "Same scheme, and Qe1 stays your main idea." }
+    ]},
+    { "id": "larsen", "name": "Larsen's Opening", "color": "white", "difficulty": "Medium", "style": ["Tricky"], "prefix": "b3", "summary": "Nimzowitsch-Larsen: fianchetto on move two and pressure e5 from the very start.", "lines": [
+      { "name": "Against ...e5", "moves": "b3 e5 Bb2 Nc6 e3 d5 Bb5 Bd6 f4", "idea": "Bb5 and f4 both attack the e5 pawn's support." },
+      { "name": "Against ...d5", "moves": "b3 d5 Bb2 Nf6 Nf3 e6 e3 Be7 Be2 O-O O-O", "idea": "A quiet Queen's Indian with colours reversed and an extra tempo." },
+      { "name": "Against ...Nf6", "moves": "b3 Nf6 Bb2 g6 Bxf6 exf6 c4 Bg7 Nc3 O-O", "idea": "Wreck the pawns and control d5." }
+    ]},
+    { "id": "polish", "name": "Polish Opening (Sokolsky)", "color": "white", "difficulty": "Medium", "style": ["Tricky"], "prefix": "b4", "summary": "The Orangutan. Odd and slightly annoying: the bishop comes to b2 straight away.", "lines": [
+      { "name": "Against ...e5", "moves": "b4 e5 Bb2 Bxb4 Bxe5 Nf6 c4 O-O e3 d5 cxd5", "idea": "You give up a wing pawn to grab a central one. Fair trade." },
+      { "name": "Against ...d5", "moves": "b4 d5 Bb2 Nf6 e3 e6 a3 Be7 Nf3 O-O c4", "idea": "a3 supports the b-pawn, and c4 attacks the centre." },
+      { "name": "Against ...Nf6", "moves": "b4 Nf6 Bb2 e6 a3 d5 e3 Be7 Nf3 O-O c4", "idea": "Same plan: Bb2, a3, e3, Nf3 and c4." }
+    ]},
+    { "id": "hungarian", "name": "Benko's Opening (Hungarian)", "color": "white", "difficulty": "Easy", "style": ["Solid"], "prefix": "g3", "summary": "Fianchetto first and decide on the structure later. No theory at all.", "lines": [
+      { "name": "Against ...d5", "moves": "g3 d5 Bg2 Nf6 d3 e5 Nf3 Nc6 O-O Be7 c4", "idea": "A reversed Pirc or King's Indian. You are a useful tempo up." },
+      { "name": "Against ...e5", "moves": "g3 e5 Bg2 d5 d3 Nf6 Nf3 Nc6 O-O Be7 c4", "idea": "Let Black build the big centre, then strike it with c4." },
+      { "name": "Against ...Nf6", "moves": "g3 Nf6 Bg2 d5 d3 e5 Nf3 Nc6 O-O Be7 c4", "idea": "A reversed King's Indian, and you are a useful tempo up." }
+    ]},
+    { "id": "grob", "name": "Grob Attack", "color": "white", "difficulty": "Hard", "style": ["Gambit", "Tricky"], "prefix": "g4", "summary": "Objectively dubious, gloriously chaotic. A meme that wins blitz games.", "lines": [
+      { "name": "Grob Gambit", "moves": "g4 d5 Bg2 Bxg4 c4 c6 Qb3 Qd7 cxd5 cxd5 Bxd5", "idea": "Pressure d5 and b7 at once. Two attackers against one defender wins the pawn back." },
+      { "name": "Against ...e5", "moves": "g4 e5 Bg2 d5 d3 Nc6 c4 dxc4 dxc4 Qxd1+ Kxd1", "idea": "Trade the queens and use your bishop on the long diagonal." }
+    ]},
+
+    { "id": "najdorf", "name": "Sicilian: Najdorf", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6", "summary": "Fischer and Kasparov's weapon. One quiet move, ...a6, and an ocean of possibilities.", "lines": [
+      { "name": "Against Be2", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be2 e5 Nb3 Be7 O-O O-O", "idea": "...e5 kicks the knight. Watch out for the hole on d5." },
+      { "name": "English Attack", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be3 e5 Nb3 Be6 f3 Be7 Qd2 O-O", "idea": "Counterattack with ...b5 and ...b4 while White attacks on the other flank." },
+      { "name": "Against Bg5", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Bg5 e6 f4 Be7 Qf3 Qc7 O-O-O Nbd7", "idea": "...e6 and ...Be7 hold the pin. Your counterplay is ...b5." },
+      { "name": "Sozin with Bc4", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Bc4 e6 Bb3 b5 O-O Be7", "idea": "...e6 blunts the bishop, and ...b5 gains queenside space." },
+      { "name": "Against h3", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 h3 e5 Nde2 h5", "idea": "...h5 stops g4 in its tracks." },
+      { "name": "Against f3", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 f3 e5 Nb3 Be6 Be3 h5", "idea": "Same setup as the English, with ...h5 slowing down g4." }
+    ]},
+    { "id": "dragon", "name": "Sicilian: Dragon", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6", "summary": "Breathe fire down the long diagonal. Razor-sharp races with opposite-side castling.", "lines": [
+      { "name": "Yugoslav Attack", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 Be3 Bg7 f3 O-O Qd2 Nc6 Bc4 Bd7 O-O-O Rc8 Bb3 Ne5", "idea": "Pile on c3 and be ready to sacrifice the exchange there." },
+      { "name": "Classical", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 Be2 Bg7 O-O O-O Be3 Nc6", "idea": "White is less direct, so you get a comfortable game with ...d5 ideas." },
+      { "name": "Levenfish", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 f4 Nc6 Nxc6 bxc6 e5 Nd7", "idea": "Recapture towards the centre and go after the overextended e5 pawn." }
+    ]},
+    { "id": "accelerated-dragon", "name": "Sicilian: Accelerated Dragon", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6", "summary": "A Dragon without the Yugoslav worry. ...d5 in one go is the dream.", "lines": [
+      { "name": "Main line", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6 Nc3 Bg7 Be3 Nf6 Bc4 O-O Bb3 d6", "idea": "Trade on d4 and go for ...Bd7 and ...Rc8 on the open file." },
+      { "name": "Maroczy Bind", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6 c4 Nf6 Nc3 d6 Be2 Nxd4 Qxd4 Bg7", "idea": "White has a squeeze, so trade pieces to relieve the cramped position." }
+    ]},
+    { "id": "sveshnikov", "name": "Sicilian: Sveshnikov", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5", "summary": "Accept a hole on d5 for active pieces. Carlsen's world championship choice.", "lines": [
+      { "name": "Main line", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5 Ndb5 d6 Bg5 a6 Na3 b5 Nd5 Be7 Bxf6 Bxf6 c3", "idea": "The bishop pair and queenside space offset the hole on d5." },
+      { "name": "Against Nf5", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5 Nf5 d5 exd5 Bxf5 dxc6 bxc6", "idea": "Hit the centre right away with ...d5." },
+      { "name": "Against Nb3", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 e5 Nb3 Bb4 Bd3 d5", "idea": "A passive retreat lets you get the ...d5 break right away." }
+    ]},
+    { "id": "taimanov", "name": "Sicilian: Taimanov", "color": "black", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6", "summary": "Flexible and hard to prepare against. Your pieces decide where they go late.", "lines": [
+      { "name": "English Attack", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6 Nc3 Qc7 Be3 a6 Qd2 Nf6 O-O-O Be7", "idea": "Keep the structure flexible and use ...b5 for counterplay." },
+      { "name": "Against Be2", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6 Nc3 Qc7 Be2 a6 O-O Nf6 Be3 Bb4", "idea": "...Bb4 pressures e4 and c3." },
+      { "name": "Against Nb5", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 Nc6 Nb5 d6 c4 Nf6 N1c3 a6 Na3 Be7", "idea": "A hedgehog structure: wait, then break with ...b5 or ...d5." }
+    ]},
+    { "id": "kan", "name": "Sicilian: Kan (Paulsen)", "color": "black", "difficulty": "Medium", "style": ["Positional"], "prefix": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6", "summary": "...a6 and ...Qc7 keep every option open. Excellent counterattacking chances.", "lines": [
+      { "name": "Against Bd3", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6 Bd3 Nf6 O-O Qc7 Qe2 d6", "idea": "A classic hedgehog: slow on the surface, tense underneath." },
+      { "name": "Against Nc3", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6 Nc3 Qc7 Bd3 Nc6 Be3 Nf6 O-O", "idea": "Pressure on d4 and e4, with ...Ne5 and ...Bd6 ideas." },
+      { "name": "Against c4", "moves": "e4 c5 Nf3 e6 d4 cxd4 Nxd4 a6 c4 Nf6 Nc3 Bb4 Bd3 Nc6", "idea": "...Bb4 hits the knight defending e4." }
+    ]},
+    { "id": "classical-sicilian", "name": "Sicilian: Classical", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 d6", "summary": "Natural development and solid structure. A safe route into Sicilian waters.", "lines": [
+      { "name": "Richter-Rauzer", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 d6 Bg5 e6 Qd2 a6 O-O-O Bd7 f4 b5", "idea": "White attacks in the centre. You answer with queenside play." },
+      { "name": "Sozin", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 d6 Bc4 Qb6 Nb3 e6 O-O Be7", "idea": "...Qb6 pushes the knight back and takes the sting out of the attack." },
+      { "name": "Against Be2", "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 d6 Be2 e5 Nb3 Be7 O-O O-O", "idea": "Easy play: claim the centre with ...e5." }
+    ]},
+    { "id": "scheveningen", "name": "Sicilian: Scheveningen", "color": "black", "difficulty": "Hard", "style": ["Positional"], "prefix": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 e6", "summary": "Kasparov's small-centre setup: compact, elastic and full of counterpunches.", "lines": [
+      { "name": "Against Be2", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 e6 Be2 a6 O-O Be7 Be3 O-O f4 Qc7", "idea": "Standard setup. Your small centre controls key squares." },
+      { "name": "Keres Attack", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 e6 g4 h6 h4 Nc6 Rg1 h5", "idea": "White attacks straight away. ...h6 and ...h5 fight back on that very wing." },
+      { "name": "English Attack", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 e6 Be3 a6 f3 b5 Qd2 Bb7", "idea": "Go for ...b5, ...b4 and ...Nbd7 as fast as you can." }
+    ]},
+    { "id": "anti-sicilians", "name": "Sicilian: Handling the Anti-Sicilians", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 c5", "summary": "Half your Sicilian games never reach move 3.d4. Be ready for Alapin, Grand Prix and Morra.", "lines": [
+      { "name": "Alapin", "moves": "e4 c5 c3 Nf6 e5 Nd5 d4 cxd4 Nf3 Nc6 cxd4 d6 Bc4 Nb6 Bb5 dxe5", "idea": "Hit the centre before White gets settled." },
+      { "name": "Closed", "moves": "e4 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 d3 d6 Nge2 e6 O-O Nge7", "idea": "Copy the fianchetto and expand with ...Rb8 and ...b5." },
+      { "name": "Grand Prix", "moves": "e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Bc4 e6 f5 Nge7", "idea": "...e6 and ...Ne7 cover f5 and shut down the attack on f7." },
+      { "name": "Smith-Morra", "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 d6 Bc4 e6 O-O Nf6", "idea": "Take the pawn and develop calmly. ...e6 blunts the bishop." },
+      { "name": "Moscow", "moves": "e4 c5 Nf3 d6 Bb5+ Bd7 Bxd7+ Qxd7 O-O Nc6 c3 Nf6 Re1 e6", "idea": "Trade bishops without fear. You end up solid with control of d4." },
+      { "name": "Open Sicilian", "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6", "idea": "Your Najdorf goes here. Pick your own favourite setup later." }
+    ]},
+    { "id": "caro-kann", "name": "Caro-Kann Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 c6", "summary": "Rock-solid with healthy pawns. Your bishop escapes before ...e6.", "lines": [
+      { "name": "Classical", "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 h4 h6 Nf3 Nd7 h5 Bh7 Bd3 Bxd3 Qxd3", "idea": "Your bishop gets out before ...e6, and after the trade your pieces have easy squares." },
+      { "name": "Advance", "moves": "e4 c6 d4 d5 e5 Bf5 Nf3 e6 Be2 Nd7 O-O Ne7 Nbd2 h6", "idea": "Get the bishop outside the chain, then undermine d4 with ...c5." },
+      { "name": "Exchange", "moves": "e4 c6 d4 d5 exd5 cxd5 Bd3 Nc6 c3 Nf6 Bf4 Bg4 Qb3 Qd7", "idea": "...Bg4 gets your bishop out before ...e6 shuts it in." },
+      { "name": "Panov Attack", "moves": "e4 c6 d4 d5 exd5 cxd5 c4 Nf6 Nc3 e6 Nf3 Be7 cxd5 Nxd5", "idea": "White has an isolated pawn. Blockade it on d5 and trade pieces." },
+      { "name": "Two Knights", "moves": "e4 c6 Nc3 d5 Nf3 Bg4 h3 Bxf3 Qxf3 e6 d4 Nf6 Bd3 dxe4 Bxe4 Qxd4 O-O Qd8", "idea": "Give up the bishop, and take the d4 pawn if White offers it. Your structure is sound." },
+      { "name": "Fantasy", "moves": "e4 c6 d4 d5 f3 e6 Nc3 Nf6 Be3 Bb4 Qd3 O-O", "idea": "...e6 and ...Bb4 are the calm antidote. Do not grab anything too early." },
+      { "name": "King's Indian Attack", "moves": "e4 c6 d3 d5 Nd2 e5 Ngf3 Bd6 g3 Nf6 Bg2 O-O O-O", "idea": "Take the centre with ...e5, because White has been too modest." },
+      { "name": "Against early Nf3", "moves": "e4 c6 Nf3 d5 Nc3 Bg4 h3 Bxf3 Qxf3 e6 d4 Nf6 Bd3 dxe4 Bxe4 Qxd4 O-O Qd8", "idea": "Transposes straight into the Two Knights." }
+    ]},
+    { "id": "french", "name": "French Defence", "color": "black", "difficulty": "Medium", "style": ["Solid", "Positional"], "prefix": "e4 e6", "summary": "A firm pawn chain in exchange for a bad bishop. Counterattack the base with ...c5 and ...f6.", "lines": [
+      { "name": "Advance", "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 a3 Nh6 b4 cxd4 cxd4 Nf5", "idea": "Throw everything at d4: ...c5, ...Nc6, ...Qb6, and the knight heads to f5." },
+      { "name": "Exchange", "moves": "e4 e6 d4 d5 exd5 exd5 Nf3 Nf6 Bd3 Bd6 O-O O-O Bg5 Bg4", "idea": "Symmetrical, and your c8 bishop is free. Develop just like White." },
+      { "name": "Tarrasch", "moves": "e4 e6 d4 d5 Nd2 c5 exd5 exd5 Ngf3 Nc6 Bb5 Bd6 dxc5 Bxc5 O-O Ne7", "idea": "Accept the isolated pawn for active pieces and open lines." },
+      { "name": "Winawer", "moves": "e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Qg4 O-O", "idea": "Double White's pawns at the price of the bishop pair." },
+      { "name": "Winawer: Bd3", "moves": "e4 e6 d4 d5 Nc3 Bb4 Bd3 dxe4 Bxe4 Nf6 Bf3 c5 Ne2 cxd4 Qxd4 Qxd4 Nxd4 O-O Bd2 Nbd7", "idea": "Take on e4 and hit back with ...c5. With the queens off, you have no worries." },
+      { "name": "Against Nf3", "moves": "e4 e6 Nf3 d5 exd5 exd5 d4 Nf6 Bd3 Bd6 O-O O-O", "idea": "Transposes to the Exchange. Develop symmetrically." },
+      { "name": "King's Indian Attack", "moves": "e4 e6 d3 d5 Nd2 Nf6 Ngf3 c5 g3 Nc6 Bg2 Be7 O-O O-O", "idea": "Occupy the centre with ...d5 and ...c5, and play on the queenside." }
+    ]},
+    { "id": "scandinavian", "name": "Scandinavian Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 d5", "summary": "Hit the centre on move one. Little theory and a Caro-Kann structure.", "lines": [
+      { "name": "Main line with ...Qa5", "moves": "e4 d5 exd5 Qxd5 Nc3 Qa5 d4 Nf6 Nf3 c6 Bc4 Bf5 Bd2 e6 Nd5 Qd8", "idea": "The queen is safe on a5. ...c6 gives her a way home and ...Bf5 develops." },
+      { "name": "Against Nf3", "moves": "e4 d5 exd5 Qxd5 Nf3 Bg4 Be2 Nc6 d4 O-O-O", "idea": "Castle long and pressure d4 at once." },
+      { "name": "Against d4", "moves": "e4 d5 exd5 Qxd5 d4 Nf6 Nf3 Bg4 Be2 e6 O-O Nc6", "idea": "Pin on f3 and normal development, with a comfortable game." },
+      { "name": "Against e5", "moves": "e4 d5 e5 Bf5 d4 e6 Nf3 c5 c3 Nc6", "idea": "A French structure with the bishop already out: a great version for you." },
+      { "name": "Against Nc3", "moves": "e4 d5 Nc3 d4 Nce2 e5 Ng3 Be6 Nf3 Nc6", "idea": "Gain space with ...d4 and ...e5 and chase the knight around." }
+    ]},
+    { "id": "portuguese", "name": "Scandinavian: Portuguese Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "e4 d5 exd5 Nf6 d4 Bg4", "summary": "Sacrifice a pawn for quick development and mating threats. Great blitz fun.", "lines": [
+      { "name": "Main line", "moves": "e4 d5 exd5 Nf6 d4 Bg4 f3 Bf5 Bb5+ Nbd7 c4 e6 dxe6 fxe6", "idea": "Sacrifice and develop fast: the e3 hole and White's king are your targets." },
+      { "name": "Against Nf3", "moves": "e4 d5 exd5 Nf6 d4 Bg4 Nf3 Qxd5 Be2 e6 O-O Nc6", "idea": "You win the pawn back and get a pleasant Scandinavian." }
+    ]},
+    { "id": "alekhine", "name": "Alekhine's Defence", "color": "black", "difficulty": "Medium", "style": ["Tricky"], "prefix": "e4 Nf6", "summary": "Invite White's pawns forward, then pick them off. Hypermodern provocation.", "lines": [
+      { "name": "Modern with ...Bg4", "moves": "e4 Nf6 e5 Nd5 d4 d6 Nf3 Bg4 Be2 e6 O-O Be7 c4 Nb6", "idea": "Pressure the centre with your pieces. It can collapse under its own weight." },
+      { "name": "Four Pawns Attack", "moves": "e4 Nf6 e5 Nd5 d4 d6 c4 Nb6 f4 dxe5 fxe5 Nc6 Be3 Bf5 Nc3 e6", "idea": "White's pawns are big but brittle. Hit them from every side." },
+      { "name": "Exchange", "moves": "e4 Nf6 e5 Nd5 d4 d6 c4 Nb6 exd6 exd6 Nc3 Be7 Bd3 Nc6", "idea": "A safe structure. Your pieces develop naturally." },
+      { "name": "Against Nc3", "moves": "e4 Nf6 Nc3 d5 e5 Nfd7 d4 e6 Nf3 c5", "idea": "A French-style structure with your bishop still free." },
+      { "name": "Against d3", "moves": "e4 Nf6 d3 e5 Nf3 Nc6 Be2 d5 Nbd2 Be7 O-O O-O", "idea": "A passive setup lets you take the centre." }
+    ]},
+    { "id": "pirc", "name": "Pirc Defence", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 d6", "summary": "Let White build a centre, then strike it from a coiled position.", "lines": [
+      { "name": "Classical", "moves": "e4 d6 d4 Nf6 Nc3 g6 Nf3 Bg7 Be2 O-O O-O c6 h3 Nbd7", "idea": "...c6, ...b5 or ...e5 are all possible. Pick your moment." },
+      { "name": "Austrian Attack", "moves": "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O Bd3 Na6 O-O c5 d5 Nc7", "idea": "...c5 hits the centre. Your knight on a6 supports the queenside." },
+      { "name": "150 Attack", "moves": "e4 d6 d4 Nf6 Nc3 g6 Be3 c6 Qd2 b5 f3 Nbd7", "idea": "Get on with ...b5 first and castle only when it is safe." }
+    ]},
+    { "id": "modern", "name": "Modern Defence", "color": "black", "difficulty": "Medium", "style": ["Tricky"], "prefix": "e4 g6", "summary": "Just play ...g6, ...Bg7 and react. Flexible and hard to prepare against.", "lines": [
+      { "name": "Against Be3", "moves": "e4 g6 d4 Bg7 Nc3 d6 Be3 a6 Qd2 b5 f3 Nd7 h4 h5", "idea": "...b5 and ...Bb7 hit e4. ...h5 stops the kingside storm." },
+      { "name": "Against Nf3", "moves": "e4 g6 d4 Bg7 Nf3 d6 Bc4 Nf6 Qe2 O-O", "idea": "Finish development, then go for ...Nc6 and ...e5." },
+      { "name": "Against c4", "moves": "e4 g6 d4 Bg7 c4 d6 Nc3 Nc6 Be3 e5 d5 Nce7", "idea": "A King's Indian-style closed centre. Attack on the kingside." }
+    ]},
+    { "id": "owens", "name": "Owen's Defence", "color": "black", "difficulty": "Medium", "style": ["Tricky"], "prefix": "e4 b6", "summary": "...b6 and ...Bb7 target e4 from afar. Unusual and easy to surprise with.", "lines": [
+      { "name": "Main line", "moves": "e4 b6 d4 Bb7 Bd3 e6 Nf3 c5 c3 Nf6 Qe2", "idea": "Pressure e4 and d4 at once. You need ...d6 and ...Be7 next." },
+      { "name": "Against Nc3", "moves": "e4 b6 d4 Bb7 Nc3 e6 Nf3 Bb4 Bd3 Nf6 Qe2 d5", "idea": "...Bb4 and ...Nf6 keep hitting e4." }
+    ]},
+    { "id": "nimzowitsch", "name": "Nimzowitsch Defence", "color": "black", "difficulty": "Medium", "style": ["Tricky"], "prefix": "e4 Nc6", "summary": "A knight out in front of the c-pawn! Dare White to overextend.", "lines": [
+      { "name": "Against d4", "moves": "e4 Nc6 d4 d5 e5 Bf5 Nf3 e6 Be2 Nge7 O-O h6", "idea": "A French structure, except your bishop is outside the chain." },
+      { "name": "Against Nf3", "moves": "e4 Nc6 Nf3 e5 d4 exd4 Nxd4 Nf6 Nc3 Bb4", "idea": "A Scotch Four Knights structure is perfectly fine." },
+      { "name": "Against Nc3", "moves": "e4 Nc6 Nc3 e5 Nf3 Nf6 d4 exd4 Nxd4 Bb4", "idea": "...Bb4 pins the knight and pressures e4." }
+    ]},
+    { "id": "e5-italian", "name": "1...e5 vs the Italian", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Bc5", "summary": "The most natural replies, easy plans and very little to memorise.", "lines": [
+      { "name": "Pianissimo", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d3 d6 O-O a6 Bb3 Ba7 Nbd2 O-O h3 h6", "idea": "...Ba7 tucks the bishop away from d4 and b4 ideas." },
+      { "name": "Against d4", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 c3 Nf6 d4 exd4 e5 d5 Bb5 Ne4 cxd4 Bb6", "idea": "Strike back at once with ...d5. Never let the centre roll." },
+      { "name": "Against O-O", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 O-O Nf6 d3 d6 c3 a6", "idea": "No problems at all. Play ...O-O, ...Ba7 and ...h6." },
+      { "name": "Evans Gambit", "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Ba5 d4 d6 Qb3 Qd7 dxe5 Bb6", "idea": "Take the pawn and give up the centre only on your terms." }
+    ]},
+    { "id": "two-knights", "name": "Two Knights Defence", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 e5 Nf3 Nc6 Bc4 Nf6", "summary": "Counterattack on e4 at once. Walk through the Fried Liver safely and hit back.", "lines": [
+      { "name": "Polerio against Ng5", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5 Bb5+ c6 dxc6 bxc6 Be2 h6 Nf3 e4 Ne5 Bd6", "idea": "Never play ...Nxd5! Give the pawn for rapid, active development." },
+      { "name": "Against d3", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d3 Be7 O-O O-O Re1 d6 c3 Na5 Bb5 a6 Ba4 b5 Bc2 c5", "idea": "Go after the bishop with ...Na5 and expand on the queenside." },
+      { "name": "Against d4", "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d4 exd4 e5 d5 Bb5 Ne4 Nxd4 Bd7", "idea": "...d5 at the right moment grabs the centre back." }
+    ]},
+    { "id": "ruy-black", "name": "1...e5 vs the Ruy Lopez", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Bb5 a6", "summary": "The Morphy Defence: kick the bishop, castle fast and prepare for a long game.", "lines": [
+      { "name": "Closed", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 d6 c3 O-O h3 Bb7", "idea": "Chase the bishop away and castle. ...Bb7 hits e4." },
+      { "name": "Exchange", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Bxc6 dxc6 O-O f6 d4 exd4 Nxd4 c5", "idea": "The bishop pair compensates for your doubled pawns." },
+      { "name": "Against d3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 d3 d6 c3 g6 O-O Bg7", "idea": "White plays quietly, so the fianchetto is very comfortable." }
+    ]},
+    { "id": "berlin", "name": "Ruy Lopez: Berlin Defence", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 Bb5 Nf6", "summary": "The Berlin Wall: Kramnik dethroned Kasparov with it. The most solid answer at the top level.", "lines": [
+      { "name": "Berlin Wall", "moves": "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Nxe4 d4 Nd6 Bxc6 dxc6 dxe5 Nf5 Qxd8+ Kxd8", "idea": "No queens and a slightly exposed king, but your bishop pair is rock solid." },
+      { "name": "Rio de Janeiro", "moves": "e4 e5 Nf3 Nc6 Bb5 Nf6 O-O Nxe4 Re1 Nd6 Nxe5 Be7 Bf1 Nxe5 Rxe5 O-O", "idea": "Simple equality. Your pieces are nicely developed." },
+      { "name": "Anti-Berlin", "moves": "e4 e5 Nf3 Nc6 Bb5 Nf6 d3 Bc5 c3 O-O O-O d6 Nbd2 a6 Ba4", "idea": "White avoids the endgame. ...Bc5 sits on its best diagonal." }
+    ]},
+    { "id": "marshall", "name": "Ruy Lopez: Marshall Attack", "color": "black", "difficulty": "Hard", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5", "summary": "Frank Marshall saved it for years to spring it on Capablanca. Sacrifice a pawn for a raging attack.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 d4 Bd6 Re1 Qh4 g3 Qh3", "idea": "Queen on h3, bishop on d6, and the rest of your army on the way. Bg4 and Rae8 next." },
+      { "name": "Declined with d3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 d3 dxe4 dxe4 Qxd1 Bxd1 Bc5", "idea": "White opts out, but you get easy equality in the endgame." }
+    ]},
+    { "id": "schliemann", "name": "Ruy Lopez: Schliemann", "color": "black", "difficulty": "Hard", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 Nf3 Nc6 Bb5 f5", "summary": "Hit back on move three with ...f5! A rude, risky counterattack.", "lines": [
+      { "name": "Against Nc3", "moves": "e4 e5 Nf3 Nc6 Bb5 f5 Nc3 fxe4 Nxe4 Nf6 Nxf6+ Qxf6 Qe2 Be7", "idea": "Open the f-file and develop rapidly." },
+      { "name": "Against d3", "moves": "e4 e5 Nf3 Nc6 Bb5 f5 d3 fxe4 dxe4 Nf6 O-O Bc5", "idea": "A calm response lets you develop with a very comfortable game." },
+      { "name": "Against exf5", "moves": "e4 e5 Nf3 Nc6 Bb5 f5 exf5 e4 Qe2 Qe7 Bxc6 dxc6 Nd4 Qe5", "idea": "...e4 is the key, and ...Qe7 keeps everything protected." }
+    ]},
+    { "id": "e5-scotch", "name": "1...e5 vs the Scotch", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4", "summary": "Meet the open centre head on and hit e4 and d4 straight away.", "lines": [
+      { "name": "With ...Nf6", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5 Qe7 Qe2 Nd5 c4 Ba6", "idea": "Pin the e-pawn with your queen and centralise the knight." },
+      { "name": "Against Nc3", "moves": "e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nc3 Bb4 Nxc6 bxc6 Bd3 d5", "idea": "...Bb4 and ...d5 solve all your problems in one go." }
+    ]},
+    { "id": "e5-vienna", "name": "1...e5 vs the Vienna", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "e4 e5 Nc3", "summary": "Be ready for the Vienna Gambit and the early queen raid on f7.", "lines": [
+      { "name": "Vienna Gambit", "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 Nf3 Be7 d4 O-O Bd3 f5", "idea": "...d5 is the right answer to f4: the centre opens in your favour." },
+      { "name": "Against Bc4 and Qh5", "moves": "e4 e5 Nc3 Nf6 Bc4 Nxe4 Qh5 Nd6 Bb3 Be7 Qxe5 O-O Nf3 Nc6 Qf4 Na5", "idea": "Take on e4, give the pawn back with ...Be7 and ...O-O, then hunt the b3 bishop." },
+      { "name": "Against Nf3", "moves": "e4 e5 Nc3 Nf6 Nf3 Nc6 d4 exd4 Nxd4 Bb4", "idea": "A Four Knights where ...Bb4 pressures e4." }
+    ]},
+    { "id": "kings-gambit-accepted", "name": "King's Gambit Accepted", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "e4 e5 f4 exf4", "summary": "Take the pawn and make White prove the attack is worth it.", "lines": [
+      { "name": "Against Nf3", "moves": "e4 e5 f4 exf4 Nf3 d6 d4 g5 h4 g4 Ng1 Qf6", "idea": "Fischer's move ...d6 is rock solid. ...g5 holds your extra pawn." },
+      { "name": "Against Bc4", "moves": "e4 e5 f4 exf4 Bc4 Nf6 Nc3 c6 Bb3 d5 exd5 cxd5", "idea": "Strike in the centre and develop rapidly." },
+      { "name": "Against d4", "moves": "e4 e5 f4 exf4 d4 d5 exd5 Nf6 Bxf4 Nxd5", "idea": "Trade off centre pawns and develop with no problems." }
+    ]},
+    { "id": "falkbeer", "name": "Falkbeer Countergambit", "color": "black", "difficulty": "Hard", "style": ["Gambit", "Aggressive"], "prefix": "e4 e5 f4 d5", "summary": "Answer a gambit with a gambit. White's king gets exposed in a hurry.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 f4 d5 exd5 e4 d3 Nf6 dxe4 Nxe4 Nf3 Bc5 Qe2 Bf5 Nc3 Qe7", "idea": "...Bf5 protects the knight, and the pin on the e-file makes White's position awkward." },
+      { "name": "Against exd5 exf4", "moves": "e4 e5 f4 d5 exd5 exf4 Nf3 Nf6 Bc4 Nxd5 O-O Be7", "idea": "If you prefer calm, take on f4 for a good King's Gambit Accepted." }
+    ]},
+    { "id": "petrov", "name": "Petrov Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 Nf6", "summary": "Counterattack e4 rather than defend e5. A drawish reputation that hides sharp traps.", "lines": [
+      { "name": "Classical", "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4 d4 d5 Bd3 Nc6 O-O Be7", "idea": "Never take on e4 straight away. Play ...d6 first, then take." },
+      { "name": "Nimzowitsch Attack", "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4 Nc3 Nxc3 dxc3 Be7 Be3 O-O", "idea": "Castle kingside and stay calm while White goes long." },
+      { "name": "Steinitz", "moves": "e4 e5 Nf3 Nf6 d4 Nxe4 Bd3 d5 Nxe5 Nd7 Nxd7 Bxd7 O-O Bd6", "idea": "Trade pieces in the centre for an easy equal game." },
+      { "name": "Against Nc3", "moves": "e4 e5 Nf3 Nf6 Nc3 Nc6 Bb5 Bb4 O-O O-O", "idea": "You have transposed to a Four Knights." },
+      { "name": "Against Bc4", "moves": "e4 e5 Nf3 Nf6 Bc4 Nxe4 Nc3 Nxc3 dxc3 f6 Nh4 g6", "idea": "Take on e4 and stop Nxe5 with ...f6." }
+    ]},
+    { "id": "stafford", "name": "Stafford Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "e4 e5 Nf3 Nf6 Nxe5 Nc6", "summary": "Eric Rosen made it famous. Objectively bad, but packed with mating traps people fall for.", "lines": [
+      { "name": "Main trap line", "trap": true, "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 Bg5 Bxf2+ Kxf2 Ng4+ Bxg4 Qxg5", "idea": "A trap: it only works if White takes everything. Against accurate replies you are just worse." },
+      { "name": "Against e5", "trap": true, "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 e5 Ne4 d3 Bc5 dxe4 Bxf2+ Ke2 Bg4+", "idea": "A trap: dropping the knight is the point, because ...Bxf2+ and ...Bg4+ win the queen." },
+      { "name": "Against Nc3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 Be2 h5 h3 Qd4", "idea": "...Qd4 eyes f2 and e4 at the same time." }
+    ]},
+    { "id": "philidor", "name": "Philidor Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "e4 e5 Nf3 d6", "summary": "Solid and old-fashioned, named for the 18th-century master. A compact, safe setup.", "lines": [
+      { "name": "Hanham", "moves": "e4 e5 Nf3 d6 d4 Nf6 Nc3 Nbd7 Bc4 Be7 O-O O-O a4 c6", "idea": "A stubborn fortress: ...c6, ...Qc7 and ...b6 keep everything covered." },
+      { "name": "Exchange", "moves": "e4 e5 Nf3 d6 d4 exd4 Nxd4 Nf6 Nc3 Be7 Bf4 O-O Qd2 c6", "idea": "Space for White, but your position has no weaknesses." },
+      { "name": "Against Bc4", "moves": "e4 e5 Nf3 d6 Bc4 Be7 O-O Nf6 d3 O-O", "idea": "Develop quietly. White has no way to break through soon." }
+    ]},
+    { "id": "latvian", "name": "Latvian Gambit", "color": "black", "difficulty": "Hard", "style": ["Gambit", "Tricky"], "prefix": "e4 e5 Nf3 f5", "summary": "The most reckless second move in chess. Great for catching opponents cold.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 f5 Nxe5 Qf6 d4 d6 Nc4 fxe4 Nc3 Qg6", "idea": "Your queen and advanced e-pawn create real threats. Be bold." },
+      { "name": "Against exf5", "moves": "e4 e5 Nf3 f5 exf5 e4 Ne5 Nf6 d3 Qe7 d4 d6 Nc4 Bxf5", "idea": "...e4 kicks the knight, and ...Qe7 and ...d6 win back the f5 pawn." },
+      { "name": "Against Bc4", "moves": "e4 e5 Nf3 f5 Bc4 fxe4 Nxe5 d5 Qh5+ g6 Nxg6 hxg6 Qxh8", "idea": "This is the wild Svedenborg. It's sharp, so check it after the game!" }
+    ]},
+    { "id": "elephant", "name": "Elephant Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "e4 e5 Nf3 d5", "summary": "Hit the centre on move two and fight for open lines right away.", "lines": [
+      { "name": "Main line", "moves": "e4 e5 Nf3 d5 exd5 Bd6 d4 e4 Ne5 Nf6 Bc4 O-O", "idea": "Develop rapidly and get your pieces out in front of the extra pawn." },
+      { "name": "Against Nxe5", "moves": "e4 e5 Nf3 d5 Nxe5 dxe4 Bc4 Qg5 d4 Qxg2 Rf1 Be6", "idea": "...Qg5 hits g2 and the knight at once. Accurate defence is hard." }
+    ]},
+    { "id": "kings-indian", "name": "King's Indian Defence", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "d4 Nf6 c4 g6", "summary": "Fischer and Kasparov's choice. Give up the centre, then storm White's king.", "lines": [
+      { "name": "Classical", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7", "idea": "With the centre closed, play ...Ne8 or ...Nd7, then ...f5 and go!" },
+      { "name": "Sämisch", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 f3 O-O Be3 e5 d5 Nh5 Qd2 f5", "idea": "...e5 and ...f5 attack the centre before White castles long." },
+      { "name": "Four Pawns", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 f4 O-O Nf3 c5 d5 e6 Be2 exd5", "idea": "Attack the overextended centre from the sides." },
+      { "name": "Fianchetto", "moves": "d4 Nf6 c4 g6 Nf3 Bg7 g3 O-O Bg2 d6 O-O Nbd7 Nc3 e5", "idea": "Set up ...e5 with support from the d7 knight." }
+    ]},
+    { "id": "kid-setup", "name": "King's Indian vs d4 Systems", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 Nf6", "summary": "Half your games never see c4. Your ...g6 and ...c5 answer to the London, Colle and Torre.", "lines": [
+      { "name": "Against the London", "moves": "d4 Nf6 Bf4 g6 e3 Bg7 Nf3 O-O Be2 d6 h3 c5 c3 Nc6", "idea": "...c5 and ...Qb6 hit b2 and d4: the system's classic weak spots." },
+      { "name": "Against Nf3 and Bf4", "moves": "d4 Nf6 Nf3 g6 Bf4 Bg7 e3 O-O Be2 d6 h3 c5 c3 Nc6", "idea": "Same plan regardless of move order." },
+      { "name": "Against the Trompowsky", "moves": "d4 Nf6 Bg5 Ne4 Bf4 c5 f3 Qa5+ c3 Nf6 d5 Qb6", "idea": "Jump to e4 at once and go after b2." },
+      { "name": "Against the Colle", "moves": "d4 Nf6 e3 g6 Nf3 Bg7 Bd3 O-O O-O d6 c4 Nc6 Nc3 e5", "idea": "White's e3 is passive, so grab the centre with ...e5." },
+      { "name": "Against Nc3", "moves": "d4 Nf6 Nc3 d5 Bf4 c5 e3 cxd4 exd4 a6 Nf3 Bg4", "idea": "Without c4, take the centre with ...d5. Then ...a6 stops the Nb5 threat." },
+      { "name": "Against c4", "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5", "idea": "Your main-line King's Indian." }
+    ]},
+    { "id": "nimzo-indian", "name": "Nimzo-Indian Defence", "color": "black", "difficulty": "Medium", "style": ["Positional"], "prefix": "d4 Nf6 c4 e6 Nc3 Bb4", "summary": "One of the most respected defences in chess. Pin the knight and stop e4.", "lines": [
+      { "name": "Rubinstein", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 e3 O-O Bd3 d5 Nf3 c5 O-O Nc6 a3 Bxc3 bxc3 dxc4 Bxc4 Qc7", "idea": "Give up the bishop to double the pawns, then attack the weak c-pawns." },
+      { "name": "Classical", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 Qc2 O-O a3 Bxc3+ Qxc3 b6 Bg5 Bb7", "idea": "...b6 and ...Bb7 fight for the e4 square." },
+      { "name": "Sämisch", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 a3 Bxc3+ bxc3 c5 e3 Nc6 Bd3 O-O", "idea": "Pressure the doubled c-pawns at every opportunity." },
+      { "name": "Leningrad", "moves": "d4 Nf6 c4 e6 Nc3 Bb4 Bg5 h6 Bh4 c5 d5 d6 e3 Bxc3+ bxc3 e5", "idea": "Trade the bishop and close the centre for a knight-friendly game." }
+    ]},
+    { "id": "queens-indian", "name": "Queen's Indian Defence", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "d4 Nf6 c4 e6 Nf3 b6", "summary": "Solid and elegant. The bishop takes the long diagonal and clamps down on e4.", "lines": [
+      { "name": "Fianchetto", "moves": "d4 Nf6 c4 e6 Nf3 b6 g3 Ba6 b3 Bb4+ Bd2 Be7 Bg2 c6 O-O d5", "idea": "...Ba6 hits c4 and forces White to find an awkward defence." },
+      { "name": "Petrosian", "moves": "d4 Nf6 c4 e6 Nf3 b6 a3 Ba6 Qc2 Bb7 Nc3 c5 e4 cxd4 Nxd4 Nc6", "idea": "Trade central pawns and use your pieces to pressure e4." },
+      { "name": "Against Nc3", "moves": "d4 Nf6 c4 e6 Nf3 b6 Nc3 Bb4 Bg5 Bb7 e3 h6 Bh4 g5 Bg3 Ne4", "idea": "...Bb4 pins the knight, and ...Ne4 stops the plan cold." }
+    ]},
+    { "id": "bogo-indian", "name": "Bogo-Indian Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 Nf6 c4 e6 Nf3 Bb4+", "summary": "A check to disturb White's plans. Less theory than the Nimzo with similar ideas.", "lines": [
+      { "name": "Against Bd2", "moves": "d4 Nf6 c4 e6 Nf3 Bb4+ Bd2 Qe7 g3 Nc6 Bg2 Bxd2+ Nbxd2 d6 O-O O-O", "idea": "Trade the bishop, then play ...e5 for a pleasant game." },
+      { "name": "Against Nbd2", "moves": "d4 Nf6 c4 e6 Nf3 Bb4+ Nbd2 b6 a3 Bxd2+ Bxd2 Bb7 Bg5 d6", "idea": "...b6 and ...Bb7 take control of e4." }
+    ]},
+    { "id": "grunfeld", "name": "Grünfeld Defence", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "d4 Nf6 c4 g6 Nc3 d5", "summary": "Kasparov's favourite. Let White build a giant centre, then blow it up.", "lines": [
+      { "name": "Exchange", "moves": "d4 Nf6 c4 g6 Nc3 d5 cxd5 Nxd5 e4 Nxc3 bxc3 Bg7 Nf3 c5 Rb1 O-O Be2 Nc6", "idea": "Pressure the centre with ...c5, ...Nc6 and ...Bg4. It will crack." },
+      { "name": "Russian", "moves": "d4 Nf6 c4 g6 Nc3 d5 Nf3 Bg7 Qb3 dxc4 Qxc4 O-O e4 Bg4 Be3 Nfd7", "idea": "White's queen is exposed and the g7 bishop hits d4." },
+      { "name": "Against Bf4", "moves": "d4 Nf6 c4 g6 Nc3 d5 Bf4 Bg7 e3 c5 dxc5 Qa5 Rc1 dxc4 Bxc4 O-O", "idea": "Sacrifice a pawn for a very active game." }
+    ]},
+    { "id": "qgd", "name": "Queen's Gambit Declined", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "d4 d5 c4 e6", "summary": "Classical and reliable for over a century. Hold d5, castle and free your game with ...c5.", "lines": [
+      { "name": "Tartakower", "moves": "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7 e3 O-O Nf3 h6 Bh4 b6 cxd5 Nxd5 Bxe7 Qxe7", "idea": "...b6 gives your problem bishop on c8 a home." },
+      { "name": "With Bf4", "moves": "d4 d5 c4 e6 Nc3 Nf6 Nf3 Be7 Bf4 O-O e3 c5 dxc5 Bxc5", "idea": "Break with ...c5 in time and activate the bishop." },
+      { "name": "Exchange", "moves": "d4 d5 c4 e6 cxd5 exd5 Nc3 Nf6 Bg5 Be7 e3 O-O Bd3 Nbd7 Nf3 Re8", "idea": "With the structure set, your c8 bishop is no longer shut in." },
+      { "name": "Catalan", "moves": "d4 d5 c4 e6 Nf3 Nf6 g3 Be7 Bg2 O-O O-O dxc4 Qc2 a6 a4 Bd7", "idea": "Take on c4 and use ...Bd7-c6 to neutralise the long diagonal." }
+    ]},
+    { "id": "d5-systems", "name": "1...d5 vs London & d4 Systems", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 d5", "summary": "What to do when White avoids c4. Punish the London, Colle and Jobava.", "lines": [
+      { "name": "Against the London", "moves": "d4 d5 Bf4 Nf6 e3 c5 c3 Nc6 Nf3 Qb6 Qb3 c4 Qc2 Bf5", "idea": "...c5 and ...Qb6 punish b2, and ...c4 grabs space." },
+      { "name": "Against Nf3 no c4", "moves": "d4 d5 Nf3 Nf6 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qc2 Bf5", "idea": "Same scheme: play ...c5 and activate the queen." },
+      { "name": "Against the Colle", "moves": "d4 d5 e3 Nf6 Nf3 e6 Bd3 c5 c3 Nc6 Nbd2 Bd6 O-O O-O", "idea": "A natural plan: develop and play ...c5 before White gets e4 in." },
+      { "name": "Against the Jobava", "moves": "d4 d5 Nc3 Nf6 Bf4 c5 e3 cxd4 exd4 a6 Nf3 Bg4", "idea": "Trade on d4, and play ...a6 before anything else: Nb5 is the whole point of the Jobava." },
+      { "name": "Against the Veresov", "moves": "d4 d5 Nc3 Nf6 Bg5 Nbd7 Nf3 h6 Bh4 e6 e3 Be7", "idea": "Defend with the knight and chase away the bishop." },
+      { "name": "Against the Blackmar-Diemer", "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 g6 Bc4 Bg7 O-O O-O", "idea": "Take the pawn and fianchetto: your king is safe and you are ahead." },
+      { "name": "Against c4", "moves": "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7 e3 O-O Nf3 h6 Bh4 b6", "idea": "Your Queen's Gambit Declined." }
+    ]},
+    { "id": "slav", "name": "Slav Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 d5 c4 c6", "summary": "Hold d5 with the c-pawn and keep the c8 bishop free. Very solid.", "lines": [
+      { "name": "Main line", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6 Bxc4 Bb4 O-O O-O", "idea": "Take on c4 once your bishop can get out, then ...Bb4 adds pressure." },
+      { "name": "Exchange", "moves": "d4 d5 c4 c6 cxd5 cxd5 Nc3 Nf6 Bf4 Nc6 e3 Bf5 Nf3 e6", "idea": "Copy the development, and you reach comfortable equality." },
+      { "name": "With e3", "moves": "d4 d5 c4 c6 Nf3 Nf6 e3 Bf5 Nc3 e6 Nh4 Bg6 Nxg6 hxg6", "idea": "If you lose the bishop, the half-open h-file makes up for it." },
+      { "name": "With Nc3 first", "moves": "d4 d5 c4 c6 Nc3 Nf6 e3 Bf5 Nf3 e6 Nh4 Bg6 Nxg6 hxg6", "idea": "Transposes: the bishop came out before ...e6." }
+    ]},
+    { "id": "semi-slav", "name": "Semi-Slav Defence", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6", "summary": "Solid-looking but explosive. Home of the Botvinnik and Meran variations.", "lines": [
+      { "name": "Meran", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6 e3 Nbd7 Bd3 dxc4 Bxc4 b5 Bd3 Bb7 O-O a6", "idea": "...b5 gains space with tempo, and ...c5 follows to free your game." },
+      { "name": "Botvinnik", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6 Bg5 dxc4 e4 b5 e5 h6 Bh4 g5 Nxg5 hxg5 Bxg5 Nbd7", "idea": "One of the sharpest lines in all of chess. Study it after every game!" },
+      { "name": "Moscow", "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6 Bg5 h6 Bxf6 Qxf6 e3 Nd7 Bd3 dxc4 Bxc4 g6", "idea": "You keep the bishop pair and a solid structure." }
+    ]},
+    { "id": "qga", "name": "Queen's Gambit Accepted", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "d4 d5 c4 dxc4", "summary": "Take the pawn, then give it back for free piece play and a clear plan.", "lines": [
+      { "name": "Classical", "moves": "d4 d5 c4 dxc4 Nf3 Nf6 e3 e6 Bxc4 c5 O-O a6 a4 Nc6", "idea": "Strike at d4 with ...c5, and develop calmly." },
+      { "name": "Against e4", "moves": "d4 d5 c4 dxc4 e4 e5 Nf3 exd4 Bxc4 Nc6 O-O Be6", "idea": "...e5 immediately hits the centre." },
+      { "name": "Against e3", "moves": "d4 d5 c4 dxc4 e3 Nf6 Bxc4 e6 Nf3 c5 O-O a6", "idea": "Transposes to the main line." },
+      { "name": "Against Nc3", "moves": "d4 d5 c4 dxc4 Nc3 e5 d5 Nf6 e4 b5 Nxb5 Nxe4 Nc3 Nxc3 bxc3 Nd7", "idea": "...b5 gives back a pawn to win e4, and White's structure ends up damaged." }
+    ]},
+    { "id": "tarrasch", "name": "Tarrasch Defence", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "d4 d5 c4 e6 Nc3 c5", "summary": "Accept an isolated pawn for free, active pieces. Kasparov played it as a junior.", "lines": [
+      { "name": "Main line", "moves": "d4 d5 c4 e6 Nc3 c5 cxd5 exd5 Nf3 Nc6 g3 Nf6 Bg2 Be7 O-O O-O", "idea": "All your pieces come out easily. The d5 pawn is strong as well as weak." },
+      { "name": "Against e3", "moves": "d4 d5 c4 e6 Nc3 c5 e3 Nf6 Nf3 Nc6 cxd5 exd5 Bb5 Bd6", "idea": "You have free development and no problems at all." },
+      { "name": "Schara Gambit", "moves": "d4 d5 c4 e6 Nc3 c5 cxd5 cxd4 Qxd4 Nc6 Qd1 exd5 Qxd5 Be6", "idea": "A gambit: give a pawn for a large lead in development." }
+    ]},
+    { "id": "dutch-leningrad", "name": "Dutch: Leningrad", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "d4 f5", "summary": "Combine the Dutch with a King's Indian bishop. Direct attacking chances.", "lines": [
+      { "name": "Main line", "moves": "d4 f5 g3 Nf6 Bg2 g6 Nf3 Bg7 O-O O-O c4 d6 Nc3 Qe8", "idea": "Fianchetto, then ...Qe8 prepares ...e5 with force." },
+      { "name": "With c4 first", "moves": "d4 f5 c4 Nf6 Nc3 g6 Nf3 Bg7 g3 O-O Bg2 d6 O-O Qe8", "idea": "Move order does not matter: a Leningrad with ...e5 next." },
+      { "name": "Against Bg5", "moves": "d4 f5 Bg5 h6 Bh4 g5 Bg3 Nf6 e3 d6", "idea": "Chase the bishop without fear and gain kingside space." },
+      { "name": "Staunton Gambit", "moves": "d4 f5 e4 fxe4 Nc3 Nf6 Bg5 c6 f3 exf3 Nxf3 d5", "idea": "Accept and consolidate with ...c6 and ...d5: you keep the pawn." },
+      { "name": "Against Nf3", "moves": "d4 f5 Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O c4 d6", "idea": "The same Leningrad setup." },
+      { "name": "Against Bf4", "moves": "d4 f5 Bf4 Nf6 e3 g6 Nf3 Bg7 Be2 O-O", "idea": "White avoids the fight, so finish your development." }
+    ]},
+    { "id": "dutch-stonewall", "name": "Dutch: Stonewall", "color": "black", "difficulty": "Medium", "style": ["Positional"], "prefix": "d4 f5 c4 Nf6 g3 e6 Bg2 d5", "summary": "Lock down e4 with a wall of pawns. Carlsen has played it against the very best.", "lines": [
+      { "name": "Main line", "moves": "d4 f5 c4 Nf6 g3 e6 Bg2 d5 Nf3 c6 O-O Bd6 b3 Qe7", "idea": "Stop Ba3 with ...Qe7 and plan ...Nbd7 and ...Ne4." },
+      { "name": "Against Nh3", "moves": "d4 f5 c4 Nf6 g3 e6 Bg2 d5 Nh3 c6 O-O Bd6 b3 Qe7", "idea": "The knight heads for f4. Your setup does not change." }
+    ]},
+    { "id": "benoni", "name": "Modern Benoni", "color": "black", "difficulty": "Hard", "style": ["Aggressive"], "prefix": "d4 Nf6 c4 c5 d5 e6", "summary": "Fischer stunned Spassky with it. Imbalanced from the start: dynamic play for both sides.", "lines": [
+      { "name": "Main line", "moves": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 d6 e4 g6 Nf3 Bg7 Be2 O-O O-O Re8", "idea": "Your queenside majority and the g7 bishop are your hopes." },
+      { "name": "Fianchetto", "moves": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 d6 Nf3 g6 g3 Bg7 Bg2 O-O O-O a6", "idea": "...a6, ...Nbd7 and ...b5 give you queenside play." }
+    ]},
+    { "id": "benko", "name": "Benko Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Positional"], "prefix": "d4 Nf6 c4 c5 d5 b5", "summary": "A true positional gambit: long-lasting pressure with no queens needed.", "lines": [
+      { "name": "Accepted", "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 bxa6 Bxa6 Nc3 d6 e4 Bxf1 Kxf1 g6", "idea": "White's king is misplaced. Your rooks own the a- and b-files." },
+      { "name": "Against Nf3", "moves": "d4 Nf6 c4 c5 d5 b5 Nf3 g6 cxb5 a6 bxa6 Bxa6", "idea": "The same setup. Your long-term pressure stays." }
+    ]},
+    { "id": "budapest", "name": "Budapest Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "d4 Nf6 c4 e5", "summary": "A surprise on move two. White's pieces get tangled up and tricks abound.", "lines": [
+      { "name": "Rubinstein", "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Bf4 Nc6 Nf3 Bb4+ Nbd2 Qe7 a3 Ngxe5 Nxe5 Nxe5", "idea": "Win the pawn back while White's pieces trip over one another." },
+      { "name": "Alekhine", "moves": "d4 Nf6 c4 e5 dxe5 Ng4 e4 Nxe5 f4 Nec6", "idea": "White's big centre is loose. Hit it with ...Bc5 and ...d6." },
+      { "name": "Fajarowicz trick", "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Nf3 Bc5 e3 Nc6", "idea": "...Bc5 aims at f2, and you collect e5 later." }
+    ]},
+    { "id": "albin", "name": "Albin Countergambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "d4 d5 c4 e5", "summary": "Strike the Queen's Gambit right back. Home of the famous Lasker Trap.", "lines": [
+      { "name": "Main line", "moves": "d4 d5 c4 e5 dxe5 d4 Nf3 Nc6 g3 Be6 Nbd2 Qd7 Bg2 O-O-O", "idea": "The d4 wedge cramps White. Castle long and play ...Bh3." },
+      { "name": "Lasker Trap", "moves": "d4 d5 c4 e5 dxe5 d4 e3 Bb4+ Bd2 dxe3 Bxb4 exf2+ Ke2 fxg1=N+", "idea": "An underpromotion to a knight wins! The most beautiful trap in the book." }
+    ]},
+    { "id": "englund", "name": "Englund Gambit", "color": "black", "difficulty": "Easy", "style": ["Gambit", "Tricky"], "prefix": "d4 e5", "summary": "A cheeky blitz trap. Objectively unsound, but one wrong move and it's mate.", "lines": [
+      { "name": "The famous trap", "moves": "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Bc3 Bb4 Qd2 Bxc3 Qxc3 Qc1#", "idea": "Back-rank mate on c1. It works alarmingly often." },
+      { "name": "Against Nc3", "moves": "d4 e5 dxe5 Nc6 Nf3 Qe7 Nc3 Nxe5 Nd5 Nxf3+ gxf3 Qd8", "idea": "You win the pawn back. Your position is fine." },
+      { "name": "Against e4", "moves": "d4 e5 e4 exd4 Qxd4 Nc6 Qe3 Nf6 Nc3 Bb4", "idea": "A Center Game. Gain time on the queen and develop quickly." },
+      { "name": "Against Nf3", "moves": "d4 e5 Nf3 e4 Ne5 d6 Nc4 d5 Ne3 Nf6", "idea": "...e4 and ...d6 chase the knight around." }
+    ]},
+    { "id": "chigorin", "name": "Chigorin Defence", "color": "black", "difficulty": "Medium", "style": ["Tricky"], "prefix": "d4 d5 c4 Nc6", "summary": "Break every classical rule: block the c-pawn and go for rapid piece play.", "lines": [
+      { "name": "Against Nf3", "moves": "d4 d5 c4 Nc6 Nf3 Bg4 cxd5 Bxf3 gxf3 Qxd5 e3 e5 Nc3 Bb4", "idea": "White has two bishops but a ruined structure. Keep it closed." },
+      { "name": "Against cxd5", "moves": "d4 d5 c4 Nc6 cxd5 Qxd5 e3 e5 Nc3 Bb4 Bd2 Bxc3", "idea": "...e5 hits d4 immediately, with lots of piece activity." },
+      { "name": "Against Nc3", "moves": "d4 d5 c4 Nc6 Nc3 dxc4 Nf3 Nf6 e4 Bg4 Be3 e6", "idea": "Grab the pawn and build pressure on d4." }
+    ]},
+    { "id": "old-indian", "name": "Old Indian Defence", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "d4 Nf6 c4 d6", "summary": "A sturdy King's Indian relative where your bishop stays on e7.", "lines": [
+      { "name": "Main line", "moves": "d4 Nf6 c4 d6 Nc3 e5 Nf3 Nbd7 e4 Be7 Be2 O-O O-O c6", "idea": "Solid and flexible. ...Re8, ...Bf8 and ...a6 are all part of the plan." },
+      { "name": "Against g3", "moves": "d4 Nf6 c4 d6 Nf3 Nbd7 g3 e5 Bg2 Be7 O-O O-O Nc3 c6", "idea": "Same setup and same ideas." }
+    ]},
+    { "id": "e5-english", "name": "1...e5 vs the English", "color": "black", "difficulty": "Medium", "style": ["Aggressive"], "prefix": "c4 e5", "summary": "A Sicilian with colours reversed: seize the centre and play with clear plans.", "lines": [
+      { "name": "Four Knights", "moves": "c4 e5 Nc3 Nf6 Nf3 Nc6 g3 d5 cxd5 Nxd5 Bg2 Nb6 O-O Be7", "idea": "Grab the centre with ...d5 and prepare a solid development." },
+      { "name": "With e3", "moves": "c4 e5 Nc3 Nf6 Nf3 Nc6 e3 Bb4 Qc2 O-O d3 Re8", "idea": "...Bb4 and ...Re8 prepare ...e4." },
+      { "name": "Fianchetto", "moves": "c4 e5 g3 Nf6 Bg2 d5 cxd5 Nxd5 Nc3 Nb6 Nf3 Nc6 O-O Be7", "idea": "Same plan: ...d5, then drop the knight back to b6." },
+      { "name": "With Nc3 and g3", "moves": "c4 e5 Nc3 Nf6 g3 d5 cxd5 Nxd5 Bg2 Nb6 Nf3 Nc6 O-O Be7", "idea": "Transposes to the main scheme." },
+      { "name": "With d3", "moves": "c4 e5 Nc3 Nf6 d3 d5 cxd5 Nxd5 Nf3 Nc6 g3 Be7 Bg2 O-O", "idea": "You own the centre: play ...Nc6 and ...Be7 comfortably." },
+      { "name": "Against Nf3", "moves": "c4 e5 Nf3 e4 Nd4 Nc6 Nc2 Nf6 Nc3 d5 cxd5 Nxd5", "idea": "Advance! ...e4 pushes the knight back with tempo." }
+    ]},
+    { "id": "symmetrical-english", "name": "Symmetrical English", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "c4 c5", "summary": "Mirror White's setup and fight for d4. A simple plan with little to memorise.", "lines": [
+      { "name": "Fianchetto", "moves": "c4 c5 Nf3 Nf6 Nc3 Nc6 g3 g6 Bg2 Bg7 O-O O-O d3 d6", "idea": "A reliable mirror image. The fight happens on the queenside with ...a6 and ...Rb8." },
+      { "name": "With g3 first", "moves": "c4 c5 g3 g6 Bg2 Bg7 Nc3 Nc6 Nf3 Nf6 O-O O-O d3 d6", "idea": "Transposes: ...a6, ...Rb8 and ...b5 are your plans." },
+      { "name": "With Nc3", "moves": "c4 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 Nf3 Nf6 O-O O-O", "idea": "The same scheme in any order." },
+      { "name": "With early d4", "moves": "c4 c5 Nf3 Nf6 d4 cxd4 Nxd4 e6 Nc3 Bb4 Bd2 O-O", "idea": "Pin on c3 and pressure e4 before it settles." },
+      { "name": "With e3", "moves": "c4 c5 Nf3 Nf6 e3 g6 Nc3 Bg7 d4 cxd4 exd4 d5", "idea": "Hit back with ...d5 and play against the isolated pawn." }
+    ]},
+    { "id": "anglo-indian", "name": "Anglo-Indian", "color": "black", "difficulty": "Medium", "style": ["Solid"], "prefix": "c4 Nf6", "summary": "Keep your options open: ...g6 for a King's Indian, or transpose when White plays d4.", "lines": [
+      { "name": "Fianchetto", "moves": "c4 Nf6 Nc3 g6 g3 Bg7 Bg2 O-O Nf3 d6 O-O e5", "idea": "A King's Indian structure with White's bishop on g2." },
+      { "name": "Against e4", "moves": "c4 Nf6 Nc3 g6 e4 d6 d4 Bg7 Nf3 O-O", "idea": "White has entered your King's Indian main lines." },
+      { "name": "Against Nf3", "moves": "c4 Nf6 Nf3 g6 Nc3 Bg7 e4 d6 d4 O-O", "idea": "Another transposition. Be ready to play ...e5." },
+      { "name": "Against g3", "moves": "c4 Nf6 g3 g6 Bg2 Bg7 Nf3 O-O O-O d6", "idea": "No hurry. ...e5 comes soon." }
+    ]},
+    { "id": "anglo-slav", "name": "Slav vs the English", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "c4 c6", "summary": "A sturdy ...c6 and ...d5 centre. You will know the structures from the Slav.", "lines": [
+      { "name": "Against Nf3", "moves": "c4 c6 Nf3 d5 e3 Nf6 Nc3 e6 d4 Nbd7", "idea": "You are in a Semi-Slav." },
+      { "name": "Against e4", "moves": "c4 c6 e4 d5 exd5 cxd5 cxd5 Nf6 Nc3 Nxd5", "idea": "This is a Panov Caro-Kann. Blockade the d4 pawn." },
+      { "name": "Against g3", "moves": "c4 c6 g3 d5 Nf3 Nf6 Bg2 Bf5 O-O e6 d3 Be7", "idea": "A solid wall. Your bishop sits on its best diagonal." },
+      { "name": "Against d4", "moves": "c4 c6 d4 d5 Nf3 Nf6 Nc3 dxc4 a4 Bf5", "idea": "Your main-line Slav." }
+    ]},
+    { "id": "reti-d5", "name": "1...d5 vs the Réti", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "Nf3 d5", "summary": "Claim the centre straight away. White fianchettoes, and you enjoy it.", "lines": [
+      { "name": "Fianchetto", "moves": "Nf3 d5 g3 Nf6 Bg2 c6 O-O Bf5 d3 e6 Nbd2 Be7", "idea": "Your ...c6, ...d5, ...e6 centre is a wall, with the f5 bishop active." },
+      { "name": "With c4", "moves": "Nf3 d5 c4 e6 g3 Nf6 Bg2 Be7 O-O O-O d4 dxc4 Qc2 a6", "idea": "A Catalan: take on c4 and hold with ...a6 and ...b5." },
+      { "name": "With c4 and d4", "moves": "Nf3 d5 c4 e6 d4 Nf6 Nc3 Be7 Bg5 O-O e3 h6 Bh4 b6", "idea": "Transposes to the Queen's Gambit Declined." },
+      { "name": "With d4", "moves": "Nf3 d5 d4 Nf6 c4 e6 Nc3 Be7 Bf4 O-O e3 c5", "idea": "A Queen's Gambit with ...c5 at the right time." },
+      { "name": "With d4 and Bf4", "moves": "Nf3 d5 d4 Nf6 Bf4 c5 e3 Nc6 c3 Qb6 Qb3 c4 Qc2 Bf5", "idea": "Against the London: press on b2." },
+      { "name": "With e3", "moves": "Nf3 d5 e3 Nf6 c4 e6 d4 Be7 Nc3 O-O", "idea": "A Queen's Gambit structure with no complications." },
+      { "name": "With b3", "moves": "Nf3 d5 b3 Nf6 Bb2 e6 e3 Be7 Be2 O-O O-O c5", "idea": "Against the queen fianchetto, ...e6 and ...c5 are solid." },
+      { "name": "With d3", "moves": "Nf3 d5 d3 Nf6 g3 c6 Bg2 Bf5 O-O e6 Nbd2 Be7", "idea": "The same wall as in the fianchetto line." }
+    ]},
+    { "id": "reti-kid", "name": "King's Indian vs the Réti", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "Nf3 Nf6", "summary": "Stay flexible with ...g6: the same plan against whatever White chooses.", "lines": [
+      { "name": "Against g3", "moves": "Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O d3 d6 e4 e5", "idea": "A symmetric setup, and ...e5 is your central claim." },
+      { "name": "Against c4", "moves": "Nf3 Nf6 c4 g6 Nc3 Bg7 e4 d6 d4 O-O", "idea": "You have transposed to your King's Indian." },
+      { "name": "Against d4", "moves": "Nf3 Nf6 d4 g6 c4 Bg7 Nc3 O-O e4 d6", "idea": "Same transposition." },
+      { "name": "Against b3", "moves": "Nf3 Nf6 b3 g6 Bb2 Bg7 g3 O-O Bg2 d6 d4", "idea": "Double fianchetto: play ...e5 or ...c5 at the right moment." }
+    ]},
+    { "id": "from-gambit", "name": "From's Gambit", "color": "black", "difficulty": "Medium", "style": ["Gambit", "Tricky"], "prefix": "f4 e5", "summary": "The sharpest reply to the Bird. Lots of traps, and famous for a quick mate.", "lines": [
+      { "name": "Lasker Variation", "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 g5 g3 g4 Nh4 Ne7", "idea": "...g5 and ...g4 chase the knight, and ...Nf6 keeps the initiative." },
+      { "name": "The quick trap", "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nc3 Qh4+ g3 Bxg3+ hxg3 Qxg3#", "idea": "The famous quick mate: White's kingside has no defenders left." },
+      { "name": "Declined", "moves": "f4 e5 e4 exf4 Nf3 g5", "idea": "White transposes to a King's Gambit, and you get to keep the pawn." }
+    ]},
+    { "id": "bird-d5", "name": "1...d5 vs the Bird", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "f4 d5", "summary": "A Dutch Stonewall with reversed colours. Sensible central play always works.", "lines": [
+      { "name": "Against Nf3", "moves": "f4 d5 Nf3 Nf6 e3 g6 Be2 Bg7 O-O O-O d3 c5", "idea": "...c5 and ...Nc6 give you a very pleasant game with the bishop on g7." },
+      { "name": "Against g3", "moves": "f4 d5 g3 Nf6 Bg2 g6 Nf3 Bg7 O-O O-O d3 c5", "idea": "A Leningrad reversed: stop e4 with ...d4 if needed." },
+      { "name": "Against b3", "moves": "f4 d5 b3 Nf6 Bb2 g6 Nf3 Bg7 e3 O-O Be2 c5", "idea": "Same setup: White's b2 bishop bites on the g7 bishop." }
+    ]},
+    { "id": "larsen-e5", "name": "1...e5 vs Larsen's", "color": "black", "difficulty": "Easy", "style": ["Aggressive"], "prefix": "b3 e5", "summary": "Occupy the centre at once and make the b2 bishop stare at a brick wall.", "lines": [
+      { "name": "Main line", "moves": "b3 e5 Bb2 Nc6 e3 d5 Bb5 Bd6 f4 Qh4+ g3 Qe7", "idea": "A quick check loosens White's kingside." },
+      { "name": "Against c4", "moves": "b3 e5 Bb2 Nc6 c4 Nf6 e3 d5 cxd5 Nxd5", "idea": "A reversed Sicilian with a useful extra tempo for White, but plenty of central space for you." }
+    ]},
+    { "id": "benko-opening-d5", "name": "1...d5 vs 1.g3", "color": "black", "difficulty": "Easy", "style": ["Solid"], "prefix": "g3 d5", "summary": "Build a classical centre with ...d5 and ...e5, and enjoy all the space.", "lines": [
+      { "name": "Main line", "moves": "g3 d5 Bg2 e5 d3 Nf6 Nf3 Nc6 O-O Be7 c4 d4", "idea": "Close the centre with ...d4 and enjoy the space." },
+      { "name": "Against c4", "moves": "g3 d5 Bg2 e5 c4 d4 d3 Nc6 Nf3 Be7", "idea": "...d4 grabs space and shuts down the g2 bishop." }
+    ]},
+    { "id": "polish-e5", "name": "1...e5 vs the Polish", "color": "black", "difficulty": "Easy", "style": ["Aggressive"], "prefix": "b4 e5", "summary": "Win a tempo on the b4 pawn straight away and enjoy the extra central control.", "lines": [
+      { "name": "Main line", "moves": "b4 e5 Bb2 Bxb4 Bxe5 Nf6 c4 O-O e3 d5 cxd5 Nxd5", "idea": "Trade your wing pawn for active development." },
+      { "name": "Against a3", "moves": "b4 e5 a3 d5 Bb2 Nd7 e3 Ngf6 c4 dxc4", "idea": "...d5 occupies the centre, with no way for White to dislodge it." }
+    ]},
+    { "id": "grob-d5", "name": "1...d5 vs the Grob", "color": "black", "difficulty": "Easy", "style": ["Tricky"], "prefix": "g4 d5", "summary": "Take the free pawn, hold d5 and let White explain the missing g-pawn.", "lines": [
+      { "name": "Main line", "moves": "g4 d5 Bg2 Bxg4 c4 c6 cxd5 cxd5 Qb3 Nf6 Nc3 e6 Qxb7 Nbd7 Nb5 Rc8", "idea": "...Nf6 holds d5. Even if b7 falls, you develop easily and White's king is exposed." },
+      { "name": "Against h3", "moves": "g4 d5 h3 e5 Bg2 Nc6 d3 Be6 Nc3 Qd7", "idea": "Claim the whole centre and develop with ideas of ...h5." }
+    ]}
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "source": "https://database.lichess.org/standard/lichess_db_standard_rated_2024-01.pgn.zst",
+  "license": "CC0",
+  "games": 1345577,
+  "plies": 24,
+  "referenceMinElo": 2000,
+  "bands": [
+    {
+      "id": "u750",
+      "label": "Under 750",
+      "low": 0,
+      "high": 750,
+      "players": 21621,
+      "positions": 468
+    },
+    {
+      "id": "750",
+      "label": "750–1000",
+      "low": 750,
+      "high": 1000,
+      "players": 131664,
+      "positions": 3303
+    },
+    {
+      "id": "1000",
+      "label": "1000–1250",
+      "low": 1000,
+      "high": 1250,
+      "players": 321967,
+      "positions": 9055
+    },
+    {
+      "id": "1250",
+      "label": "1250–1500",
+      "low": 1250,
+      "high": 1500,
+      "players": 508732,
+      "positions": 15635
+    },
+    {
+      "id": "1500",
+      "label": "1500–1750",
+      "low": 1500,
+      "high": 1750,
+      "players": 676002,
+      "positions": 22535
+    },
+    {
+      "id": "1750",
+      "label": "1750–2000",
+      "low": 1750,
+      "high": 2000,
+      "players": 632810,
+      "positions": 23263
+    },
+    {
+      "id": "2000",
+      "label": "2000–2250",
+      "low": 2000,
+      "high": 2250,
+      "players": 316193,
+      "positions": 13085
+    },
+    {
+      "id": "2250",
+      "label": "2250–2500",
+      "low": 2250,
+      "high": 2500,
+      "players": 70376,
+      "positions": 3297
+    },
+    {
+      "id": "2500",
+      "label": "2500+",
+      "low": 2500,
+      "high": 9999,
+      "players": 11789,
+      "positions": 621
+    }
+  ]
+}
