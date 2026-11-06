@@ -1,10 +1,13 @@
 // Training session logic. No DOM here, so it can be tested on its own.
 import { Chess } from '../vendor/chess.js';
 import { blendRows, keyOf, rowsFor } from './book.js';
+import { botMove } from './bot.js';
 
 const REFERENCE_MIN_SHARE = 0.1;
-const MASTERED_STREAK = 2;
-const UNMASTERED_WEIGHT = 3;
+const MASTERED_LEVEL = 2;
+const UNMASTERED_WEIGHT = 5;
+// Lets a written line appear now and then, even if too few people play it to be in the data.
+const UNLISTED_LINE_WEIGHT = 0.03;
 
 export const MODES = { LEARN: 'learn', PRACTICE: 'practice' };
 
@@ -43,12 +46,14 @@ export class Trainer {
   /**
    * opponent: { rating, mix: [{ id, weight }] }
    * books: { [bandId]: book, reference: book }
+   * free: no repertoire. Any move goes. When the opponent's level has no data, it
+   *   borrows from `nearbyBands` (closest first), and a bot takes over after that.
    */
-  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, random = Math.random }) {
-    Object.assign(this, { opening, opponent, books, progress, mode, plies, adaptive, random });
+  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, free = false, nearbyBands = [], random = Math.random }) {
+    Object.assign(this, { opening, opponent, books, progress, mode, plies: free ? Infinity : plies, adaptive, free, nearbyBands, random });
     this.chess = new Chess();
     this.index = buildIndex(opening);
-    this.prefix = opening.prefix.split(' ');
+    this.prefix = opening.prefix ? opening.prefix.split(' ') : [];
     this.userColor = opening.color === 'white' ? 'w' : 'b';
     this.history = [];
     this.moves = []; // verbose chess.js moves, parallel to history
@@ -68,6 +73,7 @@ export class Trainer {
 
   /** Moves accepted from the user now, and where that answer comes from. */
   expected() {
+    if (this.free) return { moves: this.referenceRows().map((row) => row.san), source: 'free' };
     if (this.inPrefix) return { moves: [this.prefix[this.ply]], source: 'prefix' };
     const entry = this.index.get(keyOf(this.fen));
     if (entry?.user.size) return { moves: [...entry.user], source: 'repertoire' };
@@ -95,6 +101,11 @@ export class Trainer {
   }
 
   tryMove(san) {
+    if (this.free) {
+      this.answered += 1;
+      this._play(san);
+      return { ok: true, source: 'free' };
+    }
     const expected = this.expected();
     if (!expected.moves.includes(san)) {
       this.mistakes += this.attempted ? 0 : 1;
@@ -129,11 +140,29 @@ export class Trainer {
     if (this.inPrefix) return [{ san: this.prefix[this.ply], weight: 1, forced: true }];
     const rows = this._legal(this.levelRows());
     if (rows.length) {
-      return rows.map((row) => ({ san: row.san, weight: row.share * this._adaptiveFactor(row.san), row }));
+      const candidates = rows.map((row) => ({ san: row.san, weight: row.share * this._adaptiveFactor(row.san), row }));
+      return [...candidates, ...this._unlistedLines(rows)];
     }
     const entry = this.index.get(keyOf(this.fen));
     if (entry?.rival.size) return [...entry.rival].map((san) => ({ san, weight: 1 }));
+    if (this.free) {
+      for (const id of this.nearbyBands) {
+        const nearby = this._legal(rowsFor(this.books[id], this.fen));
+        if (nearby.length) return nearby.map((row) => ({ san: row.san, weight: row.share, row }));
+      }
+      return [];
+    }
     return this.referenceRows().map((row) => ({ san: row.san, weight: row.games, row }));
+  }
+
+  /** Written replies that real games don't cover, offered only while they are unmastered. */
+  _unlistedLines(rows) {
+    if (!this.adaptive || !this.progress) return [];
+    const listed = new Set(rows.map((row) => row.san));
+    const written = this.index.get(keyOf(this.fen))?.rival ?? [];
+    return [...written]
+      .filter((san) => !listed.has(san) && this._adaptiveFactor(san) > 1)
+      .map((san) => ({ san, weight: UNLISTED_LINE_WEIGHT }));
   }
 
   /** Makes moves leading to not-yet-mastered lines more likely, if adaptive mode is on. */
@@ -143,12 +172,17 @@ export class Trainer {
     probe.move(san);
     const key = keyOf(probe.fen());
     if (!this.index.get(key)?.user.size) return 1;
-    return this.progress.streak(this.opening.id, key) < MASTERED_STREAK ? UNMASTERED_WEIGHT : 1;
+    return this.progress.level(this.opening.id, key) < MASTERED_LEVEL ? UNMASTERED_WEIGHT : 1;
   }
 
   playRival() {
-    const choice = pickWeighted(this.rivalCandidates(), this.random);
     const before = this.fen;
+    const candidates = this.rivalCandidates();
+    if (!candidates.length) {
+      this._play(botMove(new Chess(before), this.opponent.rating, this.random));
+      return { san: this.history[this.ply - 1], before, forced: false, bot: true };
+    }
+    const choice = pickWeighted(candidates, this.random);
     this._play(choice.san);
     return { san: choice.san, before, forced: Boolean(choice.forced), row: choice.row };
   }
@@ -178,10 +212,11 @@ export class Trainer {
   _checkEnd() {
     if (this.ply >= this.plies) this.endReason = 'complete';
     else if (this.chess.isGameOver()) this.endReason = 'gameOver';
+    else if (this.free) return;
     else if (this.chess.turn() === this.userColor) {
       if (!this.expected()) this.endReason = 'noReference';
     } else if (!this.rivalCandidates().length) this.endReason = 'noData';
-    if (this.endReason && this.mode === MODES.PRACTICE) {
+    if (this.endReason && this.mode === MODES.PRACTICE && !this.free) {
       this.progress?.finish(this.opening.id, this.summary().clean);
     }
   }

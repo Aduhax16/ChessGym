@@ -1,9 +1,10 @@
 // Browser tests for the training logic: serve the repo and open /tests/.
 import { Chess } from '../vendor/chess.js';
 import { blendRows, keyOf, loadBand, loadMeta, loadOpenings, rowsFor } from '../js/book.js';
-import { bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
+import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
 import { buildIndex, MODES, Trainer, userPositions } from '../js/trainer.js';
 import { Progress } from '../js/progress.js';
+import { botMove } from '../js/bot.js';
 
 const results = [];
 function test(name, fn) { results.push([name, fn]); }
@@ -23,7 +24,7 @@ function fakeProgress() {
     recorded,
     finished: [],
     record(id, key, firstTry) { recorded.push(firstTry); },
-    streak: () => 0,
+    level: () => 0,
     finish(id, clean) { this.finished.push(clean); },
   };
 }
@@ -116,9 +117,9 @@ test('adaptive mode boosts a line with no mastery', () => {
     trainer.tryMove('e4');
     return Object.fromEntries(trainer.rivalCandidates().map((item) => [item.san, item.weight]));
   };
-  const mastered = { ...fakeProgress(), streak: () => 5 };
+  const mastered = { ...fakeProgress(), level: () => 2 };
   equal(weights(mastered), { e5: 0.9, c5: 0.1 });
-  assert(Math.abs(weights(fakeProgress()).e5 - 2.7) < 1e-9, 'unmastered lines count triple');
+  assert(Math.abs(weights(fakeProgress()).e5 - 4.5) < 1e-9, 'unmastered lines count five times');
 });
 
 test('prefix moves are forced for the rival', () => {
@@ -152,16 +153,129 @@ test('reference rows drop rare moves', () => {
   equal(trainer.referenceRows().map((row) => row.san), ['e4', 'd4']);
 });
 
-test('progress mastery needs two right answers in a row', () => {
+const emptyProgress = () => {
   const progress = new Progress();
   progress.data = { positions: {}, sessions: {}, settings: {} };
   progress._save = () => {};
+  return progress;
+};
+
+test('a right answer counts straight away, and two master a position', () => {
+  const progress = emptyProgress();
   progress.record('o', 'k', true);
-  equal(progress.mastery('o', ['k']), 0);
+  equal(progress.mastery('o', ['k']), 0.5);
   progress.record('o', 'k', true);
   equal(progress.mastery('o', ['k']), 1);
+  progress.record('o', 'k', true);
+  equal(progress.mastery('o', ['k']), 1);
+});
+
+test('a miss costs one level, not everything', () => {
+  const progress = emptyProgress();
+  progress.record('o', 'k', true);
+  progress.record('o', 'k', true);
+  progress.record('o', 'k', false);
+  equal(progress.mastery('o', ['k']), 0.5);
+  progress.record('o', 'k', false);
   progress.record('o', 'k', false);
   equal(progress.mastery('o', ['k']), 0);
+});
+
+test('mastery averages over all the positions', () => {
+  const progress = emptyProgress();
+  progress.record('o', 'a', true);
+  progress.record('o', 'a', true);
+  equal(progress.mastery('o', ['a', 'b']), 0.5);
+});
+
+test('a perfect first game shows progress', () => {
+  const progress = emptyProgress();
+  const trainer = make({ progress, plies: 3 });
+  trainer.tryMove('e4');
+  trainer.playRival();
+  trainer.tryMove('Nf3');
+  assert(progress.mastery('test', userPositions(opening)) > 0, 'expected more than 0%');
+});
+
+test('unmastered written lines can appear even without data', () => {
+  const sparse = { ...books, 1000: { [AFTER_E4]: [['e5', 100, 40, 20, 40]] } };
+  const trainer = make({ books: sparse });
+  trainer.tryMove('e4');
+  const names = trainer.rivalCandidates().map((item) => item.san);
+  equal(names, ['e5', 'c5']);
+  const settled = make({ books: sparse, progress: { ...fakeProgress(), level: () => 2 } });
+  settled.tryMove('e4');
+  equal(settled.rivalCandidates().map((item) => item.san), ['e5']);
+});
+
+const freeOpening = { id: 'free', name: 'Free play', color: 'white', prefix: '', lines: [] };
+
+test('free play accepts any legal move and records nothing', () => {
+  const progress = fakeProgress();
+  const trainer = make({ opening: freeOpening, free: true, progress });
+  equal(trainer.tryMove('a3').ok, true);
+  equal(progress.recorded, []);
+  equal(trainer.isUserTurn, false);
+});
+
+test('free play uses real moves first, then the bot', () => {
+  const trainer = make({ opening: freeOpening, free: true });
+  trainer.tryMove('e4');
+  const real = trainer.playRival();
+  equal(real.san, 'e5');
+  equal(Boolean(real.bot), false);
+  trainer.tryMove('a3');
+  const bot = trainer.playRival();
+  equal(bot.bot, true);
+  equal(trainer.history.length, 4);
+  equal(trainer.done, false);
+});
+
+test('free play runs until the game really ends', () => {
+  const trainer = new Trainer({ opening: freeOpening, free: true, opponent: onlyLow, books, plies: 4 });
+  let guard = 0;
+  while (!trainer.done && guard < 400) {
+    if (trainer.isUserTurn) trainer.tryMove(trainer.chess.moves()[0]);
+    else trainer.playRival();
+    guard += 1;
+  }
+  assert(trainer.ply > 4, 'plies should not limit free play');
+  equal(trainer.endReason, 'gameOver');
+});
+
+test('free play borrows from nearby levels before using the bot', () => {
+  const trainer = make({
+    opening: freeOpening,
+    free: true,
+    opponent: { rating: 1125, mix: [{ id: 'empty', weight: 1 }] },
+    nearbyBands: ['empty', '1250'],
+    books: { ...books, empty: {} },
+  });
+  trainer.tryMove('e4');
+  const played = trainer.playRival();
+  equal(Boolean(played.bot), false);
+  equal(played.san, 'e5');
+});
+
+test('bands are ordered by distance from the rating', () => {
+  equal(bandsByDistance(1400, BANDS).slice(0, 2), ['1250', '1500']);
+});
+
+test('the bot mates in one and grabs a free queen', () => {
+  const mate = new Chess('6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1');
+  equal(botMove(mate, 2200, () => 0.5), 'Rd8#');
+  const queen = new Chess('6k1/5ppp/8/3q4/4P3/8/5PPP/6K1 w - - 0 1');
+  equal(botMove(queen, 2200, () => 0.5), 'exd5');
+});
+
+test('weak bots make more mistakes than strong ones', () => {
+  const missed = (rating) => {
+    let count = 0;
+    const position = new Chess('6k1/5ppp/8/3p4/4P3/8/5PPP/6K1 w - - 0 1');
+    for (let run = 0; run < 200; run += 1) if (botMove(position, rating) !== 'exd5') count += 1;
+    return count;
+  };
+  assert(missed(600) > missed(2200), 'lower ratings should miss the capture more often');
 });
 
 test('a 1300 Lichess player gets the 1250-1500 band', () => {

@@ -1,10 +1,10 @@
 <div align="center">
 
-# ♞ ChessGym
+# ChessGym
 
 ### Stop practising openings against a script.<br>Practise against what real people at your rating actually play.
 
-**[▶ Play now, free, no sign-up](https://aduhax16.github.io/ChessGym/)**
+**[Play now, free, no sign-up](https://aduhax16.github.io/ChessGym/)**
 
 [![Play now](https://img.shields.io/badge/play-in_your_browser-2f6048?style=for-the-badge)](https://aduhax16.github.io/ChessGym/)
 [![Openings](https://img.shields.io/badge/openings-125-b4532a?style=for-the-badge)](data/openings.json)
@@ -46,14 +46,16 @@ If you learn only what the masters play, you're preparing for someone else's gam
 
 ## What you get
 
-- ♟ **125 openings and 407 lines**, from the Italian to the Grob.
-- 🎯 **Play either colour.** With Black, choose what White opens with and then your defence.
-- 📈 **Opponents matched to you.** Enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
-- 🧠 **Learn and Practice modes.** Follow the arrows first, then play from memory.
-- 🔁 **It remembers what you get wrong.** Lines you haven't mastered come up more often.
-- 📊 **Real stats after every move:** how often each move is played at your level, and how it scores.
-- 🛟 **Thrown out of book?** You keep going with what strong players chose in that position.
-- 🔒 **No account, no ads, no tracking.** Your progress stays in your browser.
+- **125 openings and 407 lines**, from the Italian to the Grob.
+- **Free play.** No script: play any opening and see how people at your rating respond. When the real games run out, a simple bot finishes the game.
+- **Play either colour.** With Black, choose what White opens with and then your defence.
+- **Opponents matched to you.** Enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
+- **Learn and Practice modes.** Follow the arrows first, then play from memory.
+- **Real progress.** Right answers build mastery, misses take a little back, and the lines you haven't mastered come up more often.
+- **Real stats after every move:** how often each move is played at your level, and how it scores.
+- **Arrows and marks.** Right-click a square to mark it and right-drag to draw an arrow, as on Chess.com. Hold Shift or Alt to change the colour.
+- **Your board, your colours.** Choose a theme or pick your own colours, in light or dark mode.
+- **No account, no ads, no tracking.** Your progress stays in your browser.
 
 ## Pick your poison
 
@@ -91,6 +93,7 @@ If you learn only what the masters play, you're preparing for someone else's gam
 - **Opponent moves:** a sample of 1,345,577 rated blitz, rapid and classical games from the [Lichess open database](https://database.lichess.org/) (January 2024, CC0). Each move counts in the band of the player who made it.
 - **Your repertoire:** a curated set of lines, **checked with Stockfish 19**. About 2,000 student moves went through the audit, and anything that lost too much was fixed. Gambits get more leeway, and the few deliberately unsound trap lines tell you they're traps.
 - **After your repertoire ends:** moves commonly chosen by players rated 2000+.
+- **Free play:** real moves at your level, then from nearby levels. Past that, a small built-in bot takes over. It is not calibrated to your rating and tops out at club strength.
 
 ### Honest limitations
 
@@ -118,7 +121,7 @@ Your favourite line is missing? Adding one means editing a JSON file, with no Ja
 
 Ideas on the list:
 
-- [ ] Stockfish in the browser, for positions beyond the data
+- [ ] Stockfish in the browser, for a stronger free-play opponent and positions beyond the data
 - [ ] Spaced repetition for the lines you miss
 - [ ] Import your own repertoire from a PGN or a Lichess study
 - [ ] More languages
@@ -131,6 +134,6 @@ The code is [MIT](LICENSE). Game data is CC0, from Lichess. [chess.js](https://g
 
 <div align="center">
 
-**If ChessGym wins you a game, [leave a ⭐](https://github.com/Aduhax16/ChessGym) so other players can find it.**
+**If ChessGym wins you a game, [leave a star](https://github.com/Aduhax16/ChessGym) so other players can find it.**
 
 </div>

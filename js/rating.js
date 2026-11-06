@@ -96,3 +96,10 @@ export function bandsInRange(range, bands) {
   }
   return [...ids];
 }
+
+/** All bands, nearest to `rating` first. */
+export function bandsByDistance(rating, bands) {
+  return [...bands]
+    .sort((a, b) => Math.abs(centerOf(a) - rating) - Math.abs(centerOf(b) - rating))
+    .map((band) => band.id);
+}

@@ -1,27 +1,52 @@
-// Screens and wiring: setup form and training session.
+// Screens and wiring: setup form, training session and the customize sheet.
 import { Chess } from '../vendor/chess.js';
+import { Appearance, BOARD_THEMES } from './appearance.js';
 import { Board } from './board.js';
 import { blendRows, loadBand, loadMeta, loadOpenings } from './book.js';
 import { Progress } from './progress.js';
-import { bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
+import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
 import { MODES, Trainer, userPositions } from './trainer.js';
 
 const RIVAL_DELAY = 500;
 const WRONG_DELAY = 550;
 const SITE_URL = 'https://aduhax16.github.io/ChessGym/';
+const MIN_RATING = 100;
+const MAX_RATING = 3500;
 const LENGTHS = [
-  { plies: 12, label: 'Short', hint: '6 moves' },
-  { plies: 20, label: 'Medium', hint: '10 moves' },
-  { plies: 24, label: 'Long', hint: '12 moves' },
+  { id: 12, label: '6' },
+  { id: 20, label: '10' },
+  { id: 24, label: '12' },
 ];
 const MODE_OPTIONS = [
-  { id: MODES.LEARN, label: 'Learn', hint: 'An arrow shows you every move' },
-  { id: MODES.PRACTICE, label: 'Practice', hint: 'Play from memory and track progress' },
+  { id: MODES.LEARN, label: 'Learn' },
+  { id: MODES.PRACTICE, label: 'Practice' },
+];
+const MODE_NOTES = {
+  [MODES.LEARN]: 'An arrow shows you each move.',
+  [MODES.PRACTICE]: 'Play from memory. Your results count towards mastery.',
+};
+const COLORS = [
+  { id: 'white', label: 'White' },
+  { id: 'black', label: 'Black' },
+];
+const THEME_MODES = [
+  { id: 'system', label: 'Auto' },
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
 ];
 const STYLES = ['Aggressive', 'Solid', 'Gambit', 'Tricky', 'Positional'];
 const ALL = 'all';
-const MIN_RATING = 100;
-const MAX_RATING = 3500;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const FREE_ID = 'free';
+const FREE_PLAY = {
+  id: FREE_ID,
+  name: 'Free play',
+  summary: 'No script. Play any opening you like and see how people at your rating respond.',
+  prefix: '',
+  style: [],
+  lines: [],
+};
 
 const $ = (id) => document.getElementById(id);
 
@@ -39,10 +64,12 @@ function el(tag, props = {}, ...children) {
 const percent = (value) => `${Math.round(value * 100)}%`;
 const count = (value, one, many) => `${value} ${value === 1 ? one : many}`;
 const scoreText = (right, wrong, hints) =>
-  [count(right, 'correct', 'correct'), count(wrong, 'mistake', 'mistakes'), count(hints, 'hint', 'hints')].join(' · ');
+  [`${right} correct`, count(wrong, 'mistake', 'mistakes'), count(hints, 'hint', 'hints')].join(' · ');
+
+const progress = new Progress();
+const appearance = new Appearance(progress);
 
 const state = {
-  progress: new Progress(),
   data: null,
   meta: null,
   // Setup choices
@@ -59,6 +86,7 @@ const state = {
   adaptive: true,
   // Session
   opening: null,
+  range: null,
   books: {},
   trainer: null,
   board: null,
@@ -70,42 +98,144 @@ const state = {
   lastWrongAt: null,
   hintShownAt: null,
   currentLine: null,
+  masteryBefore: 0,
+  freeCard: null,
 };
 
-const positionCache = new Map();
-function positionsOf(opening) {
-  if (!positionCache.has(opening.id)) positionCache.set(opening.id, userPositions(opening));
-  return positionCache.get(opening.id);
+/* ---------- Small components ---------- */
+
+function segmented(options, value, onChange) {
+  return el('div', { class: 'segmented' }, ...options.map((option) => el('button', {
+    type: 'button',
+    class: option.id === value ? 'is-selected' : '',
+    'aria-pressed': String(option.id === value),
+    onclick: () => onChange(option.id),
+  }, option.label)));
 }
 
-/* ---------- Setup screen ---------- */
-
-function optionButton({ label, hint, selected, onclick }) {
-  return el('button', { type: 'button', class: `option${selected ? ' is-selected' : ''}`, 'aria-pressed': String(selected), onclick },
-    el('span', { class: 'option-label' }, label),
-    hint ? el('span', { class: 'option-hint' }, hint) : null);
-}
-
-function chip(label, selected, onclick) {
-  return el('button', { type: 'button', class: `chip${selected ? ' is-selected' : ''}`, 'aria-pressed': String(selected), onclick }, label);
-}
-
-function pieceIcon(piece) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 40 40');
+/** A static board drawn as one SVG, used for opening cards and the preview. */
+function miniBoard(fen, flipped, lastMove) {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 8 8');
+  svg.setAttribute('class', 'mini-board');
   svg.setAttribute('aria-hidden', 'true');
-  svg.classList.add('color-icon');
-  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-  use.setAttribute('href', `assets/pieces.svg#${piece}`);
-  svg.append(use);
+  const place = (file, rank) => (flipped ? [7 - file, rank] : [file, 7 - rank]);
+  const rect = (x, y, className) => {
+    const square = document.createElementNS(SVG_NS, 'rect');
+    Object.entries({ x, y, width: 1, height: 1, class: className }).forEach(([key, value]) => square.setAttribute(key, value));
+    svg.append(square);
+  };
+  for (let file = 0; file < 8; file += 1) {
+    for (let rank = 0; rank < 8; rank += 1) {
+      const [x, y] = place(file, rank);
+      rect(x, y, (file + rank) % 2 === 0 ? 'mini-dark' : 'mini-light');
+    }
+  }
+  if (lastMove) {
+    for (const square of [lastMove.from, lastMove.to]) {
+      const [x, y] = place('abcdefgh'.indexOf(square[0]), Number(square[1]) - 1);
+      rect(x, y, 'mini-last');
+    }
+  }
+  fen.split(' ')[0].split('/').forEach((row, rowIndex) => {
+    let file = 0;
+    for (const char of row) {
+      if (/\d/.test(char)) {
+        file += Number(char);
+      } else {
+        const [x, y] = place(file, 7 - rowIndex);
+        const color = char === char.toUpperCase() ? 'w' : 'b';
+        const piece = document.createElementNS(SVG_NS, 'svg');
+        Object.entries({ x, y, width: 1, height: 1, viewBox: '0 0 40 40' }).forEach(([key, value]) => piece.setAttribute(key, value));
+        const use = document.createElementNS(SVG_NS, 'use');
+        use.setAttribute('href', `assets/pieces.svg#${color}${char.toLowerCase()}`);
+        piece.append(use);
+        svg.append(piece);
+        file += 1;
+      }
+    }
+  });
   return svg;
 }
 
-const firstMoveOf = (opening) => opening.prefix.split(' ')[0];
+/* ---------- Setup: settings ---------- */
 
-function openingsOfColor() {
-  return state.data.openings.filter((opening) => opening.color === state.color);
+function renderSettings() {
+  $('color-options').replaceChildren(segmented(COLORS, state.color, (color) => {
+    state.color = color;
+    state.firstMove = color === 'black' ? 'e4' : ALL;
+    state.openingId = null;
+    renderSettings();
+    renderLibrary();
+    renderPlayBar();
+  }));
+  $('scale-options').replaceChildren(segmented(
+    SCALES.map(({ id, label }) => ({ id, label })),
+    state.scale,
+    (scale) => { state.scale = scale; renderSettings(); renderPlayBar(); },
+  ));
+  $('level-options').replaceChildren(segmented(
+    LEVELS.map(({ id, label }) => ({ id, label })),
+    state.level,
+    (level) => { state.level = level; renderSettings(); renderPlayBar(); },
+  ));
+  $('mode-options').replaceChildren(segmented(MODE_OPTIONS, state.mode, (mode) => {
+    state.mode = mode;
+    renderSettings();
+  }));
+  $('length-options').replaceChildren(segmented(LENGTHS, state.plies, (plies) => {
+    state.plies = plies;
+    renderSettings();
+  }));
+  $('mode-note').textContent = state.openingId === FREE_ID
+    ? 'Free play has no script, so Mode and Moves don\'t apply.'
+    : MODE_NOTES[state.mode];
+  $('adaptive').checked = state.adaptive;
+  $('rating-input').value = state.rating;
+  syncSlider();
+  renderRangeSummary();
 }
+
+function syncSlider() {
+  const slider = $('rating-slider');
+  slider.value = state.rating;
+  const position = (Number(slider.value) - Number(slider.min)) / (Number(slider.max) - Number(slider.min));
+  slider.style.setProperty('--fill-to', `${position * 100}%`);
+}
+
+function currentRange() {
+  return opponentRange(state.rating, state.scale, state.level);
+}
+
+const roundTo25 = (value) => Math.round(value / 25) * 25;
+
+function rangeLabel(range) {
+  const scale = SCALES.find((item) => item.id === state.scale);
+  const low = roundTo25(fromLichess(range.low, state.scale));
+  const high = roundTo25(fromLichess(range.high, state.scale));
+  return `${state.scale === 'lichess' ? '' : '≈'}${low}–${high} ${scale.label}`;
+}
+
+function renderRangeSummary() {
+  const range = currentRange();
+  const exact = state.scale === 'lichess' ? '' : ` (${range.low}–${range.high} on Lichess, a rough conversion)`;
+  $('range-summary').textContent = `Opponents rated ${rangeLabel(range)}${exact}. A new one each game, playing a blend of real moves at that level.`;
+}
+
+function setRating(value) {
+  if (!Number.isFinite(value) || value < MIN_RATING || value > MAX_RATING) return;
+  state.rating = value;
+  syncSlider();
+  renderRangeSummary();
+  renderPlayBar();
+}
+
+/* ---------- Setup: opening library ---------- */
+
+const isFree = (opening) => opening?.id === FREE_ID;
+const openingById = (id) => (id === FREE_ID ? { ...FREE_PLAY, color: state.color } : state.data.openings.find((item) => item.id === id));
+const firstMoveOf = (opening) => opening.prefix.split(' ')[0];
+const openingsOfColor = () => state.data.openings.filter((opening) => opening.color === state.color);
 
 function visibleOpenings() {
   const query = state.search.trim().toLowerCase();
@@ -115,186 +245,111 @@ function visibleOpenings() {
     && (!query || `${opening.name} ${opening.summary} ${opening.lines.map((line) => line.name).join(' ')}`.toLowerCase().includes(query)));
 }
 
+const positionCache = new Map();
+function positionsOf(opening) {
+  if (!positionCache.has(opening.id)) positionCache.set(opening.id, userPositions(opening));
+  return positionCache.get(opening.id);
+}
+
+function prefixBoard(opening) {
+  const chess = new Chess();
+  let last = null;
+  for (const san of opening.prefix.split(' ')) last = chess.move(san);
+  return miniBoard(chess.fen(), opening.color === 'black', last);
+}
+
+/** Cards are kept between renders, because drawing dozens of boards is not free. */
+const cardCache = new Map();
+function openingCard(opening) {
+  if (!cardCache.has(opening.id)) {
+    const mastery = progress.mastery(opening.id, positionsOf(opening));
+    const played = progress.played(opening.id);
+    const meta = [opening.difficulty, ...opening.style.slice(0, 1), count(opening.lines.length, 'line', 'lines')].join(' · ');
+    cardCache.set(opening.id, el('button', {
+      type: 'button',
+      class: 'opening-card',
+      onclick: () => selectOpening(opening.id),
+    },
+    prefixBoard(opening),
+    el('span', { class: 'opening-body' },
+      el('span', { class: 'opening-name' }, opening.name),
+      el('span', { class: 'opening-summary' }, opening.summary),
+      el('span', { class: 'opening-meta' }, played ? `${percent(mastery)} mastered` : meta),
+      played ? el('span', { class: 'mastery-track' }, el('span', { class: 'mastery-fill', style: `width:${mastery * 100}%` })) : null)));
+  }
+  const card = cardCache.get(opening.id);
+  markSelected(card, opening.id);
+  return card;
+}
+
+function markSelected(card, id) {
+  const selected = id === state.openingId;
+  card.classList.toggle('is-selected', selected);
+  card.setAttribute('aria-pressed', String(selected));
+}
+
 function selectOpening(id) {
   state.openingId = id;
   history.replaceState(null, '', `#${id}`);
-  renderOpeningGrid();
-  renderStartBar();
+  for (const [openingId, card] of cardCache) markSelected(card, openingId);
+  if (state.freeCard) markSelected(state.freeCard, FREE_ID);
+  renderPlayBar();
+  $('mode-note').textContent = id === FREE_ID
+    ? 'Free play has no script, so Mode and Moves don\'t apply.'
+    : MODE_NOTES[state.mode];
 }
 
-function renderColor() {
-  $('color-options').replaceChildren(
-    ...[
-      { id: 'white', label: 'White', hint: 'Pick your opening', piece: 'wk' },
-      { id: 'black', label: 'Black', hint: 'Pick what White plays, then your defence', piece: 'bk' },
-    ].map((option) => {
-      const button = optionButton({
-        ...option,
-        selected: state.color === option.id,
-        onclick: () => {
-          state.color = option.id;
-          state.firstMove = option.id === 'black' ? 'e4' : ALL;
-          state.openingId = null;
-          renderSetup();
-        },
-      });
-      button.prepend(pieceIcon(option.piece));
-      button.classList.add('color-option');
-      return button;
-    }),
-  );
-}
-
-function renderFilters() {
-  const used = new Set(openingsOfColor().map(firstMoveOf));
-  $('first-move-title').textContent = state.color === 'black' ? 'What should White play?' : 'Your first move';
-  const moves = state.data.firstMoves.filter((move) => used.has(move.san));
-  $('first-move-options').replaceChildren(
-    ...(state.color === 'white' ? [chip('All', state.firstMove === ALL, () => setFirstMove(ALL))] : []),
-    ...moves.map((move) => {
-      const button = chip(move.label, state.firstMove === move.san, () => setFirstMove(move.san));
-      button.title = move.hint;
-      return button;
-    }),
-  );
-  $('style-options').replaceChildren(
-    chip('Any style', state.style === ALL, () => setStyle(ALL)),
-    ...STYLES.map((style) => chip(style, state.style === style, () => setStyle(style))),
-  );
-  $('opening-title').textContent = state.color === 'white' ? 'Choose your opening' : 'Choose your defence';
-}
-
-function setFirstMove(move) {
-  state.firstMove = move;
-  renderFilters();
-  renderOpeningGrid();
-  renderStartBar();
-}
-
-function setStyle(style) {
-  state.style = style;
-  renderFilters();
-  renderOpeningGrid();
-  renderStartBar();
-}
-
-function openingCard(opening) {
-  const mastery = state.progress.mastery(opening.id, positionsOf(opening));
-  const played = state.progress.played(opening.id);
-  const selected = state.openingId === opening.id;
-  return el('button', {
+function freePlayCard() {
+  state.freeCard = el('button', {
     type: 'button',
-    class: `opening-card${selected ? ' is-selected' : ''}`,
-    'aria-pressed': String(selected),
-    onclick: () => selectOpening(opening.id),
+    class: 'opening-card free-card',
+    onclick: () => selectOpening(FREE_ID),
   },
-  el('span', { class: 'opening-head' },
-    el('span', { class: 'opening-name' }, opening.name),
-    el('span', { class: `badge badge-${opening.difficulty.toLowerCase()}` }, opening.difficulty)),
-  el('span', { class: 'opening-moves' }, movesText(opening.prefix.split(' '))),
-  el('span', { class: 'opening-summary' }, opening.summary),
-  el('span', { class: 'opening-tags' }, ...opening.style.map((style) => el('span', { class: 'tag' }, style))),
-  el('span', { class: 'mastery' },
-    el('span', { class: 'mastery-track' }, el('span', { class: 'mastery-fill', style: `width:${mastery * 100}%` })),
-    el('span', { class: 'mastery-label' }, played ? `${percent(mastery)} mastered` : count(opening.lines.length, 'line', 'lines'))));
+  miniBoard(START_FEN, state.color === 'black'),
+  el('span', { class: 'opening-body' },
+    el('span', { class: 'opening-name' }, FREE_PLAY.name),
+    el('span', { class: 'opening-summary' }, FREE_PLAY.summary),
+    el('span', { class: 'opening-meta' }, 'Any opening · No score')));
+  markSelected(state.freeCard, FREE_ID);
+  return state.freeCard;
 }
 
-function movesText(moves) {
-  return moves.map((san, index) => (index % 2 === 0 ? `${index / 2 + 1}.${san}` : san)).join(' ');
+function renderLibrary() {
+  $('opening-title').textContent = state.color === 'white' ? 'Choose your opening' : 'Choose your defence';
+  $('first-move-title').textContent = state.color === 'black' ? 'White plays' : 'Start with';
+  const used = new Set(openingsOfColor().map(firstMoveOf));
+  const moves = state.data.firstMoves.filter((move) => used.has(move.san));
+  const pill = (label, value, title) => el('button', {
+    type: 'button',
+    class: `pill${state.firstMove === value ? ' is-selected' : ''}`,
+    'aria-pressed': String(state.firstMove === value),
+    title,
+    onclick: () => { state.firstMove = value; renderLibrary(); renderPlayBar(); },
+  }, label);
+  $('first-move-options').replaceChildren(
+    ...(state.color === 'white' ? [pill('All', ALL)] : []),
+    ...moves.map((move) => pill(move.label, move.san, move.hint)),
+  );
+  renderOpeningGrid();
 }
 
 function renderOpeningGrid() {
   const openings = visibleOpenings();
-  if (!openings.some((opening) => opening.id === state.openingId)) state.openingId = openings[0]?.id ?? null;
-  $('opening-count').textContent = count(openings.length, 'opening', 'openings');
+  const query = state.search.trim().toLowerCase();
+  const showFree = !query || 'free play'.includes(query);
+  const selectedIsVisible = (state.openingId === FREE_ID && showFree) || openings.some((opening) => opening.id === state.openingId);
+  if (!selectedIsVisible) state.openingId = openings[0]?.id ?? (showFree ? FREE_ID : null);
   $('opening-options').replaceChildren(
-    ...(openings.length ? openings.map(openingCard) : [el('p', { class: 'muted empty' }, 'No opening matches those filters.')]),
+    ...(showFree ? [freePlayCard()] : []),
+    ...(openings.length || showFree ? openings.map(openingCard) : [el('p', { class: 'empty' }, 'No openings match.')]),
   );
 }
 
-function currentRange() {
-  return opponentRange(state.rating, state.scale, state.level);
-}
-
-function roundTo25(value) {
-  return Math.round(value / 25) * 25;
-}
-
-function rangeLabel(range) {
-  const scale = SCALES.find((item) => item.id === state.scale);
-  const low = roundTo25(fromLichess(range.low, state.scale));
-  const high = roundTo25(fromLichess(range.high, state.scale));
-  return `${state.scale === 'lichess' ? '' : '≈'}${low}–${high} ${scale.label}`;
-}
-
-function renderRating() {
-  $('rating-input').value = state.rating;
-  $('rating-slider').value = state.rating;
-  $('scale-options').replaceChildren(
-    ...SCALES.map((scale) => chip(scale.label, state.scale === scale.id, () => {
-      state.scale = scale.id;
-      renderRating();
-      renderStartBar();
-    })),
-  );
-  $('level-options').replaceChildren(
-    ...LEVELS.map((level) => optionButton({
-      ...level,
-      selected: state.level === level.id,
-      onclick: () => {
-        state.level = level.id;
-        renderRating();
-        renderStartBar();
-      },
-    })),
-  );
-  renderRatingSummary();
-}
-
-function renderRatingSummary() {
-  const range = currentRange();
-  const lichess = state.scale === 'lichess' ? '' : ` (${range.low}–${range.high} on Lichess)`;
-  $('range-summary').textContent = `You'll face opponents rated ${rangeLabel(range)}${lichess}. Each game draws a new one, who plays a blend of what real players at that rating actually play.`;
-  const scaleName = SCALES.find((item) => item.id === state.scale).label;
-  const games = state.meta.games.toLocaleString('en');
-  $('band-note').textContent = state.scale === 'lichess'
-    ? `Built from ${games} real rated Lichess games (blitz, rapid and classical).`
-    : `Built from ${games} real rated Lichess games. There is no official conversion from ${scaleName}, so this is a rough estimate: use Easier or Harder if it feels off.`;
-}
-
-function renderModes() {
-  $('mode-options').replaceChildren(
-    ...MODE_OPTIONS.map((mode) => optionButton({
-      ...mode,
-      selected: state.mode === mode.id,
-      onclick: () => { state.mode = mode.id; renderModes(); },
-    })),
-  );
-  $('length-options').replaceChildren(
-    ...LENGTHS.map((length) => optionButton({
-      ...length,
-      selected: state.plies === length.plies,
-      onclick: () => { state.plies = length.plies; renderModes(); },
-    })),
-  );
-  $('adaptive').checked = state.adaptive;
-}
-
-function renderStartBar() {
-  const opening = state.data.openings.find((item) => item.id === state.openingId);
-  const start = $('start');
-  start.disabled = !opening;
-  start.textContent = opening ? `Play ${opening.name}` : 'Choose an opening';
-  $('start-range').textContent = rangeLabel(currentRange());
-}
-
-function renderSetup() {
-  renderColor();
-  renderFilters();
-  renderOpeningGrid();
-  renderRating();
-  renderModes();
-  renderStartBar();
+function renderPlayBar() {
+  const opening = openingById(state.openingId);
+  $('start').disabled = !opening;
+  $('play-name').textContent = opening ? opening.name : 'Choose an opening';
+  $('play-range').textContent = `Opponents ${rangeLabel(currentRange())}`;
 }
 
 function surpriseMe() {
@@ -304,21 +359,23 @@ function surpriseMe() {
   startTraining();
 }
 
-/* ---------- Training screen ---------- */
+/* ---------- Training ---------- */
 
 async function startTraining() {
-  const opening = state.data.openings.find((item) => item.id === state.openingId);
+  const opening = openingById(state.openingId);
   if (!opening) return;
-  state.progress.saveSettings({
+  progress.saveSettings({
     color: state.color, firstMove: state.firstMove, rating: state.rating, scale: state.scale, level: state.level,
     mode: state.mode, plies: state.plies, adaptive: state.adaptive, openingId: state.openingId,
   });
   const start = $('start');
   start.disabled = true;
-  start.textContent = 'Loading games…';
+  start.textContent = 'Loading…';
   $('setup-error').textContent = '';
   try {
-    const ids = [...bandsInRange(currentRange(), state.meta.bands), 'reference'];
+    // Free play can borrow moves from any level once its own runs out of games.
+    const bands = isFree(opening) ? state.meta.bands.map((band) => band.id) : bandsInRange(currentRange(), state.meta.bands);
+    const ids = [...bands, 'reference'];
     const entries = await Promise.all(ids.map(async (id) => [id, await loadBand(id)]));
     state.books = Object.fromEntries(entries);
     state.opening = opening;
@@ -330,7 +387,8 @@ async function startTraining() {
   } catch (error) {
     $('setup-error').textContent = `${error.message}. Check your connection and try again.`;
   } finally {
-    renderStartBar();
+    start.disabled = false;
+    start.textContent = 'Play';
   }
 }
 
@@ -341,11 +399,14 @@ function newSession() {
     opening: state.opening,
     opponent,
     books: state.books,
-    progress: state.progress,
+    progress,
     mode: state.mode,
     plies: state.plies,
     adaptive: state.adaptive,
+    free: isFree(state.opening),
+    nearbyBands: bandsByDistance(opponent.rating, state.meta.bands),
   });
+  state.masteryBefore = isFree(state.opening) ? 0 : progress.mastery(state.opening.id, positionsOf(state.opening));
   state.lastPlayed = null;
   state.baseMarks = [];
   state.rivalNote = null;
@@ -359,7 +420,9 @@ function newSession() {
   state.board.setMarks([]);
   state.board.setPosition(state.trainer.fen);
   $('training-title').textContent = state.opening.name;
-  $('training-meta').textContent = `Opponent: ${opponentLabel(opponent)} · ${state.mode === MODES.LEARN ? 'Learn' : 'Practice'}`;
+  const modeName = isFree(state.opening) ? 'Free play' : (state.mode === MODES.LEARN ? 'Learn' : 'Practice');
+  $('training-meta').textContent = `Against ${opponentLabel(opponent)} · ${modeName}`;
+  $('next-line').textContent = isFree(state.opening) ? 'New game' : 'Next line';
   $('finish-card').hidden = true;
   $('session-actions').hidden = false;
   setStatus('', '');
@@ -381,8 +444,14 @@ function setStatus(tone, title, detail = '') {
 function nextTurn() {
   const { trainer, board } = state;
   renderPanel();
-  if (trainer.done) return finish();
-  if (trainer.isUserTurn) return promptUser();
+  if (trainer.done) {
+    finish();
+    return;
+  }
+  if (trainer.isUserTurn) {
+    promptUser();
+    return;
+  }
   board.setMovable(null);
   const generation = state.generation;
   setTimeout(() => {
@@ -390,14 +459,15 @@ function nextTurn() {
     const played = trainer.playRival();
     state.lastPlayed = { ...played, by: 'rival' };
     showPosition();
-    if (!played.forced) {
+    if (played.bot) {
+      state.rivalNote = `${played.san}. Past the real-game data, a simple bot plays for your opponent.`;
+    } else if (!played.forced) {
       state.rivalNote = played.row
-        ? `Your opponent played ${played.san}, chosen by ${percent(played.row.share)} at this level.`
+        ? `${played.san} is played by ${percent(played.row.share)} at this level.`
         : `Your opponent played ${played.san}.`;
     }
     nextTurn();
   }, RIVAL_DELAY);
-  return undefined;
 }
 
 function showPosition() {
@@ -422,16 +492,20 @@ function promptUser() {
   board.setMovable(trainer.userColor, destsFor);
   const note = state.rivalNote ?? '';
   state.rivalNote = null;
+  if (expected.source === 'free') {
+    setStatus('turn', 'Your move', note || 'Play anything you like.');
+    return;
+  }
   if (expected.source === 'reference') {
     const names = trainer.referenceRows().map((row) => row.san).join(', ');
     const isFirst = !state.leftRepertoire;
     state.leftRepertoire = true;
     const text = state.mode === MODES.LEARN
-      ? `Strong players choose: ${names}.`
-      : `Play what a strong player would. Any common move at ${state.meta.referenceMinElo}+ counts.`;
-    setStatus('info', isFirst ? 'Out of your repertoire' : 'Use your judgement', [note, text].filter(Boolean).join(' '));
+      ? `Strong players choose ${names}.`
+      : `Any common move at ${state.meta.referenceMinElo}+ counts.`;
+    setStatus('info', isFirst ? 'Out of your repertoire' : 'Your move', [note, text].filter(Boolean).join(' '));
   } else {
-    setStatus('turn', 'Your move', note || (state.mode === MODES.LEARN ? 'Follow the arrow.' : 'Play the move from your repertoire.'));
+    setStatus('turn', 'Your move', note || (state.mode === MODES.LEARN ? 'Follow the arrow.' : 'Play from memory.'));
   }
   if (state.mode === MODES.LEARN) revealArrow();
 }
@@ -459,7 +533,8 @@ function handleUserMove(from, to) {
   if (result.ok) {
     state.lastPlayed = { san: move.san, before, by: 'user' };
     showPosition();
-    setStatus('good', result.source === 'reference' ? 'Good: strong players play that' : 'Correct', `You played ${move.san}.`);
+    if (result.source === 'free') setStatus('', 'Opponent thinking', `You played ${move.san}.`);
+    else setStatus('good', result.source === 'reference' ? 'Good move' : 'Correct', `You played ${move.san}.`);
     nextTurn();
     return;
   }
@@ -471,7 +546,7 @@ function handleUserMove(from, to) {
   board.setMarks([...state.baseMarks, [to, 'mark-wrong']]);
   board.shake();
   const detail = result.playable
-    ? `${move.san} is playable (${percent(result.playable.share)} at ${state.meta.referenceMinElo}+), but you're practising a different move here.`
+    ? `${move.san} is playable (${percent(result.playable.share)} at ${state.meta.referenceMinElo}+), but you're practising another move.`
     : `${move.san} isn't the move you're practising.`;
   setStatus('bad', 'Try again', detail);
   renderPanel();
@@ -490,19 +565,54 @@ function requestHint() {
   const { trainer, board } = state;
   if (!trainer.isUserTurn) return;
   const move = trainer.useHint();
-  if (!move) return;
+  if (!move) {
+    setStatus('info', 'No hint here', 'Strong players rarely reach this position.');
+    return;
+  }
+  if (trainer.free) {
+    revealArrow();
+    setStatus('info', 'Hint', `Strong players often choose ${move.san} here.`);
+    return;
+  }
   if (state.hintShownAt === trainer.ply) {
     revealArrow();
   } else {
     state.hintShownAt = trainer.ply;
     board.setMarks([...state.baseMarks, [move.from, 'mark-hint']]);
-    setStatus('info', 'Hint', 'Move the highlighted piece. Press again to see the move.');
+    setStatus('info', 'Hint', 'Move the highlighted piece. Tap Hint again to see where.');
   }
   renderPanel();
 }
 
+/** The named opening with the longest match for the moves played so far. */
+function detectOpening(history) {
+  const played = history.join(' ');
+  let best = null;
+  for (const opening of state.data.openings) {
+    const prefix = opening.prefix;
+    if (prefix.includes(' ') && (played === prefix || played.startsWith(`${prefix} `)) && prefix.length > (best?.prefix.length ?? 0)) {
+      best = opening;
+    }
+  }
+  return best;
+}
+
+function renderFreePanel() {
+  const { trainer } = state;
+  const opening = detectOpening(trainer.history);
+  $('line-name').textContent = opening ? opening.name.replace(/^(Beating|1\.\.\.\w+ vs) (the )?/, '') : 'Your opening';
+  $('line-idea').textContent = opening ? opening.summary : 'Play a few moves and we\'ll name the opening when we recognise it.';
+  renderMoves();
+  renderStats();
+  $('score').textContent = count(Math.ceil(trainer.ply / 2), 'move', 'moves');
+}
+
 function renderPanel() {
   const { trainer } = state;
+  if (trainer.free) {
+    renderFreePanel();
+    return;
+  }
   const lines = trainer.matchingLines();
   if (lines.length === 1) state.currentLine = lines[0];
   $('line-name').textContent = state.currentLine?.name ?? 'The idea';
@@ -535,8 +645,8 @@ function renderStats() {
   const box = $('stats');
   const rows = last ? blendRows(state.books, state.trainer.opponent.mix, last.before) : [];
   if (!rows.length) {
-    $('stats-title').textContent = 'What people play at this level';
-    box.replaceChildren(el('p', { class: 'muted' }, last ? 'Not enough games at this level in that position.' : 'Appears after the first move.'));
+    $('stats-title').textContent = 'At this level';
+    box.replaceChildren(el('p', { class: 'muted' }, last ? 'Too few games in that position.' : 'Appears after the first move.'));
     return;
   }
   const games = rows.reduce((sum, row) => sum + row.games, 0).toLocaleString('en');
@@ -544,7 +654,7 @@ function renderStats() {
   box.replaceChildren(
     el('div', { class: 'stats-head' }, el('span', {}, 'Move'), el('span', {}, 'Played by'), el('span', {}, 'Result')),
     ...topRowsWith(rows, last.san).map((row) => statRow(row, row.san === last.san)),
-    el('p', { class: 'stats-foot' }, `${games} games · White / draw / Black`),
+    el('p', { class: 'stats-foot' }, `${games} games. Results: White, draw, Black.`),
   );
 }
 
@@ -558,7 +668,7 @@ function topRowsWith(rows, san) {
 function statRow(row, played) {
   const segment = (kind, value) => el('span', { class: `result-${kind}`, style: `width:${value * 100}%`, title: percent(value) });
   return el('div', { class: `stats-row${played ? ' is-played' : ''}` },
-    el('span', { class: 'stats-move' }, row.san),
+    el('span', {}, row.san),
     el('span', { class: 'stats-share' },
       el('span', { class: 'share-track' }, el('span', { class: 'share-fill', style: `width:${row.share * 100}%` })),
       el('span', { class: 'share-value' }, percent(row.share))),
@@ -566,13 +676,31 @@ function statRow(row, played) {
       segment('white', row.white), segment('draw', row.draws), segment('black', row.black)));
 }
 
+function finishFreeGame() {
+  const { chess, userColor } = state.trainer;
+  const won = chess.isCheckmate() && chess.turn() !== userColor;
+  if (!chess.isCheckmate()) setStatus('info', 'Draw', 'Nobody could make progress.');
+  else if (won) setStatus('good', 'You won', 'Checkmate.');
+  else setStatus('bad', 'You lost', 'Checkmate. Open it on Lichess to see what went wrong.');
+  $('finish-score').textContent = `${count(Math.ceil(state.trainer.ply / 2), 'move', 'moves')} played.`;
+  $('finish-mastery').textContent = 'The opening moves came from real games. Later ones may come from a simple bot.';
+}
+
 function finish() {
   const { trainer, board } = state;
   board.setMovable(null);
+  $('analysis-link').href = `https://lichess.org/analysis/${trainer.fen.replace(/ /g, '_')}`;
+  $('share').textContent = 'Share';
+  $('finish-card').hidden = false;
+  $('session-actions').hidden = true;
+  if (trainer.free) {
+    finishFreeGame();
+    return;
+  }
   const summary = trainer.summary();
   const headlines = {
-    complete: summary.clean && state.mode === MODES.PRACTICE ? 'Perfect line!' : 'Line complete',
-    gameOver: 'The game is over',
+    complete: summary.clean && state.mode === MODES.PRACTICE ? 'Perfect line' : 'Line complete',
+    gameOver: 'Game over',
     noReference: 'You left theory behind',
     noData: 'You left theory behind',
   };
@@ -584,27 +712,33 @@ function finish() {
   };
   setStatus(summary.clean ? 'good' : 'info', headlines[summary.endReason], details[summary.endReason]);
   $('finish-score').textContent = state.mode === MODES.LEARN
-    ? 'Once it feels familiar, switch to Practice to track your progress.'
+    ? 'When it feels familiar, switch to Practice.'
     : scoreText(summary.answered, summary.mistakes, summary.hints);
-  $('finish-mastery').textContent = `${state.opening.name}: ${percent(state.progress.mastery(state.opening.id, positionsOf(state.opening)))} mastered`;
-  $('analysis-link').href = `https://lichess.org/analysis/${trainer.fen.replace(/ /g, '_')}`;
-  $('share').textContent = 'Share';
-  $('finish-card').hidden = false;
-  $('session-actions').hidden = true;
+  const mastery = progress.mastery(state.opening.id, positionsOf(state.opening));
+  const before = Math.round(state.masteryBefore * 100);
+  const now = Math.round(mastery * 100);
+  const change = now === before ? '' : `, ${now > before ? 'up' : 'down'} from ${before}%`;
+  $('finish-mastery').textContent = `${now}% of this opening mastered${change}.`;
 }
 
 async function shareResult() {
-  const { opponent } = state.trainer;
+  if (state.trainer.free) {
+    await sendShare(`I just played a free game against a ${opponentLabel(state.trainer.opponent)} opponent on ChessGym`, SITE_URL);
+    return;
+  }
   const summary = state.trainer.summary();
   const outcome = summary.clean ? 'a perfect line' : `a line with ${count(summary.mistakes, 'mistake', 'mistakes')}`;
-  const text = `I played ${outcome} of the ${state.opening.name} against a ${opponentLabel(opponent)} opponent on ChessGym`;
-  const url = `${SITE_URL}#${state.opening.id}`;
+  const text = `I played ${outcome} of the ${state.opening.name} against a ${opponentLabel(state.trainer.opponent)} opponent on ChessGym`;
+  await sendShare(text, `${SITE_URL}#${state.opening.id}`);
+}
+
+async function sendShare(text, url) {
   try {
     if (navigator.share) {
       await navigator.share({ text, url });
     } else {
       await navigator.clipboard.writeText(`${text}: ${url}`);
-      $('share').textContent = 'Copied!';
+      $('share').textContent = 'Copied';
     }
   } catch {
     // The person cancelled the share sheet or clipboard access is blocked.
@@ -613,15 +747,81 @@ async function shareResult() {
 
 function exitTraining() {
   state.generation += 1;
+  cardCache.clear(); // mastery may have changed
   $('training').hidden = true;
   $('setup').hidden = false;
-  renderSetup();
+  renderSettings();
+  renderLibrary();
+  renderPlayBar();
+}
+
+/* ---------- Customize sheet ---------- */
+
+const PREVIEW_FEN = 'r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3';
+
+function renderCustomizer() {
+  const { prefs } = appearance;
+  $('customize-preview').replaceChildren(miniBoard(PREVIEW_FEN, false, { from: 'f1', to: 'b5' }));
+  const swatch = (light, dark) => el('span', { class: 'theme-swatch' },
+    ...[light, dark, dark, light].map((color) => el('span', { style: `background:${color}` })));
+  $('theme-options').replaceChildren(
+    ...BOARD_THEMES.map((theme) => el('button', {
+      type: 'button',
+      class: `theme-option${prefs.board === theme.id ? ' is-selected' : ''}`,
+      'aria-pressed': String(prefs.board === theme.id),
+      onclick: () => {
+        appearance.set({ board: theme.id, customLight: theme.light, customDark: theme.dark });
+        renderCustomizer();
+      },
+    }, swatch(theme.light, theme.dark), theme.label)),
+  );
+  const { light, dark } = appearance.colors;
+  $('custom-light').value = light;
+  $('custom-dark').value = dark;
+  $('theme-mode-options').replaceChildren(segmented(THEME_MODES, prefs.theme, (theme) => {
+    appearance.set({ theme });
+    renderCustomizer();
+  }));
+  $('pref-coordinates').checked = prefs.coordinates;
+  $('pref-animation').checked = prefs.animation;
+}
+
+function wireCustomizer() {
+  const sheet = $('customize');
+  $('customize-open').addEventListener('click', () => {
+    renderCustomizer();
+    sheet.showModal();
+  });
+  $('customize-close').addEventListener('click', () => sheet.close());
+  // A click on the dialog element itself is a click on its backdrop.
+  sheet.addEventListener('click', (event) => {
+    if (event.target === sheet) sheet.close();
+  });
+  const setCustomColor = () => {
+    appearance.set({ board: 'custom', customLight: $('custom-light').value, customDark: $('custom-dark').value });
+    renderCustomizer();
+  };
+  $('custom-light').addEventListener('input', setCustomColor);
+  $('custom-dark').addEventListener('input', setCustomColor);
+  $('pref-coordinates').addEventListener('change', (event) => appearance.set({ coordinates: event.target.checked }));
+  $('pref-animation').addEventListener('change', (event) => appearance.set({ animation: event.target.checked }));
+  $('reset-progress').addEventListener('click', () => {
+    if (window.confirm('Delete all the progress saved in this browser?')) {
+      progress.reset();
+      cardCache.clear();
+      renderLibrary();
+    }
+  });
 }
 
 /* ---------- Startup ---------- */
 
 function applyDeepLink() {
   const id = decodeURIComponent(location.hash.slice(1));
+  if (id === FREE_ID) {
+    state.openingId = FREE_ID;
+    return;
+  }
   const opening = state.data.openings.find((item) => item.id === id);
   if (!opening) return;
   state.color = opening.color;
@@ -631,6 +831,7 @@ function applyDeepLink() {
 }
 
 async function main() {
+  wireCustomizer();
   try {
     const [data, meta] = await Promise.all([loadOpenings(), loadMeta()]);
     state.data = data;
@@ -639,34 +840,35 @@ async function main() {
     $('setup-error').textContent = `${error.message}.`;
     return;
   }
-  $('stat-openings').textContent = formatCount(state.data.openings.length);
-  $('stat-lines').textContent = formatCount(state.data.openings.reduce((sum, opening) => sum + opening.lines.length, 0));
-  $('stat-games').textContent = `${(state.meta.games / 1e6).toFixed(1)}M`;
+  $('hero-text').textContent = `Your opponent plays what real people at your rating play, from ${(state.meta.games / 1e6).toFixed(1)} million games. ${state.data.openings.length} openings.`;
 
-  const saved = state.progress.settings;
+  const saved = progress.settings;
   for (const key of ['color', 'firstMove', 'rating', 'scale', 'level', 'mode', 'plies', 'adaptive', 'openingId']) {
     if (saved[key] !== undefined) state[key] = saved[key];
   }
   applyDeepLink();
-  renderSetup();
+
+  $('style-filter').replaceChildren(
+    el('option', { value: ALL }, 'Any style'),
+    ...STYLES.map((style) => el('option', { value: style }, style)),
+  );
+  renderSettings();
+  renderLibrary();
+  renderPlayBar();
 
   $('start').addEventListener('click', startTraining);
   $('surprise').addEventListener('click', surpriseMe);
   $('search').addEventListener('input', (event) => {
     state.search = event.target.value;
     renderOpeningGrid();
-    renderStartBar();
+    renderPlayBar();
   });
-  const setRating = (value) => {
-    if (!Number.isFinite(value) || value < MIN_RATING || value > MAX_RATING) return;
-    state.rating = value;
-    renderRatingSummary();
-    renderStartBar();
-  };
-  $('rating-input').addEventListener('input', (event) => {
-    setRating(Number(event.target.value));
-    $('rating-slider').value = state.rating;
+  $('style-filter').addEventListener('change', (event) => {
+    state.style = event.target.value;
+    renderOpeningGrid();
+    renderPlayBar();
   });
+  $('rating-input').addEventListener('input', (event) => setRating(Number(event.target.value)));
   $('rating-input').addEventListener('blur', () => { $('rating-input').value = state.rating; });
   $('rating-slider').addEventListener('input', (event) => {
     setRating(Number(event.target.value));
@@ -679,20 +881,14 @@ async function main() {
   $('share').addEventListener('click', shareResult);
   $('back').addEventListener('click', exitTraining);
   $('back-setup').addEventListener('click', exitTraining);
-  $('reset-progress').addEventListener('click', () => {
-    if (window.confirm('Delete all the progress saved in this browser?')) {
-      state.progress.reset();
-      renderSetup();
-    }
-  });
   window.addEventListener('hashchange', () => {
     applyDeepLink();
-    if ($('training').hidden) renderSetup();
+    if ($('training').hidden) {
+      renderSettings();
+      renderLibrary();
+      renderPlayBar();
+    }
   });
-}
-
-function formatCount(value) {
-  return value.toLocaleString('en');
 }
 
 main();

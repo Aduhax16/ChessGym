@@ -5,147 +5,197 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ChessGym</title>
   <meta name="description" content="Train chess openings against opponents who play like real people at your rating. Free, open source, no sign-up.">
-  <meta property="og:title" content="ChessGym: train openings against real people's moves">
-  <meta property="og:description" content="Your opponent plays what real players at your rating actually play. Free, open source, no sign-up.">
+  <meta property="og:title" content="ChessGym">
+  <meta property="og:description" content="Train chess openings against what real people at your rating actually play. Free, no sign-up.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://aduhax16.github.io/ChessGym/">
   <meta property="og:image" content="https://aduhax16.github.io/ChessGym/docs/social.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%23e9e0cb'/%3E%3Cpath d='M0 0h4v4H0zM4 4h4v4H4z' fill='%23527a63'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' rx='1.6' fill='%23dee3e6'/%3E%3Cpath d='M0 1.6A1.6 1.6 0 0 1 1.6 0H4v4H0zM4 4h4v2.4A1.6 1.6 0 0 1 6.4 8H4z' fill='%238ca2ad'/%3E%3C/svg%3E">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="./">ChessGym</a>
-    <p class="tagline">Train your openings against what real people at your rating actually play</p>
-  </header>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="./">ChessGym</a>
+      <button id="customize-open" class="nav-button" type="button">Customize</button>
+    </div>
+  </nav>
 
   <main>
     <section id="setup" class="setup">
-      <ul class="stats-strip" aria-label="What's inside">
-        <li><strong id="stat-openings">–</strong> openings</li>
-        <li><strong id="stat-lines">–</strong> lines</li>
-        <li><strong id="stat-games">–</strong> real games</li>
-        <li><strong>0</strong> sign-ups</li>
-      </ul>
+      <header class="hero">
+        <h1>Train the openings<br>you'll actually face.</h1>
+        <p id="hero-text">Your opponent plays what real people at your rating play.</p>
+      </header>
 
-      <section class="step">
-        <h2>Which colour do you want to play?</h2>
-        <div id="color-options" class="options options-2"></div>
-      </section>
-
-      <section class="step">
-        <h2><label for="rating-input">What's your rating?</label></h2>
-        <div class="rating-row">
-          <input id="rating-input" type="number" inputmode="numeric" min="100" max="3500" step="25">
-          <input id="rating-slider" type="range" min="400" max="2800" step="25" aria-label="Your rating">
-        </div>
-        <div id="scale-options" class="chips scale-chips"></div>
-        <div id="level-options" class="options options-4"></div>
-        <p id="range-summary" class="range-summary"></p>
-        <p id="band-note" class="note"></p>
-      </section>
-
-      <section class="step">
-        <h2 id="opening-title">Choose your opening</h2>
-        <div class="filters">
-          <div>
-            <h3 id="first-move-title" class="filter-title"></h3>
-            <div id="first-move-options" class="chips"></div>
+      <div class="setup-layout">
+        <aside class="setup-panel">
+          <div class="group">
+            <div class="row">
+              <span class="row-label">Play as</span>
+              <div id="color-options"></div>
+            </div>
+            <div class="row row-stack">
+              <label class="row-label" for="rating-input">Your rating</label>
+              <div class="rating-control">
+                <input id="rating-input" type="number" inputmode="numeric" min="100" max="3500" step="25">
+                <input id="rating-slider" type="range" min="400" max="2800" step="25" aria-label="Your rating">
+              </div>
+            </div>
+            <div class="row row-stack">
+              <span class="row-label">Rated on</span>
+              <div id="scale-options"></div>
+            </div>
+            <div class="row row-stack">
+              <span class="row-label">Opponents</span>
+              <div id="level-options"></div>
+            </div>
           </div>
-          <div>
-            <h3 class="filter-title">Style</h3>
-            <div id="style-options" class="chips"></div>
+          <p id="range-summary" class="footnote"></p>
+
+          <div class="group">
+            <div class="row">
+              <span class="row-label">Mode</span>
+              <div id="mode-options"></div>
+            </div>
+            <div class="row">
+              <span class="row-label">Moves</span>
+              <div id="length-options"></div>
+            </div>
+            <label class="row">
+              <span class="row-label">Repeat weak lines</span>
+              <input id="adaptive" class="switch" type="checkbox">
+            </label>
           </div>
-          <div class="search-row">
-            <input id="search" type="search" placeholder="Search: Najdorf, Fried Liver, gambit…" aria-label="Search openings">
-            <span id="opening-count" class="muted"></span>
-            <button id="surprise" class="ghost" type="button">Surprise me</button>
+          <p id="mode-note" class="footnote"></p>
+        </aside>
+
+        <section class="library">
+          <div class="library-head">
+            <h2 id="opening-title"></h2>
+            <button id="surprise" class="text-button" type="button">Surprise me</button>
           </div>
-        </div>
-        <div id="opening-options" class="opening-grid"></div>
-      </section>
-
-      <section class="settings-grid">
-        <div>
-          <h2>Mode</h2>
-          <div id="mode-options" class="options options-2"></div>
-        </div>
-        <div>
-          <h2>Length</h2>
-          <div id="length-options" class="options options-3"></div>
-        </div>
-      </section>
-
-      <label class="check">
-        <input type="checkbox" id="adaptive">
-        <span>Show the lines I haven't mastered more often</span>
-      </label>
-
-      <div class="start-bar">
-        <button id="start" class="primary" type="button">Play</button>
-        <p class="start-note">Opponents: <span id="start-range"></span></p>
-        <p id="setup-error" class="error" role="alert"></p>
+          <div class="library-tools">
+            <input id="search" type="search" placeholder="Search openings" aria-label="Search openings">
+            <select id="style-filter" aria-label="Filter by style"></select>
+          </div>
+          <div class="move-filter">
+            <span id="first-move-title" class="filter-label"></span>
+            <div id="first-move-options" class="pills"></div>
+          </div>
+          <div id="opening-options" class="opening-grid"></div>
+        </section>
       </div>
+
+      <div class="play-bar">
+        <div class="play-text">
+          <strong id="play-name"></strong>
+          <span id="play-range"></span>
+        </div>
+        <button id="start" class="primary" type="button">Play</button>
+      </div>
+      <p id="setup-error" class="error" role="alert"></p>
     </section>
 
     <section id="training" class="training" hidden>
       <div class="board-column">
         <div id="board"></div>
+        <p class="board-tip">Right-click to mark a square. Right-drag to draw an arrow.</p>
       </div>
 
       <aside class="panel">
-        <div class="panel-top">
+        <header class="panel-top">
           <div>
             <h1 id="training-title"></h1>
-            <p id="training-meta" class="muted"></p>
+            <p id="training-meta"></p>
           </div>
-          <button id="back" class="ghost" type="button">Change</button>
-        </div>
+          <button id="back" class="text-button" type="button">Change</button>
+        </header>
 
         <div id="status" class="status" role="status" aria-live="polite">
-          <p id="status-title" class="status-title"></p>
-          <p id="status-detail" class="status-detail"></p>
+          <p id="status-title"></p>
+          <p id="status-detail"></p>
         </div>
 
         <div id="session-actions" class="actions">
           <button id="hint" class="secondary" type="button">Hint</button>
-          <button id="restart" class="ghost" type="button">Restart</button>
+          <button id="restart" class="secondary" type="button">Restart</button>
         </div>
 
         <div id="finish-card" class="finish" hidden>
           <p id="finish-score"></p>
-          <p id="finish-mastery" class="muted"></p>
+          <p id="finish-mastery"></p>
           <div class="actions">
             <button id="next-line" class="primary" type="button">Next line</button>
             <button id="share" class="secondary" type="button">Share</button>
-            <button id="back-setup" class="ghost" type="button">Change opening</button>
+            <button id="back-setup" class="secondary" type="button">Change opening</button>
           </div>
-          <a id="analysis-link" target="_blank" rel="noopener noreferrer">Analyse this position on Lichess</a>
+          <a id="analysis-link" target="_blank" rel="noopener noreferrer">Analyse on Lichess</a>
         </div>
 
-        <div class="panel-block">
+        <section class="panel-block">
           <h2 id="line-name"></h2>
           <p id="line-idea"></p>
-        </div>
+        </section>
 
-        <div class="panel-block">
+        <section class="panel-block">
           <h2 id="stats-title"></h2>
           <div id="stats" class="stats"></div>
-        </div>
+        </section>
 
-        <div class="panel-block">
+        <section class="panel-block">
           <h2>Moves</h2>
           <ol id="moves" class="moves"></ol>
-          <p id="score" class="muted"></p>
-        </div>
+          <p id="score"></p>
+        </section>
       </aside>
     </section>
   </main>
 
+  <dialog id="customize" class="sheet" aria-labelledby="customize-title">
+    <header class="sheet-head">
+      <h2 id="customize-title">Customize</h2>
+      <button id="customize-close" class="text-button" type="button">Done</button>
+    </header>
+    <div id="customize-preview" class="sheet-preview"></div>
+
+    <h3>Board</h3>
+    <div id="theme-options" class="theme-grid"></div>
+    <div class="group">
+      <label class="row">
+        <span class="row-label">Light squares</span>
+        <input id="custom-light" class="color-well" type="color">
+      </label>
+      <label class="row">
+        <span class="row-label">Dark squares</span>
+        <input id="custom-dark" class="color-well" type="color">
+      </label>
+    </div>
+
+    <h3>Display</h3>
+    <div class="group">
+      <div class="row">
+        <span class="row-label">Appearance</span>
+        <div id="theme-mode-options"></div>
+      </div>
+      <label class="row">
+        <span class="row-label">Coordinates</span>
+        <input id="pref-coordinates" class="switch" type="checkbox">
+      </label>
+      <label class="row">
+        <span class="row-label">Animate moves</span>
+        <input id="pref-animation" class="switch" type="checkbox">
+      </label>
+    </div>
+
+    <div class="group">
+      <button id="reset-progress" class="row row-button destructive" type="button">Delete my progress</button>
+    </div>
+  </dialog>
+
   <footer class="site-footer">
-    <p><a href="https://github.com/Aduhax16/ChessGym" target="_blank" rel="noopener noreferrer">Open source</a> under the MIT licence. Game data from the <a href="https://database.lichess.org/" target="_blank" rel="noopener noreferrer">Lichess open database</a> (CC0). Pieces by Cburnett and Rfc1394 (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>). Your progress is stored only in this browser.</p>
-    <button id="reset-progress" class="link" type="button">Delete my progress</button>
+    <p><a href="https://github.com/Aduhax16/ChessGym" target="_blank" rel="noopener noreferrer">Open source</a> under the MIT licence. Game data from the <a href="https://database.lichess.org/" target="_blank" rel="noopener noreferrer">Lichess open database</a> (CC0). Pieces by Cburnett and Rfc1394 (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>). Your progress stays in this browser.</p>
   </footer>
 
   <script type="module" src="js/app.js"></script>

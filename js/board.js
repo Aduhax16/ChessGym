@@ -1,8 +1,20 @@
 // A small dependency-free chess board: click or drag to move, animated pieces,
-// legal-move dots, highlights and arrows. Knows nothing about training.
+// legal-move dots, highlights, hint arrows and right-click annotations.
+// Knows nothing about training.
 
 const FILES = 'abcdefgh';
 const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** Hold Shift or Alt while right-dragging for a different annotation colour. */
+function annotationColor(event) {
+  if (event.shiftKey) return 'green';
+  if (event.altKey) return 'red';
+  return 'orange';
+}
+
+function isKnightJump(dx, dy) {
+  return (Math.abs(dx) === 1 && Math.abs(dy) === 2) || (Math.abs(dx) === 2 && Math.abs(dy) === 1);
+}
 
 function parsePlacement(fen) {
   const pieces = new Map();
@@ -32,16 +44,23 @@ export class Board {
     this.destsFor = null;
     this.marks = new Map(); // square -> class
     this.drag = null;
+    this.annotations = { squares: new Map(), arrows: new Map() }; // keyed by square or "from-to"
+    this.annotating = null;
 
     root.classList.add('board');
     root.innerHTML = '';
     this.squaresLayer = this._layer('board-squares');
     this.marksLayer = this._layer('board-marks');
+    this.annotationLayer = this._layer('board-annotations');
     this.piecesLayer = this._layer('board-pieces');
     this.arrowLayer = document.createElementNS(SVG_NS, 'svg');
     this.arrowLayer.setAttribute('viewBox', '0 0 8 8');
     this.arrowLayer.classList.add('board-arrows');
     this.arrowLayer.setAttribute('aria-hidden', 'true');
+    this.userArrows = document.createElementNS(SVG_NS, 'g');
+    this.previewArrow = document.createElementNS(SVG_NS, 'g');
+    this.hintArrow = document.createElementNS(SVG_NS, 'g');
+    this.arrowLayer.append(this.userArrows, this.previewArrow, this.hintArrow);
     root.append(this.arrowLayer);
     this._drawSquares();
 
@@ -49,6 +68,7 @@ export class Board {
     root.addEventListener('pointermove', (event) => this._dragMove(event));
     root.addEventListener('pointerup', (event) => this._up(event));
     root.addEventListener('pointercancel', () => this._cancelDrag());
+    root.addEventListener('contextmenu', (event) => event.preventDefault());
   }
 
   _layer(className) {
@@ -98,6 +118,7 @@ export class Board {
     this._drawSquares();
     for (const [square, el] of this.pieceEls) this._place(el, square);
     this._drawMarks();
+    this._drawAnnotations();
   }
 
   _makePiece(piece, square) {
@@ -144,6 +165,7 @@ export class Board {
     for (const el of leftover.values()) el.remove();
     this.pieceEls = placed;
     this.position = next;
+    this.clearAnnotations();
     this._clearSelection();
   }
 
@@ -177,28 +199,102 @@ export class Board {
 
   showArrow(from, to) {
     this.clearArrows();
-    const [x1, y1] = this._xy(from);
-    const [x2, y2] = this._xy(to);
-    const length = Math.hypot(x2 - x1, y2 - y1);
-    const ux = (x2 - x1) / length;
-    const uy = (y2 - y1) / length;
-    const startX = x1 + 0.5 + ux * 0.25;
-    const startY = y1 + 0.5 + uy * 0.25;
-    const tipX = x2 + 0.5 - ux * 0.08;
-    const tipY = y2 + 0.5 - uy * 0.08;
-    const baseX = tipX - ux * 0.42;
-    const baseY = tipY - uy * 0.42;
-    const line = document.createElementNS(SVG_NS, 'line');
-    Object.entries({ x1: startX, y1: startY, x2: baseX, y2: baseY }).forEach(([k, v]) => line.setAttribute(k, v));
-    const head = document.createElementNS(SVG_NS, 'polygon');
-    const px = -uy * 0.26;
-    const py = ux * 0.26;
-    head.setAttribute('points', `${tipX},${tipY} ${baseX + px},${baseY + py} ${baseX - px},${baseY - py}`);
-    this.arrowLayer.append(line, head);
+    this._drawArrow(this.hintArrow, from, to, 'arrow-hint');
   }
 
   clearArrows() {
-    this.arrowLayer.innerHTML = '';
+    this.hintArrow.replaceChildren();
+  }
+
+  /** Draws an arrow, bent like an L when it follows a knight's jump. */
+  _drawArrow(group, from, to, className) {
+    const [x1, y1] = this._xy(from);
+    const [x2, y2] = this._xy(to);
+    const points = [[x1 + 0.5, y1 + 0.5]];
+    if (isKnightJump(x2 - x1, y2 - y1)) {
+      points.push(Math.abs(x2 - x1) > Math.abs(y2 - y1) ? [x2 + 0.5, y1 + 0.5] : [x1 + 0.5, y2 + 0.5]);
+    }
+    points.push([x2 + 0.5, y2 + 0.5]);
+
+    const [tailX, tailY] = points[points.length - 2];
+    const [endX, endY] = points[points.length - 1];
+    const length = Math.hypot(endX - tailX, endY - tailY);
+    const ux = (endX - tailX) / length;
+    const uy = (endY - tailY) / length;
+    const tipX = endX - ux * 0.08;
+    const tipY = endY - uy * 0.08;
+    const baseX = tipX - ux * 0.38;
+    const baseY = tipY - uy * 0.38;
+
+    const [startX, startY] = points[0];
+    const [nextX, nextY] = points[1];
+    const startLength = Math.hypot(nextX - startX, nextY - startY);
+    points[0] = [startX + ((nextX - startX) / startLength) * 0.28, startY + ((nextY - startY) / startLength) * 0.28];
+    points[points.length - 1] = [baseX, baseY];
+
+    const arrow = document.createElementNS(SVG_NS, 'g');
+    arrow.setAttribute('class', `arrow ${className}`);
+    const line = document.createElementNS(SVG_NS, 'polyline');
+    line.setAttribute('points', points.map((point) => point.join(',')).join(' '));
+    const head = document.createElementNS(SVG_NS, 'polygon');
+    const px = -uy * 0.23;
+    const py = ux * 0.23;
+    head.setAttribute('points', `${tipX},${tipY} ${baseX + px},${baseY + py} ${baseX - px},${baseY - py}`);
+    arrow.append(line, head);
+    group.append(arrow);
+  }
+
+  clearAnnotations() {
+    this.annotations.squares.clear();
+    this.annotations.arrows.clear();
+    this._drawAnnotations();
+  }
+
+  _toggle(map, key, value) {
+    if (map.get(key) === value) map.delete(key);
+    else map.set(key, value);
+  }
+
+  _drawAnnotations() {
+    this.annotationLayer.replaceChildren();
+    for (const [square, color] of this.annotations.squares) {
+      const mark = document.createElement('div');
+      mark.className = `mark annotation-${color}`;
+      this._place(mark, square);
+      this.annotationLayer.append(mark);
+    }
+    this.userArrows.replaceChildren();
+    for (const [key, color] of this.annotations.arrows) {
+      const [from, to] = key.split('-');
+      this._drawArrow(this.userArrows, from, to, `arrow-${color}`);
+    }
+  }
+
+  _startAnnotation(event) {
+    const square = this._squareAt(event);
+    if (!square) return;
+    event.preventDefault();
+    this.annotating = { from: square, to: square, color: annotationColor(event) };
+    this.root.setPointerCapture(event.pointerId);
+  }
+
+  _moveAnnotation(event) {
+    const target = this._squareAt(event);
+    if (!target || target === this.annotating.to) return;
+    this.annotating.to = target;
+    this.previewArrow.replaceChildren();
+    if (target !== this.annotating.from) {
+      this._drawArrow(this.previewArrow, this.annotating.from, target, `arrow-${this.annotating.color}`);
+    }
+  }
+
+  _finishAnnotation() {
+    const { from, to, color } = this.annotating;
+    this.annotating = null;
+    this.previewArrow.replaceChildren();
+    if (from === to) this._toggle(this.annotations.squares, from, color);
+    else this._toggle(this.annotations.arrows, `${from}-${to}`, color);
+    this._drawAnnotations();
   }
 
   shake() {
@@ -232,6 +328,13 @@ export class Board {
   }
 
   _down(event) {
+    // On a Mac, Ctrl+click is also a right click.
+    if (event.button === 2 || (event.button === 0 && event.ctrlKey)) {
+      this._startAnnotation(event);
+      return;
+    }
+    if (event.button !== 0) return;
+    this.clearAnnotations();
     if (!this.movable) return;
     const square = this._squareAt(event);
     if (!square) return;
@@ -249,6 +352,10 @@ export class Board {
   }
 
   _dragMove(event) {
+    if (this.annotating) {
+      this._moveAnnotation(event);
+      return;
+    }
     if (!this.drag) return;
     const { el, startX, startY } = this.drag;
     if (!this.drag.moved && Math.hypot(event.clientX - startX, event.clientY - startY) < 4) return;
@@ -262,6 +369,10 @@ export class Board {
   }
 
   _up(event) {
+    if (this.annotating) {
+      this._finishAnnotation();
+      return;
+    }
     if (!this.drag) return;
     const { el, square, moved, wasSelected } = this.drag;
     this.drag = null;
@@ -276,6 +387,8 @@ export class Board {
   }
 
   _cancelDrag() {
+    this.annotating = null;
+    this.previewArrow.replaceChildren();
     if (!this.drag) return;
     this.drag.el.classList.remove('is-dragging');
     this._place(this.drag.el, this.drag.square);
