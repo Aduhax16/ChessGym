@@ -11,6 +11,13 @@
   <meta property="og:url" content="https://aduhax16.github.io/ChessGym/">
   <meta property="og:image" content="https://aduhax16.github.io/ChessGym/docs/social.png">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ChessGym">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' rx='1.6' fill='%23dee3e6'/%3E%3Cpath d='M0 1.6A1.6 1.6 0 0 1 1.6 0H4v4H0zM4 4h4v2.4A1.6 1.6 0 0 1 6.4 8H4z' fill='%238ca2ad'/%3E%3C/svg%3E">
 </head>
@@ -18,7 +25,10 @@
   <nav class="nav">
     <div class="nav-inner">
       <a class="brand" href="./">ChessGym</a>
-      <button id="customize-open" class="nav-button" type="button">Customize</button>
+      <div class="nav-actions">
+        <button id="install-open" class="nav-button" type="button" hidden>Install</button>
+        <button id="customize-open" class="nav-button" type="button">Customize</button>
+      </div>
     </div>
   </nav>
 
@@ -198,6 +208,16 @@
     <p><a href="https://github.com/Aduhax16/ChessGym" target="_blank" rel="noopener noreferrer">Open source</a> under the MIT licence. Game data from the <a href="https://database.lichess.org/" target="_blank" rel="noopener noreferrer">Lichess open database</a> (CC0). Pieces by Cburnett and Rfc1394 (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>). Your progress stays in this browser.</p>
   </footer>
 
+  <dialog id="install" class="sheet" aria-labelledby="install-title">
+    <header class="sheet-head">
+      <h2 id="install-title">Install ChessGym</h2>
+      <button id="install-close" class="text-button" type="button">Done</button>
+    </header>
+    <p class="install-note">Open it from its own icon and keep training without a connection. It's free.</p>
+    <ol id="install-steps" class="install-steps"></ol>
+  </dialog>
+
   <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/install.js"></script>
 </body>
 </html>

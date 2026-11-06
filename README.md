@@ -55,7 +55,8 @@ If you learn only what the masters play, you're preparing for someone else's gam
 - **Real stats after every move:** how often each move is played at your level, and how it scores.
 - **Arrows and marks.** Right-click a square to mark it and right-drag to draw an arrow, as on Chess.com. Hold Shift or Alt to change the colour.
 - **Your board, your colours.** Choose a theme or pick your own colours, in light or dark mode.
-- **No account, no ads, no tracking.** Your progress stays in your browser.
+- **Install it like an app.** Add it to your phone or Mac from the Install button. It gets its own icon and works offline.
+- **No account, no ads, no tracking.** Your progress stays on your device.
 
 ## Pick your poison
 
