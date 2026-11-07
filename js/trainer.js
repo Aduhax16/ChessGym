@@ -197,6 +197,11 @@ export class Trainer {
     return { san, before, forced: false, bot: true, source };
   }
 
+  /** Ends a free game early. Only a game with no fixed line can be resigned. */
+  resign() {
+    if (this.free && !this.done) this.endReason = 'resigned';
+  }
+
   summary() {
     return {
       answered: this.answered,

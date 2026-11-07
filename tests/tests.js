@@ -4,7 +4,8 @@ import { blendRows, keyOf, loadBand, loadMeta, loadOpenings, rowsFor } from '../
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
 import { buildIndex, MODES, Trainer, userPositions } from '../js/trainer.js';
 import { Progress } from '../js/progress.js';
-import { botMove, chooseMove, Engine, ENGINE_CEILING, ENGINE_FLOOR, engineSettings } from '../js/bot.js';
+import { botMove, chooseMove, Engine, ENGINE_CEILING, ENGINE_FLOOR, engineSettings, parseInfo } from '../js/bot.js';
+import { analyseGame, buildReview, classify, formatEval, fromEngine, isBookMove, moveAccuracy, winChance } from '../js/review.js';
 
 const results = [];
 function test(name, fn) { results.push([name, fn]); }
@@ -526,6 +527,141 @@ test('real data: levels really differ', async () => {
   const share = (id, san) => rowsFor(loaded[id], fen).find((row) => row.san === san)?.share ?? 0;
   assert(share(low, 'e4') > share(high, 'e4'), '1.e4 should be more popular among beginners');
   assert(share(low, 'Nf3') < share(high, 'Nf3'), '1.Nf3 should be more popular among strong players');
+});
+
+
+/* ---------- Game review ---------- */
+
+function playedMoves(...sans) {
+  const chess = new Chess();
+  return sans.map((san) => chess.move(san));
+}
+
+/** Answers from a table keyed by position, with the search's score for the side to move. */
+const fakeAnalyst = (answers) => ({
+  asked: [],
+  async analyse(fen) {
+    this.asked.push(fen);
+    return answers[fen];
+  },
+});
+
+test('expected score is even at 0, follows the evaluation and is certain at mate', () => {
+  equal(winChance({ cp: 0 }), 50);
+  assert(winChance({ cp: 300 }) > winChance({ cp: 100 }));
+  assert(Math.abs(winChance({ cp: 200 }) + winChance({ cp: -200 }) - 100) < 1e-9);
+  equal([winChance({ mate: 3 }), winChance({ mate: -3 })], [100, 0]);
+});
+
+test('engine scores become White\'s point of view', () => {
+  equal(fromEngine({ cp: 40 }, 'w'), { cp: 40 });
+  equal(fromEngine({ cp: 40 }, 'b'), { cp: -40 });
+  equal(fromEngine({ mate: 2 }, 'b'), { mate: -2 });
+});
+
+test('moves are graded by how much expected score they give away', () => {
+  equal([0, 2, 2.1, 5, 5.1, 10, 10.1, 20, 20.1].map(classify),
+    ['excellent', 'excellent', 'good', 'good', 'inaccuracy', 'inaccuracy', 'mistake', 'mistake', 'blunder']);
+  assert(moveAccuracy(0) > 99.9, 'a perfect move should score about 100');
+  assert(moveAccuracy(50) < moveAccuracy(5), 'worse moves should score lower');
+  assert(moveAccuracy(100) >= 0);
+});
+
+test('evaluations read like a chess site', () => {
+  equal([{ cp: 35 }, { cp: -120 }, { cp: 0 }, { mate: 3 }, { mate: -2 }].map(formatEval),
+    ['+0.35', '-1.20', '0.00', '+M3', '-M2']);
+  equal([{ mate: 1, over: true }, { mate: -1, over: true }, { cp: 0, over: true }].map(formatEval), ['1-0', '0-1', '½-½']);
+});
+
+test('UCI info lines give a score and line, and bounds are ignored', () => {
+  equal(parseInfo('info depth 12 seldepth 18 multipv 1 score cp -23 nodes 9 nps 9 time 1 pv e7e5 g1f3'), { score: { cp: -23 }, pv: ['e7e5', 'g1f3'] });
+  equal(parseInfo('info depth 3 score mate 2 nodes 9 pv d1h5'), { score: { mate: 2 }, pv: ['d1h5'] });
+  equal(parseInfo('info depth 12 score cp 15 lowerbound nodes 9 pv e2e4'), null);
+  equal(parseInfo('info string NNUE evaluation using nn.nnue'), null);
+});
+
+test('a review asks about every position and skips finished ones', async () => {
+  const moves = playedMoves('f3', 'e5', 'g4', 'Qh4#');
+  const answers = {};
+  for (const move of moves) answers[move.before] = { best: move.lan, score: { cp: 0 }, pv: [move.lan] };
+  const engine = fakeAnalyst(answers);
+  const seen = [];
+  const positions = await analyseGame(engine, moves, { onProgress: (done, total) => seen.push([done, total]) });
+  equal(engine.asked.length, 4);
+  equal(positions.length, 5);
+  equal(positions[4].evaluation, { mate: -1, over: true });
+  equal(seen[4], [5, 5]);
+});
+
+test('a review stops when the game is abandoned', async () => {
+  const moves = playedMoves('e4');
+  const engine = fakeAnalyst({});
+  equal(await analyseGame(engine, moves, { isCancelled: () => true }), null);
+  equal(engine.asked, []);
+});
+
+test('the review grades both players and names the better move', () => {
+  const moves = playedMoves('e4', 'e5', 'Qh5', 'Nf6');
+  const position = (cp, best, turn, pv = [best]) => ({ fen: '', evaluation: { cp }, best, pv, turn });
+  const positions = [
+    position(30, 'e2e4'),
+    position(30, 'e7e5'),
+    position(30, 'g1f3'),
+    position(-150, 'b8c6', 'b', ['b8c6', 'f1c4']),
+    { evaluation: { cp: 900 }, best: 'h5f7', pv: ['h5f7'] },
+  ];
+  const review = buildReview(moves, positions);
+  equal(review.plies.map((ply) => ply.grade), ['best', 'best', 'mistake', 'blunder']);
+  equal(review.plies[2].best, { san: 'Nf3', from: 'g1', to: 'f3' });
+  equal(review.plies[0].best, null);
+  equal(review.plies[3].best, { san: 'Nc6', from: 'b8', to: 'c6' });
+  equal(review.plies[3].line, ['Nc6', 'Bc4']);
+  equal([review.players.w.counts.mistake, review.players.b.counts.blunder], [1, 1]);
+  assert(review.players.w.accuracy > review.players.b.accuracy, 'the bigger error should cost more accuracy');
+  assert(review.plies[3].chanceBefore > review.plies[3].chanceAfter, 'chances are from the mover\'s side');
+});
+
+test('opening theory is marked until the game leaves it for good', () => {
+  const moves = playedMoves('e4', 'e5', 'Nf3');
+  const evaluation = { evaluation: { cp: 20 }, best: 'a2a3', pv: ['a2a3'] };
+  const book = new Set(['e4', 'e5', 'Nf3']);
+  const positions = [evaluation, evaluation, evaluation, evaluation];
+  equal(buildReview(moves, positions, (_, san) => book.has(san)).plies.map((ply) => ply.grade), ['book', 'book', 'book']);
+  book.delete('e5');
+  equal(buildReview(moves, positions, (_, san) => book.has(san)).plies.map((ply) => ply.grade), ['book', 'excellent', 'excellent']);
+  assert(isBookMove([{ san: 'e4', share: 0.5 }], 'e4'));
+  assert(!isBookMove([{ san: 'e4', share: 0.01 }], 'e4'), 'a rare move is not theory');
+});
+
+test('the only legal move is never a mistake', () => {
+  const chess = new Chess('7k/8/8/8/8/8/6q1/7K w - - 0 1');
+  const moves = chess.moves({ verbose: true }).slice(0, 1);
+  equal(moves.length, 1);
+  const review = buildReview(moves, [
+    { evaluation: { cp: 0 }, best: 'a1a2', pv: [] },
+    { evaluation: { mate: -3 }, best: null, pv: [] },
+  ]);
+  equal([review.plies[0].grade, review.plies[0].loss], ['best', 0]);
+});
+
+test('resigning ends only a free game', () => {
+  const trainer = make({ opening: freeOpening, free: true });
+  trainer.resign();
+  equal([trainer.done, trainer.endReason], [true, 'resigned']);
+  const drill = make();
+  drill.resign();
+  equal(drill.done, false);
+});
+
+test('real Stockfish finds a mate at full strength', async () => {
+  const engine = new Engine();
+  try {
+    const { best, score } = await engine.analyse(MATE_IN_ONE);
+    equal(score, { mate: 1 });
+    equal(best, 'd1d8');
+  } finally {
+    engine.terminate();
+  }
 });
 
 const list = document.getElementById('results');

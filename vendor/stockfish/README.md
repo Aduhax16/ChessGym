@@ -1,6 +1,6 @@
 # Stockfish in ChessGym
 
-Free play runs [Stockfish](https://github.com/official-stockfish/Stockfish) in the browser, using the [Stockfish.js](https://github.com/nmrugg/stockfish.js) WebAssembly port. This folder is **GPL-3, not MIT** like the rest of the repository. See [Copying.txt](Copying.txt).
+Free play and game reviews run [Stockfish](https://github.com/official-stockfish/Stockfish) in the browser, using the [Stockfish.js](https://github.com/nmrugg/stockfish.js) WebAssembly port. This folder is **GPL-3, not MIT** like the rest of the repository. See [Copying.txt](Copying.txt).
 
 ## What is here
 

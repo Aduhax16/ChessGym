@@ -18,6 +18,9 @@ export const ENGINE_CEILING = 3190;
 const THINK_MS = 300;
 const MOVE_TIMEOUT = 8000;
 const LOAD_TIMEOUT = 60000;
+// A review needs a fair judgement quickly: whichever limit comes first ends the search.
+const ANALYSIS_DEPTH = 18;
+const ANALYSIS_MS = 700;
 // How long a move waits for an engine that is still downloading before the bot plays it.
 const LOAD_WAIT = 3000;
 // Below the floor, the rating gap at which every move would be left to the small bot.
@@ -109,6 +112,17 @@ function positionCommand(chess) {
   return `position fen ${start}${moves.length ? ` moves ${moves.map((move) => move.lan).join(' ')}` : ''}`;
 }
 
+/** The score and line from a UCI info line, or null if it has neither or is only a bound. */
+export function parseInfo(line) {
+  const score = line.match(/ score (cp|mate) (-?\d+)( lowerbound| upperbound)?/);
+  const pv = line.match(/ pv (.+)$/);
+  if (!score || !pv || score[3]) return null;
+  return {
+    score: { [score[1]]: Number(score[2]) },
+    pv: pv[1].trim().split(/\s+/),
+  };
+}
+
 /** Talks UCI to Stockfish in a Web Worker. Nothing is downloaded until load(). */
 export class Engine {
   constructor({ url = ENGINE_URL, thinkMs = THINK_MS, loadTimeout = LOAD_TIMEOUT, loadWait = LOAD_WAIT, moveTimeout = MOVE_TIMEOUT } = {}) {
@@ -118,6 +132,7 @@ export class Engine {
     this.loading = null;
     this.waiting = null; // { pattern, resolve, reject } for the one reply being awaited
     this.queue = Promise.resolve(); // searches run one at a time
+    this.lastInfo = null; // the newest usable score of the current analysis
   }
 
   /** Starts the download, once. Resolves when the engine is ready. */
@@ -135,7 +150,6 @@ export class Engine {
       this.worker.onmessage = (event) => this._receive(String(event.data));
       this.worker.onerror = (event) => this._fail(new Error(event.message || 'The engine crashed'));
       await this._ask('uci', /^uciok/, this.loadTimeout);
-      this.worker.postMessage('setoption name UCI_LimitStrength value true');
     } catch (error) {
       this._fail(error);
       throw error;
@@ -143,6 +157,7 @@ export class Engine {
   }
 
   _receive(line) {
+    if (line.startsWith('info ')) this.lastInfo = parseInfo(line) ?? this.lastInfo;
     if (this.waiting?.pattern.test(line)) {
       const { resolve } = this.waiting;
       this.waiting = null;
@@ -187,6 +202,7 @@ export class Engine {
     const position = positionCommand(chess);
     const search = async () => {
       await this._loaded();
+      this.worker.postMessage('setoption name UCI_LimitStrength value true');
       this.worker.postMessage(`setoption name UCI_Elo value ${elo}`);
       this.worker.postMessage(position);
       try {
@@ -194,6 +210,32 @@ export class Engine {
         return reply.split(' ')[1];
       } catch (error) {
         this._fail(error); // a search that hangs won't recover
+        throw error;
+      }
+    };
+    const result = this.queue.catch(() => {}).then(search);
+    this.queue = result;
+    return result;
+  }
+
+  /**
+   * Evaluates a position at full strength, waiting for as long as the download takes.
+   * Resolves to { best, score, pv } with the score for the side to move.
+   */
+  analyse(fen) {
+    const search = async () => {
+      await this.load();
+      if (!this.worker) throw new Error('The engine was stopped');
+      this.lastInfo = null;
+      this.worker.postMessage('setoption name UCI_LimitStrength value false');
+      this.worker.postMessage(`position fen ${fen}`);
+      try {
+        const reply = await this._ask(`go depth ${ANALYSIS_DEPTH} movetime ${ANALYSIS_MS}`, /^bestmove /, this.moveTimeout);
+        const best = reply.split(' ')[1];
+        const info = this.lastInfo ?? { score: { cp: 0 }, pv: [best] };
+        return { best, score: info.score, pv: info.pv };
+      } catch (error) {
+        this._fail(error);
         throw error;
       }
     };

@@ -2,10 +2,12 @@
 import { Chess } from '../vendor/chess.js';
 import { Appearance, BOARD_THEMES } from './appearance.js';
 import { Board } from './board.js';
-import { blendRows, loadBand, loadMeta, loadOpenings } from './book.js';
+import { blendRows, loadBand, loadMeta, loadOpenings, rowsFor } from './book.js';
 import { Engine, ENGINE_FLOOR } from './bot.js';
 import { Progress } from './progress.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
+import { analyseGame, buildReview, isBookMove } from './review.js';
+import { ReviewPanel } from './review-panel.js';
 import { MODES, Trainer, userPositions } from './trainer.js';
 
 const RIVAL_DELAY = 500;
@@ -94,6 +96,8 @@ const state = {
   generation: 0, // bumps on restart or exit, cancelling pending rival moves
   engine: null, // Stockfish, created when a free game starts
   botSources: new Set(), // who chose the rival's moves past the real-game data
+  reviewPanel: null,
+  reviewJob: null, // the analysis in progress for this game, if any
   lastPlayed: null,
   baseMarks: [],
   rivalNote: null,
@@ -405,6 +409,9 @@ function freePlayEngine() {
 
 function newSession() {
   state.generation += 1;
+  closeReview();
+  state.reviewPanel?.reset();
+  state.reviewJob = null;
   const opponent = drawOpponent(state.range, state.meta.bands);
   state.trainer = new Trainer({
     opening: state.opening,
@@ -438,6 +445,7 @@ function newSession() {
   $('next-line').textContent = isFree(state.opening) ? 'New game' : 'Next line';
   $('finish-card').hidden = true;
   $('session-actions').hidden = false;
+  $('resign').hidden = !isFree(state.opening);
   setStatus('', '');
   nextTurn();
 }
@@ -702,9 +710,10 @@ function statRow(row, played) {
 function finishFreeGame() {
   const { chess, userColor } = state.trainer;
   const won = chess.isCheckmate() && chess.turn() !== userColor;
-  if (!chess.isCheckmate()) setStatus('info', 'Draw', 'Nobody could make progress.');
+  if (state.trainer.endReason === 'resigned') setStatus('bad', 'You resigned', 'Review the game to see where it turned.');
+  else if (!chess.isCheckmate()) setStatus('info', 'Draw', 'Nobody could make progress.');
   else if (won) setStatus('good', 'You won', 'Checkmate.');
-  else setStatus('bad', 'You lost', 'Checkmate. Open it on Lichess to see what went wrong.');
+  else setStatus('bad', 'You lost', 'Checkmate. Review the game to see where it turned.');
   $('finish-score').textContent = `${count(Math.ceil(state.trainer.ply / 2), 'move', 'moves')} played.`;
   const sources = state.botSources;
   const engineUsed = sources.has('engine') || sources.has('slip');
@@ -722,6 +731,10 @@ function finish() {
   $('share').textContent = 'Share';
   $('finish-card').hidden = false;
   $('session-actions').hidden = true;
+  $('review-open').hidden = trainer.ply === 0;
+  // A review is the natural next step after a game, a new line after a drill.
+  $('review-open').className = trainer.free ? 'primary' : 'secondary';
+  $('next-line').className = trainer.free ? 'secondary' : 'primary';
   if (trainer.free) {
     finishFreeGame();
     return;
@@ -750,6 +763,65 @@ function finish() {
   $('finish-mastery').textContent = `${now}% of this opening mastered${change}.`;
 }
 
+function resign() {
+  const { trainer } = state;
+  if (!trainer.free || trainer.done) return;
+  state.generation += 1; // cancels a rival move still on its way
+  trainer.resign();
+  nextTurn();
+}
+
+/* ---------- Game review ---------- */
+
+function reviewPanel() {
+  if (!state.reviewPanel) {
+    state.reviewPanel = new ReviewPanel({ board: state.board, onClose: closeReview, onRetry: runReview });
+  }
+  return state.reviewPanel;
+}
+
+function openReview() {
+  const { trainer } = state;
+  const panel = reviewPanel();
+  panel.open(trainer.userColor, `${state.opening.name} · against ${opponentLabel(trainer.opponent)}`);
+  if (panel.review) panel.show(panel.review);
+  else if (!state.reviewJob) runReview();
+}
+
+async function runReview() {
+  const { trainer, books, generation } = state;
+  const panel = reviewPanel();
+  if (!state.engine || state.engine.failed) state.engine = new Engine();
+  panel.showProgress(0, trainer.moves.length + 1);
+  const isCurrent = () => generation === state.generation;
+  const job = analyseGame(state.engine, trainer.moves, {
+    isCancelled: () => !isCurrent(),
+    onProgress: (done, total) => { if (isCurrent()) panel.showProgress(done, total); },
+  });
+  state.reviewJob = job;
+  try {
+    const positions = await job;
+    if (!positions || !isCurrent()) return;
+    const isBook = (fen, san) => isBookMove(rowsFor(books.reference, fen), san);
+    panel.review = buildReview(trainer.moves, positions, isBook);
+    if (panel.isOpen) panel.show(panel.review);
+  } catch {
+    if (isCurrent()) panel.showError('The engine couldn\'t run. Check your connection and try again.');
+  } finally {
+    if (state.reviewJob === job) state.reviewJob = null;
+  }
+}
+
+function closeReview() {
+  const panel = state.reviewPanel;
+  if (!panel?.isOpen) return;
+  panel.close();
+  if (!state.trainer) return;
+  state.board.setPosition(state.trainer.fen);
+  state.board.clearArrows();
+  state.board.setMarks(state.baseMarks);
+}
+
 async function shareResult() {
   if (state.trainer.free) {
     await sendShare(`I just played a free game against a ${opponentLabel(state.trainer.opponent)} opponent on ChessGym`, SITE_URL);
@@ -776,6 +848,7 @@ async function sendShare(text, url) {
 
 function exitTraining() {
   state.generation += 1;
+  closeReview();
   state.engine?.terminate(); // it holds a lot of memory, and restarts quickly from the browser's cache
   state.engine = null;
   cardCache.clear(); // mastery may have changed
@@ -908,6 +981,8 @@ async function main() {
   $('adaptive').addEventListener('change', (event) => { state.adaptive = event.target.checked; });
   $('hint').addEventListener('click', requestHint);
   $('restart').addEventListener('click', newSession);
+  $('resign').addEventListener('click', resign);
+  $('review-open').addEventListener('click', openReview);
   $('next-line').addEventListener('click', newSession);
   $('share').addEventListener('click', shareResult);
   $('back').addEventListener('click', exitTraining);

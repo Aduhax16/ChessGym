@@ -576,3 +576,161 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
 .install-note { color: var(--ink-2); font-size: 15px; line-height: 1.45; }
 .install-steps { margin: 16px 0 4px; padding-left: 22px; font-size: 15px; line-height: 1.45; }
 .install-steps li + li { margin-top: 8px; }
+
+/* Game review */
+.board-row { display: flex; justify-content: center; gap: 8px; }
+.board-row .board { margin: 0; flex: 1 1 auto; min-width: 0; }
+.eval-bar {
+  position: relative;
+  flex: 0 0 28px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #2c2c2e;
+}
+.eval-bar[hidden] { display: none; }
+.eval-fill {
+  position: absolute;
+  inset: auto 0 0;
+  background: #f5f5f7;
+  transition: height .25s ease;
+}
+.eval-bar.is-flipped .eval-fill { inset: 0 0 auto; }
+.eval-text {
+  position: absolute;
+  inset: auto 0 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  text-align: center;
+  color: #1d1d1f;
+}
+/* The figure sits at the end of whoever is ahead, on that player's colour. */
+.eval-bar.is-flipped .eval-text { inset: 6px 0 auto; }
+.eval-bar.black-leads .eval-text { inset: 6px 0 auto; color: #f5f5f7; }
+.eval-bar.is-flipped.black-leads .eval-text { inset: auto 0 6px; }
+
+.panel.is-reviewing > :not(#review-panel) { display: none; }
+.review, .review-content { display: grid; gap: 18px; min-width: 0; }
+.review[hidden], .review-content[hidden], .review-progress[hidden] { display: none; }
+.review-progress { display: grid; gap: 12px; padding: 18px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-card); }
+.review-progress p { font-size: 14px; color: var(--ink-2); }
+.review-progress button { justify-self: start; }
+.review-progress-track { height: 4px; overflow: hidden; border-radius: 99px; background: var(--fill-strong); }
+.review-progress-fill { width: 0; height: 100%; border-radius: 99px; background: var(--accent); transition: width .2s; }
+
+.grade-best { --grade: #1a8a3f; --grade-ink: #fff; }
+.grade-excellent { --grade: #2f9e64; --grade-ink: #fff; }
+.grade-good { --grade: #5f8f6b; --grade-ink: #fff; }
+.grade-book { --grade: #8a6f4d; --grade-ink: #fff; }
+.grade-inaccuracy { --grade: #f2c200; --grade-ink: #1d1d1f; }
+.grade-mistake { --grade: #ec7a08; --grade-ink: #1d1d1f; }
+.grade-blunder { --grade: #d92d20; --grade-ink: #fff; }
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--grade-ink);
+  background: var(--grade);
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px 76px;
+  align-items: center;
+  gap: 7px 8px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+.review-player { font-size: 12px; color: var(--ink-2); text-align: center; }
+.review-row-label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.review-accuracy { font-size: 19px; font-weight: 700; letter-spacing: -.02em; text-align: center; font-variant-numeric: tabular-nums; }
+.review-count { font-size: 14px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.review-move { display: grid; gap: 6px; min-height: 92px; align-content: start; }
+.review-move-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; letter-spacing: -.012em; }
+.review-move-detail, .review-move-best { font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.review-move-best strong { color: var(--ink); font-weight: 600; }
+.review-line-text { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-3); }
+
+.review-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.review-nav button { padding: 9px 0; }
+.review button:disabled { opacity: .4; cursor: default; }
+
+.review-graph { position: relative; min-height: 84px; }
+.review-graph-svg { display: block; cursor: pointer; touch-action: manipulation; }
+.graph-area { fill: var(--fill-strong); }
+.graph-line { fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.graph-mid { stroke: var(--line); stroke-width: 1; }
+.graph-cursor { stroke: var(--accent); stroke-width: 2; }
+.graph-hover { stroke: var(--ink-3); stroke-width: 1; }
+.graph-marker { fill: var(--grade); stroke: var(--bg, var(--surface)); stroke-width: 2; }
+.graph-tip {
+  position: absolute;
+  bottom: 100%;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--ink-2);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.graph-tip strong { color: var(--ink); }
+
+.review-moves { max-height: 240px; overflow-y: auto; }
+.review-moves li { align-items: center; }
+.review-move-button {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 5px;
+  padding: 2px 6px;
+  border-radius: 7px;
+  font-weight: 500;
+}
+.review-move-button:hover { background: var(--fill); }
+.review-move-button.is-current { background: var(--fill-strong); }
+.review-move-button .grade-badge { min-width: 15px; height: 15px; font-size: 8px; }
+.review-note { padding: 0; }
+
+.mark-review { --review-mark: rgb(95 143 107 / .45); background: var(--review-mark); }
+.mark-review-best, .mark-review-excellent { --review-mark: rgb(26 138 63 / .42); }
+.mark-review-book { --review-mark: rgb(138 111 77 / .42); }
+.mark-review-inaccuracy { --review-mark: rgb(242 194 0 / .5); }
+.mark-review-mistake { --review-mark: rgb(236 122 8 / .5); }
+.mark-review-blunder { --review-mark: rgb(217 45 32 / .5); }
+.mark-review-line { background: rgb(52 199 89 / .35); }
+.mark-badge::after {
+  position: absolute;
+  top: 3%;
+  right: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  font-size: clamp(8px, 1.5vmin, 13px);
+  font-weight: 700;
+  color: #fff;
+  background: #5f8f6b;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .4);
+  content: '✓';
+}
+.mark-review-best.mark-badge::after { background: #1a8a3f; content: '★'; }
+.mark-review-excellent.mark-badge::after { background: #2f9e64; content: '!'; }
+.mark-review-book.mark-badge::after { background: #8a6f4d; content: '≡'; }
+.mark-review-inaccuracy.mark-badge::after { color: #1d1d1f; background: #f2c200; content: '?!'; }
+.mark-review-mistake.mark-badge::after { color: #1d1d1f; background: #ec7a08; content: '?'; }
+.mark-review-blunder.mark-badge::after { background: #d92d20; content: '??'; }

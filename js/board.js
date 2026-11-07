@@ -197,9 +197,9 @@ export class Board {
     }
   }
 
-  showArrow(from, to) {
+  showArrow(from, to, className = 'arrow-hint') {
     this.clearArrows();
-    this._drawArrow(this.hintArrow, from, to, 'arrow-hint');
+    this._drawArrow(this.hintArrow, from, to, className);
   }
 
   clearArrows() {

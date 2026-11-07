@@ -18,6 +18,8 @@ const APP_FILES = [
   'js/install.js',
   'js/progress.js',
   'js/rating.js',
+  'js/review-panel.js',
+  'js/review.js',
   'js/trainer.js',
   'vendor/chess.js',
   'assets/pieces.svg',
@@ -30,18 +32,25 @@ const APP_FILES = [
   'data/book/reference.json',
 ];
 
-/** The rating bands are large, so one failed download must not block the install. */
-async function storeBands(cache) {
+// Free play and game reviews need the engine. The worker script fetches its own wasm.
+const ENGINE_FILES = [
+  'vendor/stockfish/stockfish-19-lite-single.js',
+  'vendor/stockfish/stockfish-19-lite-single.wasm',
+];
+
+/** These files are large, so one failed download must not block the install. */
+async function storeLargeFiles(cache) {
   const response = await cache.match('data/book/meta.json');
   const { bands } = await response.json();
-  await Promise.allSettled(bands.map(({ id }) => cache.add(`data/book/${id}.json`)));
+  const files = [...bands.map(({ id }) => `data/book/${id}.json`), ...ENGINE_FILES];
+  await Promise.allSettled(files.map((file) => cache.add(file)));
 }
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     await cache.addAll(APP_FILES);
-    await storeBands(cache);
+    await storeLargeFiles(cache);
     await self.skipWaiting();
   })());
 });

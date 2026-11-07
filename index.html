@@ -110,11 +110,61 @@
 
     <section id="training" class="training" hidden>
       <div class="board-column">
-        <div id="board"></div>
+        <div class="board-row">
+          <div id="eval-bar" class="eval-bar" hidden>
+            <div id="eval-fill" class="eval-fill"></div>
+            <span id="eval-text" class="eval-text"></span>
+          </div>
+          <div id="board"></div>
+        </div>
         <p class="board-tip">Right-click to mark a square. Right-drag to draw an arrow.</p>
       </div>
 
       <aside class="panel">
+        <section id="review-panel" class="review" hidden>
+          <header class="panel-top">
+            <div>
+              <h1>Game review</h1>
+              <p id="review-meta"></p>
+            </div>
+            <button id="review-close" class="text-button" type="button">Done</button>
+          </header>
+
+          <div id="review-progress" class="review-progress" role="status">
+            <p id="review-progress-text"></p>
+            <div class="review-progress-track"><div id="review-progress-fill" class="review-progress-fill"></div></div>
+          </div>
+
+          <div id="review-error" class="review-progress" role="alert" hidden>
+            <p id="review-error-text"></p>
+            <button id="review-retry" class="secondary" type="button">Try again</button>
+          </div>
+
+          <div id="review-content" class="review-content" hidden>
+            <div id="review-move" class="review-move" aria-live="polite"></div>
+            <div class="review-nav">
+              <button id="review-first" class="secondary" type="button" aria-label="First move">⏮</button>
+              <button id="review-prev" class="secondary" type="button" aria-label="Previous move">◀</button>
+              <button id="review-next" class="secondary" type="button" aria-label="Next move">▶</button>
+              <button id="review-last" class="secondary" type="button" aria-label="Last move">⏭</button>
+            </div>
+            <div class="actions">
+              <button id="review-next-error" class="secondary" type="button">Next mistake</button>
+              <button id="review-line" class="secondary" type="button">Play the best line</button>
+            </div>
+            <div id="review-summary"></div>
+            <section class="panel-block">
+              <h2>Evaluation</h2>
+              <div id="review-graph" class="review-graph"></div>
+            </section>
+            <section class="panel-block">
+              <h2>Moves</h2>
+              <ol id="review-moves" class="moves review-moves"></ol>
+            </section>
+            <p class="footnote review-note">Stockfish judges each move in under a second, so these grades are a good estimate. Accuracy won't match other sites exactly.</p>
+          </div>
+        </section>
+
         <header class="panel-top">
           <div>
             <h1 id="training-title"></h1>
@@ -131,13 +181,15 @@
         <div id="session-actions" class="actions">
           <button id="hint" class="secondary" type="button">Hint</button>
           <button id="restart" class="secondary" type="button">Restart</button>
+          <button id="resign" class="secondary" type="button" hidden>Resign</button>
         </div>
 
         <div id="finish-card" class="finish" hidden>
           <p id="finish-score"></p>
           <p id="finish-mastery"></p>
           <div class="actions">
-            <button id="next-line" class="primary" type="button">Next line</button>
+            <button id="review-open" class="primary" type="button">Review game</button>
+            <button id="next-line" class="secondary" type="button">Next line</button>
             <button id="share" class="secondary" type="button">Share</button>
             <button id="back-setup" class="secondary" type="button">Change opening</button>
           </div>
