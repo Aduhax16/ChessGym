@@ -4,7 +4,7 @@ import { blendRows, keyOf, loadBand, loadMeta, loadOpenings, rowsFor } from '../
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
 import { buildIndex, MODES, Trainer, userPositions } from '../js/trainer.js';
 import { Progress } from '../js/progress.js';
-import { botMove } from '../js/bot.js';
+import { botMove, chooseMove, Engine, ENGINE_CEILING, ENGINE_FLOOR, engineSettings } from '../js/bot.js';
 
 const results = [];
 function test(name, fn) { results.push([name, fn]); }
@@ -276,6 +276,166 @@ test('weak bots make more mistakes than strong ones', () => {
     return count;
   };
   assert(missed(600) > missed(2200), 'lower ratings should miss the capture more often');
+});
+
+test('engine settings follow the rating and stay inside the engine limits', () => {
+  equal(engineSettings(1800), { elo: 1800, slipChance: 0 });
+  equal(engineSettings(ENGINE_FLOOR), { elo: ENGINE_FLOOR, slipChance: 0 });
+  equal(engineSettings(9000).elo, ENGINE_CEILING);
+  equal(engineSettings(600).elo, ENGINE_FLOOR);
+});
+
+test('opponents below the floor slip more the weaker they are', () => {
+  const slips = [1300, 1100, 900, 700, 500].map((rating) => engineSettings(rating).slipChance);
+  slips.forEach((slip, index) => assert(index === 0 || slip > slips[index - 1], `not rising: ${slips}`));
+  assert(slips[0] > 0, 'just below the floor should already slip sometimes');
+  assert(slips[4] < 1, 'the weakest opponent should still use the engine sometimes');
+});
+
+const fakeEngine = (answer) => ({
+  failed: false,
+  asked: [],
+  async bestMove(chess, elo) {
+    this.asked.push(elo);
+    return answer(chess);
+  },
+});
+const MATE_IN_ONE = '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1';
+
+test('without an engine the small bot plays', async () => {
+  const { san, source } = await chooseMove(new Chess(MATE_IN_ONE), 2200, null, () => 0.5);
+  equal([san, source], ['Rd8#', 'bot']);
+});
+
+test('the engine chooses at the opponent\'s rating, and promotions convert to SAN', async () => {
+  const engine = fakeEngine(() => 'a7a8q');
+  const { san, source } = await chooseMove(new Chess('6k1/P7/8/8/8/8/8/6K1 w - - 0 1'), 1800, engine);
+  equal([san, source], ['a8=Q+', 'engine']);
+  equal(engine.asked, [1800]);
+});
+
+test('the small bot steps in if the engine fails or answers nonsense', async () => {
+  const failing = fakeEngine(() => { throw new Error('no engine'); });
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 1800, failing, () => 0.5)).source, 'bot');
+  const illegal = fakeEngine(() => 'a1a8');
+  const chess = new Chess(MATE_IN_ONE);
+  const before = chess.fen();
+  const { san, source } = await chooseMove(chess, 1800, illegal, () => 0.5);
+  equal(source, 'bot');
+  assert(chess.moves().includes(san), `${san} is not legal`);
+  equal(chess.fen(), before);
+});
+
+test('a slip below the floor skips the engine', async () => {
+  const engine = fakeEngine(() => 'd1d8');
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 800, engine, () => 0)).source, 'slip');
+  equal(engine.asked, []);
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 800, engine, () => 0.99)).source, 'engine');
+  equal(engine.asked, [ENGINE_FLOOR]);
+});
+
+test('free play asks the engine only once the real games run out', async () => {
+  const engine = fakeEngine((chess) => { const move = chess.moves({ verbose: true })[0]; return move.from + move.to; });
+  const strong = { rating: 1800, mix: onlyLow.mix };
+  const trainer = make({ opening: freeOpening, free: true, engine, opponent: strong });
+  trainer.tryMove('e4');
+  const real = await trainer.playRivalWithEngine();
+  equal([real.san, Boolean(real.bot), engine.asked], ['e5', false, []]);
+  trainer.tryMove('a3');
+  const fromEngine = await trainer.playRivalWithEngine();
+  equal([fromEngine.bot, fromEngine.source, engine.asked], [true, 'engine', [1800]]);
+  equal(trainer.history.length, 4);
+});
+
+const workerFrom = (code) => URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+const FAST = { thinkMs: 20 };
+
+test('creating an engine downloads nothing until it is needed', () => {
+  equal(new Engine().worker, null);
+});
+
+test('real engine: it loads and mates at full strength', async () => {
+  const engine = new Engine(FAST);
+  try {
+    await engine.load();
+    const { san, source } = await chooseMove(new Chess(MATE_IN_ONE), ENGINE_CEILING, engine);
+    equal([san, source], ['Rd8#', 'engine']);
+  } finally {
+    engine.terminate();
+  }
+});
+
+test('real engine: it answers with the game history and at the floor', async () => {
+  const engine = new Engine(FAST);
+  try {
+    const chess = new Chess();
+    for (const san of ['Nf3', 'Nf6', 'Ng1', 'Ng8', 'e4', 'e5']) chess.move(san);
+    const { san, source } = await chooseMove(chess, ENGINE_FLOOR, engine, () => 0.5);
+    equal(source, 'engine');
+    assert(chess.moves().includes(san), `${san} is not legal`);
+    assert(!engine.failed, 'the engine should still be healthy');
+  } finally {
+    engine.terminate();
+  }
+});
+
+test('real engine: a whole free game ends in checkmate', async () => {
+  const engine = new Engine(FAST);
+  try {
+    const trainer = new Trainer({ opening: freeOpening, free: true, opponent: { rating: 2700, mix: onlyLow.mix }, books, engine });
+    while (!trainer.done && trainer.ply < 400) {
+      if (trainer.isUserTurn) trainer.tryMove(trainer.chess.moves()[0]);
+      else equal((await trainer.playRivalWithEngine()).source, 'engine');
+    }
+    assert(trainer.chess.isCheckmate(), `expected mate, got ${trainer.fen}`);
+    equal(trainer.chess.turn(), 'w');
+  } finally {
+    engine.terminate();
+  }
+});
+
+test('a missing engine file falls back to the bot', async () => {
+  const engine = new Engine({ url: '/vendor/stockfish/does-not-exist.js', loadTimeout: 3000 });
+  const { source } = await chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5);
+  equal(source, 'bot');
+  equal(engine.failed, true);
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5)).source, 'bot');
+});
+
+test('a missing engine binary falls back to the bot', async () => {
+  const url = new URL('../vendor/stockfish/stockfish-19-lite-single.js#/vendor/stockfish/does-not-exist.wasm', import.meta.url);
+  const engine = new Engine({ url, loadTimeout: 500 });
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5)).source, 'bot');
+  equal(engine.failed, true);
+});
+
+test('a slow download doesn\'t hold up the game, and isn\'t given up on', async () => {
+  const engine = new Engine({ url: workerFrom(''), loadWait: 50, loadTimeout: 60000 });
+  try {
+    equal((await chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5)).source, 'bot');
+    equal(engine.failed, false);
+    equal(engine.loadWait, 0); // later moves don't wait again
+  } finally {
+    engine.terminate();
+  }
+});
+
+test('a search that hangs falls back to the bot and stops using the engine', async () => {
+  const url = workerFrom("onmessage = (event) => { if (event.data === 'uci') postMessage('uciok'); };");
+  const engine = new Engine({ url, moveTimeout: 100 });
+  equal((await chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5)).source, 'bot');
+  equal(engine.failed, true);
+  equal(engine.worker, null);
+});
+
+test('stopping the engine mid-search still gives a move', async () => {
+  const url = workerFrom("onmessage = (event) => { if (event.data === 'uci') postMessage('uciok'); };");
+  const engine = new Engine({ url });
+  await engine.load();
+  const move = chooseMove(new Chess(MATE_IN_ONE), 1800, engine, () => 0.5);
+  await new Promise((resolve) => { setTimeout(resolve, 50); });
+  engine.terminate();
+  equal((await move).source, 'bot');
 });
 
 test('a 1300 Lichess player gets the 1250-1500 band', () => {

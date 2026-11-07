@@ -1,7 +1,7 @@
 // Training session logic. No DOM here, so it can be tested on its own.
 import { Chess } from '../vendor/chess.js';
 import { blendRows, keyOf, rowsFor } from './book.js';
-import { botMove } from './bot.js';
+import { botMove, chooseMove } from './bot.js';
 
 const REFERENCE_MIN_SHARE = 0.1;
 const MASTERED_LEVEL = 2;
@@ -47,10 +47,11 @@ export class Trainer {
    * opponent: { rating, mix: [{ id, weight }] }
    * books: { [bandId]: book, reference: book }
    * free: no repertoire. Any move goes. When the opponent's level has no data, it
-   *   borrows from `nearbyBands` (closest first), and a bot takes over after that.
+   *   borrows from `nearbyBands` (closest first), and `engine` takes over after that,
+   *   with the small bot standing in if there is no working engine.
    */
-  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, free = false, nearbyBands = [], random = Math.random }) {
-    Object.assign(this, { opening, opponent, books, progress, mode, plies: free ? Infinity : plies, adaptive, free, nearbyBands, random });
+  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, free = false, nearbyBands = [], engine = null, random = Math.random }) {
+    Object.assign(this, { opening, opponent, books, progress, mode, plies: free ? Infinity : plies, adaptive, free, nearbyBands, engine, random });
     this.chess = new Chess();
     this.index = buildIndex(opening);
     this.prefix = opening.prefix ? opening.prefix.split(' ') : [];
@@ -180,11 +181,20 @@ export class Trainer {
     const candidates = this.rivalCandidates();
     if (!candidates.length) {
       this._play(botMove(new Chess(before), this.opponent.rating, this.random));
-      return { san: this.history[this.ply - 1], before, forced: false, bot: true };
+      return { san: this.history[this.ply - 1], before, forced: false, bot: true, source: 'bot' };
     }
     const choice = pickWeighted(candidates, this.random);
     this._play(choice.san);
     return { san: choice.san, before, forced: Boolean(choice.forced), row: choice.row };
+  }
+
+  /** Like playRival, but past the real-game data the engine gets to choose. */
+  async playRivalWithEngine() {
+    if (this.rivalCandidates().length) return this.playRival();
+    const before = this.fen;
+    const { san, source } = await chooseMove(this.chess, this.opponent.rating, this.engine, this.random);
+    this._play(san);
+    return { san, before, forced: false, bot: true, source };
   }
 
   summary() {

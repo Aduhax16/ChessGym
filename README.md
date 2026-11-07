@@ -47,7 +47,7 @@ If you learn only what the masters play, you're preparing for someone else's gam
 ## What you get
 
 - **125 openings and 407 lines**, from the Italian to the Grob.
-- **Free play.** No script: play any opening and see how people at your rating respond. When the real games run out, a simple bot finishes the game.
+- **Free play.** No script: play any opening and see how people at your rating respond. When the real games run out, Stockfish finishes the game, limited to your opponent's rating.
 - **Play either colour.** With Black, choose what White opens with and then your defence.
 - **Opponents matched to you.** Enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
 - **Learn and Practice modes.** Follow the arrows first, then play from memory.
@@ -94,12 +94,15 @@ If you learn only what the masters play, you're preparing for someone else's gam
 - **Opponent moves:** a sample of 1,345,577 rated blitz, rapid and classical games from the [Lichess open database](https://database.lichess.org/) (January 2024, CC0). Each move counts in the band of the player who made it.
 - **Your repertoire:** a curated set of lines, **checked with Stockfish 19**. About 2,000 student moves went through the audit, and anything that lost too much was fixed. Gambits get more leeway, and the few deliberately unsound trap lines tell you they're traps.
 - **After your repertoire ends:** moves commonly chosen by players rated 2000+.
-- **Free play:** real moves at your level, then from nearby levels. Past that, a small built-in bot takes over. It is not calibrated to your rating and tops out at club strength.
+- **Free play:** real moves at your level, then from nearby levels. Past that, [Stockfish 19](https://stockfishchess.org/) (the 1.8 MB lite build) plays on in your browser, limited to your opponent's rating with `UCI_LimitStrength`. It only downloads when you start a free game, and the opening trainer never loads it.
+  - **Below 1320:** that's the lowest strength Stockfish offers, so weaker opponents play at 1320 and hand a share of their moves to a small built-in bot, which makes mistakes. The share grows steadily below 1320, reaching about 59% at 500.
+  - **If Stockfish can't load:** the small bot plays instead, and the game says so. On a slow connection the first engine move waits up to 3 seconds for the download, and the bot covers any moves until it arrives.
 
 ### Honest limitations
 
 - Ratings are Lichess ratings. There is no official conversion, so the Chess.com and FIDE options are rough estimates. Use Easier or Harder if a level feels off.
 - Rare positions have too few games to use, so a line can end early when your opponent wanders far from known paths.
+- Stockfish's strength scale is an engine rating (CCRL Blitz), and we use it as if it were a Lichess rating. No one has measured that against human players, and it plays like an engine rather than a person. Below 1320 the strength comes from our own mix of engine and bot moves, checked only in matches against Stockfish. Use Easier or Harder if a level feels off.
 - The audit covers your moves at a fixed engine depth. It doesn't prove a line is the best one, and no engine checks the written explanations, so corrections from strong players are very welcome.
 
 ## Run it yourself
@@ -122,14 +125,13 @@ Your favourite line is missing? Adding one means editing a JSON file, with no Ja
 
 Ideas on the list:
 
-- [ ] Stockfish in the browser, for a stronger free-play opponent and positions beyond the data
 - [ ] Spaced repetition for the lines you miss
 - [ ] Import your own repertoire from a PGN or a Lichess study
 - [ ] More languages
 
 ## Licence
 
-The code is [MIT](LICENSE). Game data is CC0, from Lichess. [chess.js](https://github.com/jhlywa/chess.js) is BSD-2-Clause. The pieces in `assets/pieces.svg` are by Cburnett and Rfc1394 on Wikimedia Commons, adapted by [cm-chessboard](https://github.com/shaack/cm-chessboard), under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+The code is [MIT](LICENSE). Game data is CC0, from Lichess. [chess.js](https://github.com/jhlywa/chess.js) is BSD-2-Clause. The exception is [Stockfish](vendor/stockfish/README.md) in `vendor/stockfish/`, which is **GPL-3, not MIT**: it is a separate, unmodified program that the site starts in a Web Worker and talks to over the standard UCI text protocol, shipped with its source. The pieces in `assets/pieces.svg` are by Cburnett and Rfc1394 on Wikimedia Commons, adapted by [cm-chessboard](https://github.com/shaack/cm-chessboard), under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 ---
 

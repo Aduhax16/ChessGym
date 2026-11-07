@@ -59,7 +59,7 @@ There is no build step. Serve the folder and reload:
 python3 -m http.server 8000
 ```
 
-If you touch `js/trainer.js`, `js/rating.js`, `js/book.js` or `js/progress.js`, open <http://localhost:8000/tests/> and make sure everything still passes.
+If you touch `js/trainer.js`, `js/bot.js`, `js/rating.js`, `js/book.js` or `js/progress.js`, open <http://localhost:8000/tests/> and make sure everything still passes.
 
 ## Regenerate the game data
 

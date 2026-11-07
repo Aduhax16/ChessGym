@@ -3,6 +3,7 @@ import { Chess } from '../vendor/chess.js';
 import { Appearance, BOARD_THEMES } from './appearance.js';
 import { Board } from './board.js';
 import { blendRows, loadBand, loadMeta, loadOpenings } from './book.js';
+import { Engine, ENGINE_FLOOR } from './bot.js';
 import { Progress } from './progress.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
 import { MODES, Trainer, userPositions } from './trainer.js';
@@ -91,6 +92,8 @@ const state = {
   trainer: null,
   board: null,
   generation: 0, // bumps on restart or exit, cancelling pending rival moves
+  engine: null, // Stockfish, created when a free game starts
+  botSources: new Set(), // who chose the rival's moves past the real-game data
   lastPlayed: null,
   baseMarks: [],
   rivalNote: null,
@@ -392,6 +395,14 @@ async function startTraining() {
   }
 }
 
+/** Downloads the engine in the background as a free game starts, so its first move is ready. */
+function freePlayEngine() {
+  if (!state.engine || state.engine.failed) state.engine = new Engine();
+  state.engine.load();
+  state.engine.newGame();
+  return state.engine;
+}
+
 function newSession() {
   state.generation += 1;
   const opponent = drawOpponent(state.range, state.meta.bands);
@@ -405,7 +416,9 @@ function newSession() {
     adaptive: state.adaptive,
     free: isFree(state.opening),
     nearbyBands: bandsByDistance(opponent.rating, state.meta.bands),
+    engine: isFree(state.opening) ? freePlayEngine() : null,
   });
+  state.botSources = new Set();
   state.masteryBefore = isFree(state.opening) ? 0 : progress.mastery(state.opening.id, positionsOf(state.opening));
   state.lastPlayed = null;
   state.baseMarks = [];
@@ -454,13 +467,15 @@ function nextTurn() {
   }
   board.setMovable(null);
   const generation = state.generation;
-  setTimeout(() => {
+  setTimeout(async () => {
     if (generation !== state.generation) return;
-    const played = trainer.playRival();
+    const played = await trainer.playRivalWithEngine();
+    if (generation !== state.generation) return;
     state.lastPlayed = { ...played, by: 'rival' };
     showPosition();
     if (played.bot) {
-      state.rivalNote = `${played.san}. Past the real-game data, a simple bot plays for your opponent.`;
+      state.botSources.add(played.source);
+      state.rivalNote = `${played.san}. ${botNote(played.source, trainer.opponent)}`;
     } else if (!played.forced) {
       state.rivalNote = played.row
         ? `${played.san} is played by ${percent(played.row.share)} at this level.`
@@ -468,6 +483,14 @@ function nextTurn() {
     }
     nextTurn();
   }, RIVAL_DELAY);
+}
+
+/** Says who is choosing the opponent's moves now that the real games have run out. */
+function botNote(source, opponent) {
+  if (source === 'bot') return 'Past the real-game data, a simple bot plays while Stockfish isn\'t available.';
+  return opponent.rating < ENGINE_FLOOR
+    ? `Past the real-game data, Stockfish plays at its weakest, with extra mistakes to match ${opponentLabel(opponent)}.`
+    : `Past the real-game data, Stockfish plays for your opponent, limited to ${opponentLabel(opponent)}.`;
 }
 
 function showPosition() {
@@ -683,7 +706,13 @@ function finishFreeGame() {
   else if (won) setStatus('good', 'You won', 'Checkmate.');
   else setStatus('bad', 'You lost', 'Checkmate. Open it on Lichess to see what went wrong.');
   $('finish-score').textContent = `${count(Math.ceil(state.trainer.ply / 2), 'move', 'moves')} played.`;
-  $('finish-mastery').textContent = 'The opening moves came from real games. Later ones may come from a simple bot.';
+  const sources = state.botSources;
+  const engineUsed = sources.has('engine') || sources.has('slip');
+  let credit = 'Every move came from real games.';
+  if (engineUsed && sources.has('bot')) credit = 'The opening came from real games, the rest from Stockfish and, while it wasn\'t available, a simple bot.';
+  else if (engineUsed) credit = 'The opening came from real games, the rest from Stockfish limited to this rating.';
+  else if (sources.has('bot')) credit = 'The opening came from real games, the rest from a simple bot because Stockfish wasn\'t available.';
+  $('finish-mastery').textContent = credit;
 }
 
 function finish() {
@@ -747,6 +776,8 @@ async function sendShare(text, url) {
 
 function exitTraining() {
   state.generation += 1;
+  state.engine?.terminate(); // it holds a lot of memory, and restarts quickly from the browser's cache
+  state.engine = null;
   cardCache.clear(); // mastery may have changed
   $('training').hidden = true;
   $('setup').hidden = false;
