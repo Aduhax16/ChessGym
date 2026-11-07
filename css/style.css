@@ -579,10 +579,12 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
 
 /* Game review */
 .board-row { display: flex; justify-content: center; gap: 8px; }
-.board-row .board { margin: 0; flex: 1 1 auto; min-width: 0; }
+.board-stack { flex: 1 1 auto; min-width: 0; max-width: min(100%, calc(100vh - 192px)); }
+.board-stack .board { max-width: none; margin: 0; }
 .eval-bar {
   position: relative;
   flex: 0 0 28px;
+  margin-block: 34px; /* lines up with the board, between the two player strips */
   overflow: hidden;
   border-radius: 6px;
   background: #2c2c2e;
@@ -734,3 +736,31 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
 .mark-review-inaccuracy.mark-badge::after { color: #1d1d1f; background: #f2c200; content: '?!'; }
 .mark-review-mistake.mark-badge::after { color: #1d1d1f; background: #ec7a08; content: '?'; }
 .mark-review-blunder.mark-badge::after { background: #d92d20; content: '??'; }
+
+/* Player strips: captures and material lead, around the board. */
+.player-strip { display: flex; align-items: center; gap: 8px; height: 28px; font-size: 13px; }
+#player-top { margin-bottom: 6px; }
+#player-bottom { margin-top: 6px; }
+.player-name { flex: none; font-weight: 600; letter-spacing: -.01em; }
+/* On the board's light colour, so pieces of either colour stand out in any theme. */
+.captured {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  height: 26px;
+  padding: 0 7px 0 5px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--sq-light);
+}
+.captured-group { display: flex; flex: none; }
+.captured-group svg { display: block; flex: none; width: 21px; height: 21px; }
+.captured-group svg + svg { margin-left: -13px; }
+.material-lead { flex: none; font-size: 13px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .player-name { max-width: 34%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .captured-group svg { width: 18px; height: 18px; }
+  .captured-group svg + svg { margin-left: -11px; }
+  .captured { gap: 3px; padding: 0 5px 0 3px; }
+}

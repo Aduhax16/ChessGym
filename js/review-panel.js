@@ -265,7 +265,7 @@ export class ReviewPanel {
     bar.classList.toggle('is-flipped', this.board.orientation === 'b');
     bar.classList.toggle('black-leads', winChance(evaluation) < 50);
     $('eval-fill').style.height = `${winChance(evaluation)}%`;
-    $('eval-text').textContent = formatEval(evaluation);
+    $('eval-text').textContent = formatEval(evaluation, 1); // the bar is too narrow for two decimals
   }
 
   _markCurrent() {

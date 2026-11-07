@@ -34,9 +34,10 @@ function parsePlacement(fen) {
 }
 
 export class Board {
-  constructor(root, { onMove }) {
+  constructor(root, { onMove, onPosition = () => {} }) {
     this.root = root;
     this.onMove = onMove;
+    this.onPosition = onPosition;
     this.orientation = 'w';
     this.pieceEls = new Map(); // square -> element
     this.selected = null;
@@ -167,6 +168,7 @@ export class Board {
     this.position = next;
     this.clearAnnotations();
     this._clearSelection();
+    this.onPosition(fen);
   }
 
   /** `color` may move; `destsFor(square)` returns [{to, capture}]. Null disables input. */

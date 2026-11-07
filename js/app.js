@@ -4,6 +4,7 @@ import { Appearance, BOARD_THEMES } from './appearance.js';
 import { Board } from './board.js';
 import { blendRows, loadBand, loadMeta, loadOpenings, rowsFor } from './book.js';
 import { Engine, ENGINE_FLOOR } from './bot.js';
+import { materialFromFen } from './material.js';
 import { Progress } from './progress.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
 import { analyseGame, buildReview, isBookMove } from './review.js';
@@ -434,7 +435,7 @@ function newSession() {
   state.lastWrongAt = null;
   state.hintShownAt = null;
   state.currentLine = null;
-  if (!state.board) state.board = new Board($('board'), { onMove: handleUserMove });
+  if (!state.board) state.board = new Board($('board'), { onMove: handleUserMove, onPosition: renderPlayers });
   state.board.setOrientation(state.opening.color === 'white' ? 'w' : 'b');
   state.board.clearArrows();
   state.board.setMarks([]);
@@ -448,6 +449,42 @@ function newSession() {
   $('resign').hidden = !isFree(state.opening);
   setStatus('', '');
   nextTurn();
+}
+
+function capturedIcons(types, color) {
+  const groups = [];
+  for (const type of types) {
+    if (groups[groups.length - 1]?.type !== type) groups.push({ type, node: el('span', { class: 'captured-group' }) });
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('viewBox', '0 0 40 40');
+    icon.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', `assets/pieces.svg#${color}${type}`);
+    icon.append(use);
+    groups[groups.length - 1].node.append(icon);
+  }
+  return groups.map((group) => group.node);
+}
+
+/** Fills the strips around the board with each side's captures and lead. */
+function renderPlayers(fen) {
+  const { captured, advantage } = materialFromFen(fen);
+  const bottom = state.board.orientation;
+  const top = bottom === 'w' ? 'b' : 'w';
+  const draw = (id, color, name) => {
+    const other = color === 'w' ? 'b' : 'w';
+    const lead = color === 'w' ? advantage : -advantage;
+    const taken = captured[color];
+    const label = `${name}: ${taken.length ? `has captured ${count(taken.length, 'piece', 'pieces')}` : 'no captures'}${lead > 0 ? `, ahead by ${count(lead, 'point', 'points')}` : ''}`;
+    $(id).setAttribute('aria-label', label);
+    $(id).setAttribute('role', 'group');
+    const parts = [el('span', { class: 'player-name' }, name)];
+    if (taken.length) parts.push(el('span', { class: 'captured' }, ...capturedIcons(taken, other)));
+    if (lead > 0) parts.push(el('span', { class: 'material-lead' }, `+${lead}`));
+    $(id).replaceChildren(...parts);
+  };
+  draw('player-top', top, opponentLabel(state.trainer.opponent));
+  draw('player-bottom', bottom, 'You');
 }
 
 function opponentLabel(opponent) {

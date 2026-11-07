@@ -16,6 +16,7 @@ const APP_FILES = [
   'js/book.js',
   'js/bot.js',
   'js/install.js',
+  'js/material.js',
   'js/progress.js',
   'js/rating.js',
   'js/review-panel.js',

@@ -3,6 +3,7 @@ import { Chess } from '../vendor/chess.js';
 import { blendRows, keyOf, loadBand, loadMeta, loadOpenings, rowsFor } from '../js/book.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
 import { buildIndex, MODES, Trainer, userPositions } from '../js/trainer.js';
+import { materialFromFen } from '../js/material.js';
 import { Progress } from '../js/progress.js';
 import { botMove, chooseMove, Engine, ENGINE_CEILING, ENGINE_FLOOR, engineSettings, parseInfo } from '../js/bot.js';
 import { analyseGame, buildReview, classify, formatEval, fromEngine, isBookMove, moveAccuracy, winChance } from '../js/review.js';
@@ -530,6 +531,32 @@ test('real data: levels really differ', async () => {
 });
 
 
+/* ---------- Material ---------- */
+
+test('the starting position has no captures and no lead', () => {
+  equal(materialFromFen(new Chess().fen()), { captured: { w: [], b: [] }, advantage: 0 });
+});
+
+test('captures are listed for the side that made them, weakest first', () => {
+  const chess = new Chess();
+  for (const san of ['e4', 'd5', 'exd5', 'Qxd5', 'Nc3', 'Qxg2', 'Bxg2']) chess.move(san);
+  const { captured, advantage } = materialFromFen(chess.fen());
+  equal(captured.w, ['p', 'q']);
+  equal(captured.b, ['p', 'p']);
+  equal(advantage, 8);
+});
+
+test('the lead is negative when Black is ahead', () => {
+  equal(materialFromFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1').advantage, -9);
+});
+
+test('a promoted pawn counts as the new piece and not as a capture', () => {
+  const { captured, advantage } = materialFromFen('Qnbqkbnr/1ppppppp/8/8/8/8/1PPPPPPP/RNBQKBNR b KQk - 0 1');
+  equal(captured.b, []);
+  equal(captured.w, ['p', 'r']);
+  equal(advantage, 14);
+});
+
 /* ---------- Game review ---------- */
 
 function playedMoves(...sans) {
@@ -568,9 +595,10 @@ test('moves are graded by how much expected score they give away', () => {
 });
 
 test('evaluations read like a chess site', () => {
-  equal([{ cp: 35 }, { cp: -120 }, { cp: 0 }, { mate: 3 }, { mate: -2 }].map(formatEval),
+  equal([{ cp: 35 }, { cp: -120 }, { cp: 0 }, { mate: 3 }, { mate: -2 }].map((evaluation) => formatEval(evaluation)),
     ['+0.35', '-1.20', '0.00', '+M3', '-M2']);
-  equal([{ mate: 1, over: true }, { mate: -1, over: true }, { cp: 0, over: true }].map(formatEval), ['1-0', '0-1', '½-½']);
+  equal(formatEval({ cp: -2450 }, 1), '-24.5');
+  equal([{ mate: 1, over: true }, { mate: -1, over: true }, { cp: 0, over: true }].map((evaluation) => formatEval(evaluation)), ['1-0', '0-1', '½-½']);
 });
 
 test('UCI info lines give a score and line, and bounds are ignored', () => {

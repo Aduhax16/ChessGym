@@ -40,14 +40,14 @@ export function winChance(evaluation) {
   return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * evaluation.cp)) - 1);
 }
 
-export function formatEval(evaluation) {
+export function formatEval(evaluation, digits = 2) {
   if (evaluation.over) {
     if (evaluation.mate === undefined) return '½-½';
     return evaluation.mate > 0 ? '1-0' : '0-1';
   }
   if (evaluation.mate !== undefined) return `${evaluation.mate > 0 ? '+' : '-'}M${Math.abs(evaluation.mate)}`;
   const pawns = evaluation.cp / 100;
-  return `${pawns > 0 ? '+' : ''}${pawns.toFixed(2)}`;
+  return `${pawns > 0 ? '+' : ''}${pawns.toFixed(digits)}`;
 }
 
 export function classify(loss) {
