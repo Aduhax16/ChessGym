@@ -46,8 +46,8 @@ If you learn only what the masters play, you're preparing for someone else's gam
 
 ## What you get
 
-- **125 openings and 1,145 lines**, from the Italian to the Grob. Most openings have 8 to 10 lines.
-- **Learn your lines like flashcards.** In *Your lines* mode the opponent follows the opening's lines move by move. A new line is shown with arrows, then you play it from memory. Get a move wrong and you try again, with hints if you need them. Each clean run sends the line further away (1, 3, 7, 16 days…), and a slip brings it straight back.
+- **125 openings and 15,927 lines**, from the Italian to the Grob. Most openings have 100 to 150 lines.
+- **Learn your lines like flashcards.** In *Your lines* mode the opponent follows the opening's lines move by move. You play every line from memory: a right move gets a tick, a wrong one a cross, and you try again. Hint shows the move if you're stuck, and Learn mode shows it with arrows. Each clean run sends the line further away (1, 3, 7, 16 days…), and a slip brings it straight back.
 - **Free play.** No script: play any opening and see how people at your rating respond. When the real games run out, Stockfish finishes the game, limited to your opponent's rating.
 - **Play either colour.** With Black, choose what White opens with and then your defence.
 - **Or face real opponents.** In *Real games* mode, enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
@@ -95,7 +95,7 @@ If you learn only what the masters play, you're preparing for someone else's gam
 
 - **Opponent moves:** a sample of 1,345,577 rated blitz, rapid and classical games from the [Lichess open database](https://database.lichess.org/) (January 2024, CC0). Each move counts in the band of the player who made it.
 - **Your repertoire:** 407 hand-written lines, **checked with Stockfish 19**. About 2,000 student moves went through the audit, and anything that lost too much was fixed. Gambits get more leeway, and the few deliberately unsound trap lines tell you they're traps.
-- **The other 738 lines** come from `scripts/expand_lines.py`: the opponent's replies are the ones really played (by 2000+ players or at club level) that Stockfish doesn't rate as a clear mistake, and your answers are the most popular strong move within 0.35 pawns of Stockfish's best. Their short notes are generated too.
+- **The other 15,520 lines** come from `scripts/expand_lines.py`: the opponent's replies are the ones really played (by 2000+ players or at club level) that Stockfish doesn't rate as a clear mistake, and your answers are the most popular strong move within 0.35 pawns of Stockfish's best. When real games run out, the opponent keeps to Stockfish's best moves. Lines that repeat a position or answer it differently from another line are left out. Their short notes are generated too.
 - **After your repertoire ends:** moves commonly chosen by players rated 2000+.
 - **Free play:** real moves at your level, then from nearby levels. Past that, [Stockfish 19](https://stockfishchess.org/) (the 1.8 MB lite build) plays on in your browser, limited to your opponent's rating with `UCI_LimitStrength`. It only downloads when you start a free game, and the opening trainer never loads it.
   - **Below 1320:** that's the lowest strength Stockfish offers, so weaker opponents play at 1320 and hand a share of their moves to a small built-in bot, which makes mistakes. The share grows steadily below 1320, reaching about 59% at 500.
@@ -128,7 +128,7 @@ Your favourite line is missing? Adding one means editing a JSON file, with no Ja
 
 Ideas on the list:
 
-- [ ] Spaced repetition for the lines you miss
+- [x] Spaced repetition for the lines you miss
 - [ ] Import your own repertoire from a PGN or a Lichess study
 - [ ] More languages
 

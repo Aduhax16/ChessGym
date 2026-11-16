@@ -1,0 +1,11 @@
+[
+  {"name": "Main line", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 d4 Bd6 Re1 Qh4 g3 Qh3", "idea": "Queen on h3, bishop on d6, and the rest of your army on the way. Bg4 and Rae8 next."},
+  {"name": "Declined with d3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 d3 dxe4 dxe4 Qxd1 Bxd1 Bc5", "idea": "White opts out, but you get easy equality in the endgame."},
+  {"name": "Against 12.d3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 d3 Bd6", "idea": "12.d3 is chosen by 22% of 2000+ players here. Your answer is 12...Bd6. The position is about equal, with a normal game ahead."},
+  {"name": "Against 10.d4", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 d4 exd4", "idea": "10.d4 is chosen in 18% of club games here. Your answer is 10...exd4. The position is about equal, with a normal game ahead."},
+  {"name": "Against 12.Re1", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 Re1 Bd6 d4 Qh4", "idea": "12.Re1 is chosen in 13% of club games here. Your answer is 12...Bd6. The position is about equal, with a normal game ahead."},
+  {"name": "Against 13.d3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 Re1 Bd6 d3 Qh4", "idea": "13.d3 is Stockfish's choice once real games run out. Your answer is 13...Qh4. The position is about equal, with a normal game ahead."},
+  {"name": "Against 10.h3", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 h3 e4 Rxe4 Bf5 Bxd5 Qxd5 Re3 Bxb1", "idea": "10.h3 is chosen by 6% of 2000+ players here. Your answer is 10...e4. The position is about equal, with a normal game ahead."},
+  {"name": "Against 12.Qe1", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 h3 e4 Rxe4 Bf5 Qe1 Qd7 Ne5 Nxe5", "idea": "12.Qe1 is Stockfish's choice once real games run out. Your answer is 12...Qd7. You come out better."},
+  {"name": "Against 13.d4", "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 h3 e4 Rxe4 Bf5 Qe1 Qd7 d4 Bxe4", "idea": "13.d4 is Stockfish's choice once real games run out. Your answer is 13...Bxe4. The position is about equal, with a normal game ahead."}
+]

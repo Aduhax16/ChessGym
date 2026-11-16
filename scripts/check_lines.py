@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit data/openings.json with Stockfish.
+"""Audit the repertoire with Stockfish.
 
 For every move the student has to play (after the opening's forced prefix),
 compares the engine's evaluation of the best move with that of the written
@@ -18,6 +18,8 @@ from pathlib import Path
 
 import chess
 import chess.engine
+
+import repertoire
 
 ROOT = Path(__file__).resolve().parent.parent
 LOOSE_STYLES = {"Gambit", "Tricky"}
@@ -38,7 +40,7 @@ def main():
     args = parser.parse_args()
     only = set(filter(None, args.only.split(",")))
 
-    data = json.loads((ROOT / "data" / "openings.json").read_text())
+    data = repertoire.load()
     engine = chess.engine.SimpleEngine.popen_uci(args.engine)
     engine.configure({"Threads": 4, "Hash": 256})
     limit = chess.engine.Limit(nodes=args.nodes)

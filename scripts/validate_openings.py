@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check data/openings.json: legal moves, correct prefixes, consistent answers.
+"""Check the repertoire (data/openings.json and data/lines/): legal moves, correct prefixes, consistent answers.
 
     pip install chess
     python scripts/validate_openings.py
@@ -12,6 +12,8 @@ from collections import defaultdict
 from pathlib import Path
 
 import chess
+
+import repertoire
 
 ROOT = Path(__file__).resolve().parent.parent
 REQUIRED = {"id", "name", "color", "difficulty", "style", "prefix", "summary", "lines"}
@@ -74,7 +76,7 @@ def validate(data):
 
 
 def main():
-    data = json.loads((ROOT / "data" / "openings.json").read_text())
+    data = repertoire.load()
     errors, warnings = validate(data)
     for warning in warnings:
         print(f"warning: {warning}")

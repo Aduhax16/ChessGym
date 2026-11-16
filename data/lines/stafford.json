@@ -1,0 +1,13 @@
+[
+  {"name": "Main trap line", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 Bg5 Bxf2+ Kxf2 Ng4+ Bxg4 Qxg5", "idea": "A trap: it only works if White takes everything. Against accurate replies you are just worse."},
+  {"name": "Against e5", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 e5 Ne4 d3 Bc5 dxe4 Bxf2+ Ke2 Bg4+", "idea": "A trap: dropping the knight is the point, because ...Bxf2+ and ...Bg4+ win the queen."},
+  {"name": "Against Nc3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 Be2 h5 h3 Qd4", "idea": "...Qd4 eyes f2 and e4 at the same time."},
+  {"name": "Against 7.c3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 c3 Bb6", "idea": "7.c3 is chosen by 43% of 2000+ players here. Your answer is 7...Bb6. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 6.h3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 h3 Bxf2+ Kxf2 Nxe4+", "idea": "6.h3 is chosen in 19% of club games here. Your answer is 6...Bxf2+. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 6.Bc4", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 Bc4 Ng4 O-O Qh4 h3 Nxf2 Bxf7+ Kd8", "idea": "6.Bc4 is chosen in 36% of club games here. Your answer is 6...Ng4. You come out better."},
+  {"name": "Against 6.h3, then 7.Qf3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 h3 Qd4 Qf3 Bb4", "idea": "6.h3 is chosen by 18% of 2000+ players here. Your answer is 6...Qd4. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 7.h3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 h3 Qd4 Rf1 Qe5 Qd2 Qe6 Qg5 b6", "idea": "7.h3 is chosen in 19% of club games here. Your answer is 7...Qd4. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 10.Qc3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 h3 Qd4 Rf1 Qe5 Qd2 Qe6 Qc3 Qd6", "idea": "10.Qc3 is Stockfish's choice once real games run out. Your answer is 10...Qd6. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 9.Nc3", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 h3 Qd4 Rf1 Qe5 Nc3 Bd4 Qd2 Bd7", "idea": "9.Nc3 is Stockfish's choice once real games run out. Your answer is 9...Bd4. Stockfish prefers your opponent's position here, so play accurately."},
+  {"name": "Against 10.f4", "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Be2 h5 h3 Qd4 Rf1 Qe5 Nc3 Bd4 f4 Qe7", "idea": "10.f4 is Stockfish's choice once real games run out. Your answer is 10...Qe7. Stockfish prefers your opponent's position here, so play accurately."}
+]

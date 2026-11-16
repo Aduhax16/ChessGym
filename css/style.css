@@ -766,7 +766,7 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
 }
 
 /* Lines of the opening, with where each stands */
-.line-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.line-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 340px; overflow-y: auto; overscroll-behavior: contain; position: relative; }
 .line-item {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 9px 10px; border: 0; border-radius: 10px; background: transparent;
@@ -779,3 +779,8 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
 .line-tag.tag-new { color: var(--accent-text); }
 .line-tag.tag-due { color: var(--accent-ink); background: var(--accent); }
 .line-tag.tag-mastered { color: var(--good); }
+
+/* Practice feedback: a tick for a right move, a cross for a wrong one. */
+.mark-right { background: rgb(52 199 89 / .38); }
+.mark-right.mark-badge::after { background: #1a8a3f; content: '✓'; }
+.mark-wrong.mark-badge::after { background: #d92d20; content: '✕'; }

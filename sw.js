@@ -41,9 +41,13 @@ const ENGINE_FILES = [
 
 /** These files are large, so one failed download must not block the install. */
 async function storeLargeFiles(cache) {
-  const response = await cache.match('data/book/meta.json');
-  const { bands } = await response.json();
-  const files = [...bands.map(({ id }) => `data/book/${id}.json`), ...ENGINE_FILES];
+  const { bands } = await (await cache.match('data/book/meta.json')).json();
+  const { openings } = await (await cache.match('data/openings.json')).json();
+  const files = [
+    ...bands.map(({ id }) => `data/book/${id}.json`),
+    ...openings.map(({ id }) => `data/lines/${id}.json`),
+    ...ENGINE_FILES,
+  ];
   await Promise.allSettled(files.map((file) => cache.add(file)));
 }
 

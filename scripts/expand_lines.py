@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add lines to each opening in data/openings.json, from real games and Stockfish.
+"""Add lines to each opening of the repertoire, from real games and Stockfish.
 
     pip install chess
     python scripts/expand_lines.py --engine /path/to/stockfish --names /path/to/chess-openings
@@ -24,20 +24,25 @@ from pathlib import Path
 import chess
 import chess.engine
 
+import repertoire
+
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "data" / "book"
 CLUB_BANDS = ["1000", "1250", "1500", "1750"]
 MATE = 3000
 
 # The opponent's replies worth a line: common enough and not a clear mistake.
-REFERENCE_SHARE = 0.12
-CLUB_SHARE = 0.15
-RIVAL_MAX_LOSS = 60
+REFERENCE_SHARE = 0.05
+CLUB_SHARE = 0.07
+RIVAL_MAX_LOSS = 70
+# Branches the opponent reaches less often than this are cut, so the tree stays finite.
+MIN_PROBABILITY = 0.0003
 # Your move: the most popular among strong players within this much of the best.
 USER_MAX_LOSS = 35
-MIN_PLIES = 14
-MAX_PLIES = 18
-MULTIPV = 6
+# Once real games run out, a second engine move is also followed if it is this close to the best.
+ENGINE_ALTERNATIVE = 25
+MAX_PLIES = 20
+MULTIPV = 8
 
 
 def key_of(board):
@@ -117,7 +122,7 @@ def grow(opening, books, worker):
     user_white = opening["color"] == "white"
     answers = answers_of(opening)
     prefix = opening["prefix"].split()
-    max_plies = max(MAX_PLIES, len(prefix) + 8)
+    max_plies = max(MAX_PLIES, len(prefix) + 10)
     leaves = []
 
     def user_move(board):
@@ -159,7 +164,8 @@ def grow(opening, books, worker):
         return sorted(kept, key=lambda item: -item[1])
 
     def walk(board, moves, probability, notes):
-        if board.is_game_over() or len(moves) >= max_plies:
+        # A position seen twice means pieces going back and forth: the line ends there.
+        if board.is_game_over() or len(moves) >= max_plies or board.is_repetition(2):
             leaves.append((moves, probability, notes))
             return
         if board.turn == user_white:
@@ -173,14 +179,16 @@ def grow(opening, books, worker):
             return
         replies = rival_moves(board)
         if not replies:
-            if len(moves) >= MIN_PLIES:
-                leaves.append((moves, probability, notes))
-                return
+            # Past the real games, the opponent's best moves by Stockfish carry the line on.
             engine = worker.scores(board)
             if not engine:
                 leaves.append((moves, probability, notes))
                 return
-            replies = [(max(engine, key=engine.get), 1.0, 0, 0)]
+            best = max(engine.values())
+            good = sorted((san for san in engine if best - engine[san] <= ENGINE_ALTERNATIVE), key=lambda san: -engine[san])
+            replies = [(san, 1 / len(good[:2]), 0, 0) for san in good[:2]]
+        likely = [reply for reply in replies if probability * reply[1] >= MIN_PROBABILITY]
+        replies = likely or replies[:1]
         for san, share, club_share, strong_share in replies:
             board.push_san(san)
             note = (len(moves), san, club_share, strong_share)
@@ -308,11 +316,13 @@ def expand(task):
             # Through a transposition, a branch could answer a known position differently.
             mine = {}
             board = chess.Board()
+            repeats = False
             for san in moves:
                 if board.turn == user_white:
+                    repeats = repeats or mine.get(key_of(board), san) != san
                     mine.setdefault(key_of(board), san)
                 board.push_san(san)
-            if any(answers.get(key, san) != san for key, san in mine.items()):
+            if repeats or any(answers.get(key, san) != san for key, san in mine.items()):
                 continue
             for key, san in mine.items():
                 answers.setdefault(key, san)
@@ -329,16 +339,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--engine", required=True)
     parser.add_argument("--names", required=True)
-    parser.add_argument("--nodes", type=int, default=250_000)
-    parser.add_argument("--target", type=int, default=10)
+    parser.add_argument("--nodes", type=int, default=150_000)
+    parser.add_argument("--target", type=int, default=150)
     parser.add_argument("--only", default="", help="comma-separated opening ids")
     parser.add_argument("--workers", type=int, default=max(1, multiprocessing.cpu_count() - 1))
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     only = set(filter(None, args.only.split(",")))
 
-    path = ROOT / "data" / "openings.json"
-    data = json.loads(path.read_text())
+    data = repertoire.load()
     names = load_names(args.names)
     tasks = [(opening, args.engine, args.nodes, args.target, names)
              for opening in data["openings"] if not only or opening["id"] in only]
@@ -352,30 +361,13 @@ def main():
 
     if args.dry_run:
         return
-    path.write_text(insert_lines(path.read_text(), added))
+    for opening in data["openings"]:
+        for line in added.get(opening["id"], []):
+            line.pop("generated", None)
+            opening["lines"].append(line)
+    repertoire.save(data)
     total = sum(len(lines) for lines in added.values())
     print(f"Added {total} lines.")
-
-
-def format_line(line):
-    fields = ", ".join(f"{json.dumps(key)}: {json.dumps(line[key], ensure_ascii=False)}" for key in ("name", "moves", "idea"))
-    return f"      {{ {fields} }}"
-
-
-def insert_lines(text, added):
-    """Appends lines to each opening in place, keeping the file's one-line-per-line layout."""
-    rows = text.split("\n")
-    current = None
-    out = []
-    for row in rows:
-        if row.startswith('    { "id": '):
-            current = json.loads(row.split('"id": ', 1)[1].split(",", 1)[0])
-        if current and row.startswith("    ]}") and added.get(current):
-            out[-1] = out[-1] + ","
-            out.extend(",\n".join(format_line(line) for line in added[current]).split("\n"))
-            current = None
-        out.append(row)
-    return "\n".join(out)
 
 
 if __name__ == "__main__":

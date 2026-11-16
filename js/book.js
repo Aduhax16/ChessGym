@@ -20,6 +20,8 @@ async function loadJson(path) {
 export const loadOpenings = () => loadJson('openings.json');
 export const loadMeta = () => loadJson('book/meta.json');
 export const loadBand = (id) => loadJson(`book/${id}.json`);
+/** An opening's lines are a file of their own, fetched only when it is trained. */
+export const loadLines = (id) => loadJson(`lines/${id}.json`);
 
 /** Placement, side to move and castling. Must match position_key() in scripts/build_book.py. */
 export function keyOf(fen) {

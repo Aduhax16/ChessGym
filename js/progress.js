@@ -54,6 +54,22 @@ export class Progress {
     return this.data.positions[openingId]?.[key]?.level ?? 0;
   }
 
+  /** Like mastery, from the number of positions alone, for an opening whose lines aren't loaded. */
+  masteryOf(openingId, total) {
+    if (!total) return 0;
+    const earned = Object.values(this.data.positions[openingId] ?? {}).reduce((sum, entry) => sum + entry.level, 0);
+    return Math.min(1, earned / (total * MAX_LEVEL));
+  }
+
+  /** Mastered and due lines among those played, without needing the lines themselves. */
+  savedLineCounts(openingId, now = Date.now()) {
+    const entries = Object.values(this.data.lines[openingId] ?? {});
+    return {
+      mastered: entries.filter((entry) => entry.level >= LINE_MASTERED).length,
+      due: entries.filter((entry) => entry.due <= now).length,
+    };
+  }
+
   /** Average progress over the given positions, from 0 to 1. */
   mastery(openingId, keys) {
     if (!keys.length) return 0;

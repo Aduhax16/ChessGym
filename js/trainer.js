@@ -11,8 +11,12 @@ const UNLISTED_LINE_WEIGHT = 0.03;
 
 export const MODES = { LEARN: 'learn', PRACTICE: 'practice' };
 
+const indexes = new WeakMap(); // opening.lines -> index, so each new game doesn't replay every line
+
 /** Maps each position in an opening's lines to the moves each side plays there. */
 export function buildIndex(opening) {
+  const cached = indexes.get(opening.lines);
+  if (cached?.color === opening.color) return cached.index;
   const index = new Map();
   const userTurn = opening.color === 'white' ? 'w' : 'b';
   for (const line of opening.lines) {
@@ -24,6 +28,7 @@ export function buildIndex(opening) {
       chess.move(san);
     }
   }
+  indexes.set(opening.lines, { color: opening.color, index });
   return index;
 }
 

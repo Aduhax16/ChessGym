@@ -1,6 +1,6 @@
 // Browser tests for the training logic: serve the repo and open /tests/.
 import { Chess } from '../vendor/chess.js';
-import { blendRows, keyOf, loadBand, loadMeta, loadOpenings, rowsFor } from '../js/book.js';
+import { blendRows, keyOf, loadBand, loadLines, loadMeta, loadOpenings, rowsFor } from '../js/book.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, mixFor, opponentRange, toLichess } from '../js/rating.js';
 import { buildIndex, MODES, Trainer, userPositions } from '../js/trainer.js';
 import { materialFromFen } from '../js/material.js';
@@ -552,6 +552,7 @@ test('every band an opponent can use gets loaded', () => {
 
 const realData = async () => {
   const [data, meta] = await Promise.all([loadOpenings(), loadMeta()]);
+  data.openings = await Promise.all(data.openings.map(async (opening) => ({ ...opening, lines: await loadLines(opening.id) })));
   const loaded = { reference: await loadBand('reference') };
   for (const band of meta.bands) loaded[band.id] = await loadBand(band.id);
   return { data, meta, loaded };
@@ -574,6 +575,29 @@ test('real data: every opening survives sessions at every level', async () => {
         }
         assert(trainer.ply >= trainer.prefix.length, `${candidate.id}: ended inside the prefix`);
       }
+    }
+  }
+});
+
+test('real data: the summary matches every opening\'s lines', async () => {
+  const { data } = await realData();
+  for (const opening of data.openings) {
+    equal([opening.id, opening.lines.length], [opening.id, opening.lineCount]);
+    equal([opening.id, userPositions(opening).length], [opening.id, opening.positions]);
+  }
+});
+
+test('real data: every line plays through in lines mode', async () => {
+  const { data, meta, loaded } = await realData();
+  for (const candidate of data.openings) {
+    for (const line of candidate.lines) {
+      const opponent = drawOpponent({ low: 1200, high: 1400 }, meta.bands);
+      const trainer = new Trainer({ opening: candidate, opponent, books: loaded, line });
+      while (!trainer.done) {
+        if (trainer.isUserTurn) assert(trainer.tryMove(trainer.expected().moves[0]).ok, `${candidate.id} / ${line.name}`);
+        else trainer.playRival();
+      }
+      equal([line.name, trainer.endReason], [line.name, 'complete']);
     }
   }
 });

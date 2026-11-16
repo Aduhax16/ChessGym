@@ -2,7 +2,7 @@
 import { Chess } from '../vendor/chess.js';
 import { Appearance, BOARD_THEMES } from './appearance.js';
 import { Board } from './board.js';
-import { blendRows, loadBand, loadMeta, loadOpenings, rowsFor } from './book.js';
+import { blendRows, loadBand, loadLines, loadMeta, loadOpenings, rowsFor } from './book.js';
 import { Engine, ENGINE_FLOOR } from './bot.js';
 import { materialFromFen } from './material.js';
 import { LINE_MASTERED, Progress } from './progress.js';
@@ -35,11 +35,11 @@ const RIVAL_OPTIONS = [
   { id: RIVALS.REAL, label: 'Real games' },
 ];
 const RIVAL_NOTES = {
-  [RIVALS.LINES]: 'Your opponent follows the opening\'s lines move by move. New lines are shown first, then come back to practise from memory, further apart each time you get them right.',
+  [RIVALS.LINES]: 'Your opponent follows the opening\'s lines move by move. Play each line from memory. A right move gets a tick and a wrong one a cross. Lines you get right come back further apart.',
 };
 const LINE_MODE_NOTES = {
-  [MODES.LEARN]: 'An arrow shows you each move. New lines come first.',
-  [MODES.PRACTICE]: 'Lines due for review come first. A line you haven\'t seen yet is shown once with arrows.',
+  [MODES.LEARN]: 'An arrow shows you each move.',
+  [MODES.PRACTICE]: 'Play from memory. Lines due for review come first. Hint shows the move if you get stuck.',
 };
 const COLORS = [
   { id: 'white', label: 'White' },
@@ -115,6 +115,7 @@ const state = {
   reviewJob: null, // the analysis in progress for this game, if any
   lastPlayed: null,
   baseMarks: [],
+  tickSquare: null, // where your last right move landed; the tick stays until your next move
   rivalNote: null,
   leftRepertoire: false,
   lastWrongAt: null,
@@ -278,7 +279,7 @@ function visibleOpenings() {
   return openingsOfColor().filter((opening) =>
     (state.firstMove === ALL || firstMoveOf(opening) === state.firstMove)
     && (state.style === ALL || opening.style.includes(state.style))
-    && (!query || `${opening.name} ${opening.summary} ${opening.lines.map((line) => line.name).join(' ')}`.toLowerCase().includes(query)));
+    && (!query || `${opening.name} ${opening.summary}`.toLowerCase().includes(query)));
 }
 
 const positionCache = new Map();
@@ -298,10 +299,10 @@ function prefixBoard(opening) {
 const cardCache = new Map();
 function openingCard(opening) {
   if (!cardCache.has(opening.id)) {
-    const mastery = progress.mastery(opening.id, positionsOf(opening));
+    const mastery = progress.masteryOf(opening.id, opening.positions);
     const played = progress.played(opening.id);
-    const { due } = progress.lineCounts(opening.id, opening.lines);
-    const meta = [opening.difficulty, ...opening.style.slice(0, 1), count(opening.lines.length, 'line', 'lines')].join(' · ');
+    const { due } = progress.savedLineCounts(opening.id);
+    const meta = [opening.difficulty, ...opening.style.slice(0, 1), count(opening.lineCount, 'line', 'lines')].join(' · ');
     const playedMeta = [`${percent(mastery)} mastered`, due ? `${due} due` : null].filter(Boolean).join(' · ');
     cardCache.set(opening.id, el('button', {
       type: 'button',
@@ -391,8 +392,8 @@ function renderPlayBar() {
 const lineMode = (opening) => Boolean(opening) && !isFree(opening) && state.rival === RIVALS.LINES;
 
 function linesSummary(opening) {
-  const { mastered, due } = progress.lineCounts(opening.id, opening.lines);
-  return [count(opening.lines.length, 'line', 'lines'), `${mastered} mastered`, due ? `${due} due` : null].filter(Boolean).join(' · ');
+  const { mastered, due } = progress.savedLineCounts(opening.id);
+  return [count(opening.lineCount, 'line', 'lines'), `${mastered} mastered`, due ? `${due} due` : null].filter(Boolean).join(' · ');
 }
 
 function surpriseMe() {
@@ -421,9 +422,12 @@ async function startTraining() {
     let bands = isFree(opening) ? state.meta.bands.map((band) => band.id) : bandsInRange(currentRange(), state.meta.bands);
     if (lineMode(opening)) bands = []; // the opponent follows the lines, so only the review's theory check needs data
     const ids = [...bands, 'reference'];
-    const entries = await Promise.all(ids.map(async (id) => [id, await loadBand(id)]));
+    const [entries, lines] = await Promise.all([
+      Promise.all(ids.map(async (id) => [id, await loadBand(id)])),
+      isFree(opening) ? [] : loadLines(opening.id),
+    ]);
     state.books = Object.fromEntries(entries);
-    state.opening = opening;
+    state.opening = { ...opening, lines };
     state.range = currentRange();
     state.chosenLine = null;
     $('setup').hidden = true;
@@ -453,9 +457,8 @@ function newSession() {
   state.reviewJob = null;
   const opponent = drawOpponent(state.range, state.meta.bands);
   const line = lineMode(state.opening) ? pickLine() : null;
-  // A line you haven't seen yet is shown with arrows before you're asked to play it from memory.
   const fresh = line && progress.lineStatus(state.opening.id, line.moves).status === 'new';
-  const mode = fresh ? MODES.LEARN : state.mode;
+  const mode = state.mode;
   state.trainer = new Trainer({
     opening: state.opening,
     opponent,
@@ -473,6 +476,7 @@ function newSession() {
   state.masteryBefore = isFree(state.opening) ? 0 : progress.mastery(state.opening.id, positionsOf(state.opening));
   state.lastPlayed = null;
   state.baseMarks = [];
+  state.tickSquare = null;
   state.rivalNote = null;
   state.leftRepertoire = false;
   state.lastWrongAt = null;
@@ -614,6 +618,8 @@ function showPosition() {
   const marks = [];
   const last = trainer.moves[trainer.moves.length - 1];
   if (last) marks.push([last.from, 'mark-last'], [last.to, 'mark-last']);
+  const tick = state.tickSquare;
+  if (tick && trainer.chess.get(tick)?.color === trainer.userColor) marks.push([tick, 'mark-right mark-badge']);
   if (trainer.chess.isCheck()) {
     const color = trainer.chess.turn();
     const king = trainer.chess.board().flat().find((piece) => piece?.type === 'k' && piece.color === color);
@@ -668,8 +674,10 @@ function handleUserMove(from, to) {
 
   const before = trainer.fen;
   const result = trainer.tryMove(move.san);
+  state.tickSquare = null;
   if (result.ok) {
     state.lastPlayed = { san: move.san, before, by: 'user' };
+    if (result.source !== 'free') state.tickSquare = to;
     showPosition();
     if (result.source === 'free') setStatus('', 'Opponent thinking', `You played ${move.san}.`);
     else setStatus('good', result.source === 'reference' ? 'Good move' : 'Correct', `You played ${move.san}.`);
@@ -681,7 +689,7 @@ function handleUserMove(from, to) {
   preview.move(move.san);
   board.setMovable(null);
   board.setPosition(preview.fen());
-  board.setMarks([...state.baseMarks, [to, 'mark-wrong']]);
+  board.setMarks([...state.baseMarks, [to, 'mark-wrong mark-badge']]);
   board.shake();
   let detail = result.playable
     ? `${move.san} is playable (${percent(result.playable.share)} at ${state.meta.referenceMinElo}+), but you're practising another move.`
@@ -696,11 +704,13 @@ function handleUserMove(from, to) {
     board.setPosition(before);
     board.setMarks(state.baseMarks);
     board.setMovable(trainer.userColor, destsFor);
-    if (state.lastWrongAt === trainer.ply) revealArrow();
+    // In Learn the arrow comes back after a miss. In Practice only Hint shows it.
+    if (trainer.mode === MODES.LEARN) revealArrow();
     state.lastWrongAt = trainer.ply;
   }, WRONG_DELAY);
 }
 
+/** A tick on the square you just moved to, as on Chess.com. */
 function requestHint() {
   const { trainer, board } = state;
   if (!trainer.isUserTurn) return;
@@ -796,6 +806,15 @@ function renderLineList() {
     el('span', { class: 'line-item-name' }, line.name),
     el('span', { class: `line-tag tag-${kind}` }, tag)));
   }));
+  // With a hundred lines or more the list scrolls, so keep the current one in sight.
+  const current = $('line-list').querySelector('.is-current');
+  if (current) {
+    const list = $('line-list');
+    const top = current.parentElement.offsetTop; // the list is positioned, so this is inside it
+    if (top < list.scrollTop || top > list.scrollTop + list.clientHeight - current.offsetHeight) {
+      list.scrollTop = top - list.clientHeight / 2;
+    }
+  }
 }
 
 function renderMoves() {
@@ -1118,7 +1137,7 @@ async function main() {
     $('setup-error').textContent = `${error.message}.`;
     return;
   }
-  const lineTotal = state.data.openings.reduce((sum, opening) => sum + opening.lines.length, 0);
+  const lineTotal = state.data.openings.reduce((sum, opening) => sum + opening.lineCount, 0);
   $('hero-text').textContent = `Learn ${lineTotal.toLocaleString('en')} lines in ${state.data.openings.length} openings move by move, then face what real people at your rating play.`;
 
   const saved = progress.settings;
