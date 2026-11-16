@@ -1118,7 +1118,8 @@ async function main() {
     $('setup-error').textContent = `${error.message}.`;
     return;
   }
-  $('hero-text').textContent = `Your opponent plays what real people at your rating play, from ${(state.meta.games / 1e6).toFixed(1)} million games. ${state.data.openings.length} openings.`;
+  const lineTotal = state.data.openings.reduce((sum, opening) => sum + opening.lines.length, 0);
+  $('hero-text').textContent = `Learn ${lineTotal.toLocaleString('en')} lines in ${state.data.openings.length} openings move by move, then face what real people at your rating play.`;
 
   const saved = progress.settings;
   for (const key of ['color', 'firstMove', 'rating', 'scale', 'level', 'mode', 'rival', 'plies', 'adaptive', 'openingId']) {

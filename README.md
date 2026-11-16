@@ -46,18 +46,19 @@ If you learn only what the masters play, you're preparing for someone else's gam
 
 ## What you get
 
-- **125 openings and 407 lines**, from the Italian to the Grob.
+- **125 openings and 1,145 lines**, from the Italian to the Grob. Most openings have 8 to 10 lines.
+- **Learn your lines like flashcards.** In *Your lines* mode the opponent follows the opening's lines move by move. A new line is shown with arrows, then you play it from memory. Get a move wrong and you try again, with hints if you need them. Each clean run sends the line further away (1, 3, 7, 16 days…), and a slip brings it straight back.
 - **Free play.** No script: play any opening and see how people at your rating respond. When the real games run out, Stockfish finishes the game, limited to your opponent's rating.
 - **Play either colour.** With Black, choose what White opens with and then your defence.
-- **Opponents matched to you.** Enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
+- **Or face real opponents.** In *Real games* mode, enter your Chess.com, Lichess or FIDE rating and you get a 250-point band. Each game draws a new opponent inside it, who plays a blend of the two nearest levels. You can also ask for easier, harder or mixed.
 - **Learn and Practice modes.** Follow the arrows first, then play from memory.
-- **Real progress.** Right answers build mastery, misses take a little back, and the lines you haven't mastered come up more often.
+- **Real progress.** Right answers build mastery, misses take a little back, and every line shows whether it's new, due or mastered.
 - **Real stats after every move:** how often each move is played at your level, and how it scores.
 - **Arrows and marks.** Right-click a square to mark it and right-drag to draw an arrow, as on Chess.com. Hold Shift or Alt to change the colour.
 - **Your board, your colours.** Choose a theme or pick your own colours, in light or dark mode.
 - **Review every game.** When it ends, step through it move by move. Stockfish grades each move, shows the best one on the board, and gives both players an accuracy score.
 - **Install it like an app.** Add it to your phone or Mac from the Install button. It gets its own icon and works offline.
-- **No account, no ads, no tracking.** Your progress stays on your device.
+- **No account, no ads, no tracking.** Your progress stays on your device, and the app asks the browser to keep it.
 
 ## Pick your poison
 
@@ -93,7 +94,8 @@ If you learn only what the masters play, you're preparing for someone else's gam
 ## Where the moves come from
 
 - **Opponent moves:** a sample of 1,345,577 rated blitz, rapid and classical games from the [Lichess open database](https://database.lichess.org/) (January 2024, CC0). Each move counts in the band of the player who made it.
-- **Your repertoire:** a curated set of lines, **checked with Stockfish 19**. About 2,000 student moves went through the audit, and anything that lost too much was fixed. Gambits get more leeway, and the few deliberately unsound trap lines tell you they're traps.
+- **Your repertoire:** 407 hand-written lines, **checked with Stockfish 19**. About 2,000 student moves went through the audit, and anything that lost too much was fixed. Gambits get more leeway, and the few deliberately unsound trap lines tell you they're traps.
+- **The other 738 lines** come from `scripts/expand_lines.py`: the opponent's replies are the ones really played (by 2000+ players or at club level) that Stockfish doesn't rate as a clear mistake, and your answers are the most popular strong move within 0.35 pawns of Stockfish's best. Their short notes are generated too.
 - **After your repertoire ends:** moves commonly chosen by players rated 2000+.
 - **Free play:** real moves at your level, then from nearby levels. Past that, [Stockfish 19](https://stockfishchess.org/) (the 1.8 MB lite build) plays on in your browser, limited to your opponent's rating with `UCI_LimitStrength`. It only downloads when you start a free game, and the opening trainer never loads it.
   - **Below 1320:** that's the lowest strength Stockfish offers, so weaker opponents play at 1320 and hand a share of their moves to a small built-in bot, which makes mistakes. The share grows steadily below 1320, reaching about 59% at 500.
