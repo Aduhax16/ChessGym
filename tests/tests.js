@@ -157,7 +157,7 @@ test('reference rows drop rare moves', () => {
 
 const emptyProgress = () => {
   const progress = new Progress();
-  progress.data = { positions: {}, sessions: {}, settings: {} };
+  progress.data = { positions: {}, sessions: {}, lines: {}, settings: {} };
   progress._save = () => {};
   return progress;
 };
@@ -211,6 +211,64 @@ test('unmastered written lines can appear even without data', () => {
 });
 
 const freeOpening = { id: 'free', name: 'Free play', color: 'white', prefix: '', lines: [] };
+
+test('a single line: the rival follows it even where the data disagrees', () => {
+  const line = opening.lines[1]; // e4 c5 Nf3, while the data prefers e5
+  const trainer = make({ line });
+  equal(trainer.plies, 3);
+  assert(trainer.tryMove('e4').ok);
+  equal(trainer.playRival().san, 'c5');
+  assert(trainer.tryMove('Nf3').ok);
+  equal(trainer.endReason, 'complete');
+});
+
+test('a single line rejects another line\'s move without counting a mistake', () => {
+  const branching = { ...opening, lines: [{ name: 'A', moves: 'e4 e5 Nf3', idea: '' }, { name: 'B', moves: 'e4 e5 Bc4', idea: '' }] };
+  const trainer = make({ opening: branching, line: branching.lines[0] });
+  trainer.tryMove('e4');
+  trainer.playRival();
+  const other = trainer.tryMove('Bc4');
+  assert(!other.ok && other.otherLine, 'another line\'s move is flagged');
+  equal(trainer.mistakes, 0);
+  assert(!trainer.tryMove('d4').ok);
+  equal(trainer.mistakes, 1);
+});
+
+test('finishing a line reports it to the progress', () => {
+  const calls = [];
+  const progress = { ...fakeProgress(), finishLine: (...args) => calls.push(args) };
+  const trainer = make({ line: opening.lines[1], progress });
+  trainer.tryMove('e4');
+  trainer.playRival();
+  trainer.tryMove('Nf3');
+  equal(calls, [['test', 'e4 c5 Nf3', MODES.PRACTICE, true]]);
+});
+
+test('lines are scheduled like flashcards', () => {
+  const progress = emptyProgress();
+  const lines = [{ moves: 'a' }, { moves: 'b' }];
+  const day = 24 * 60 * 60 * 1000;
+  equal(progress.nextLine('x', lines, { now: 0 }), lines[0]);
+  progress.finishLine('x', 'a', MODES.LEARN, true, 0);
+  equal(progress.lineStatus('x', 'a', 0).status, 'due');
+  equal(progress.nextLine('x', lines, { now: 0 }), lines[0]); // practise what you just saw
+  progress.finishLine('x', 'a', MODES.PRACTICE, true, 0);
+  equal(progress.lineStatus('x', 'a', 0).entry.due, day);
+  equal(progress.nextLine('x', lines, { now: 0 }), lines[1]); // then a new one
+  progress.finishLine('x', 'a', MODES.PRACTICE, true, day);
+  equal(progress.lineStatus('x', 'a', day).entry.due, 4 * day);
+  progress.finishLine('x', 'a', MODES.PRACTICE, false, day);
+  equal(progress.lineStatus('x', 'a', day).status, 'due');
+  equal(progress.lineStatus('x', 'a', day).entry.level, 0);
+});
+
+test('mastered and due lines are counted', () => {
+  const progress = emptyProgress();
+  const lines = [{ moves: 'a' }, { moves: 'b' }];
+  for (let run = 0; run < 4; run += 1) progress.finishLine('x', 'a', MODES.PRACTICE, true, 0);
+  progress.finishLine('x', 'b', MODES.LEARN, true, 0);
+  equal(progress.lineCounts('x', lines, 0), { mastered: 1, due: 1 });
+});
 
 test('free play accepts any legal move and records nothing', () => {
   const progress = fakeProgress();

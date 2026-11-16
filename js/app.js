@@ -5,7 +5,7 @@ import { Board } from './board.js';
 import { blendRows, loadBand, loadMeta, loadOpenings, rowsFor } from './book.js';
 import { Engine, ENGINE_FLOOR } from './bot.js';
 import { materialFromFen } from './material.js';
-import { Progress } from './progress.js';
+import { LINE_MASTERED, Progress } from './progress.js';
 import { bandsByDistance, bandsInRange, drawOpponent, fromLichess, LEVELS, opponentRange, SCALES } from './rating.js';
 import { analyseGame, buildReview, isBookMove } from './review.js';
 import { ReviewPanel } from './review-panel.js';
@@ -28,6 +28,18 @@ const MODE_OPTIONS = [
 const MODE_NOTES = {
   [MODES.LEARN]: 'An arrow shows you each move.',
   [MODES.PRACTICE]: 'Play from memory. Your results count towards mastery.',
+};
+const RIVALS = { LINES: 'lines', REAL: 'real' };
+const RIVAL_OPTIONS = [
+  { id: RIVALS.LINES, label: 'Your lines' },
+  { id: RIVALS.REAL, label: 'Real games' },
+];
+const RIVAL_NOTES = {
+  [RIVALS.LINES]: 'Your opponent follows the opening\'s lines move by move. New lines are shown first, then come back to practise from memory, further apart each time you get them right.',
+};
+const LINE_MODE_NOTES = {
+  [MODES.LEARN]: 'An arrow shows you each move. New lines come first.',
+  [MODES.PRACTICE]: 'Lines due for review come first. A line you haven\'t seen yet is shown once with arrows.',
 };
 const COLORS = [
   { id: 'white', label: 'White' },
@@ -86,9 +98,11 @@ const state = {
   scale: 'chesscom',
   level: 'same',
   mode: MODES.PRACTICE,
+  rival: RIVALS.LINES,
   plies: 20,
   adaptive: true,
   // Session
+  chosenLine: null, // a line picked from the list, played next
   opening: null,
   range: null,
   books: {},
@@ -191,17 +205,27 @@ function renderSettings() {
     state.mode = mode;
     renderSettings();
   }));
+  $('rival-options').replaceChildren(segmented(RIVAL_OPTIONS, state.rival, (rival) => {
+    state.rival = rival;
+    renderSettings();
+    renderPlayBar();
+  }));
+  const lines = state.rival === RIVALS.LINES;
+  for (const row of document.querySelectorAll('[data-real-only]')) row.hidden = lines;
   $('length-options').replaceChildren(segmented(LENGTHS, state.plies, (plies) => {
     state.plies = plies;
     renderSettings();
   }));
-  $('mode-note').textContent = state.openingId === FREE_ID
-    ? 'Free play has no script, so Mode and Moves don\'t apply.'
-    : MODE_NOTES[state.mode];
+  $('mode-note').textContent = modeNote();
   $('adaptive').checked = state.adaptive;
   $('rating-input').value = state.rating;
   syncSlider();
   renderRangeSummary();
+}
+
+function modeNote() {
+  if (state.openingId === FREE_ID) return 'Free play has no script, so Mode and Moves don\'t apply.';
+  return (state.rival === RIVALS.LINES ? LINE_MODE_NOTES : MODE_NOTES)[state.mode];
 }
 
 function syncSlider() {
@@ -225,6 +249,10 @@ function rangeLabel(range) {
 }
 
 function renderRangeSummary() {
+  if (state.rival === RIVALS.LINES) {
+    $('range-summary').textContent = RIVAL_NOTES[RIVALS.LINES];
+    return;
+  }
   const range = currentRange();
   const exact = state.scale === 'lichess' ? '' : ` (${range.low}–${range.high} on Lichess, a rough conversion)`;
   $('range-summary').textContent = `Opponents rated ${rangeLabel(range)}${exact}. A new one each game, playing a blend of real moves at that level.`;
@@ -272,7 +300,9 @@ function openingCard(opening) {
   if (!cardCache.has(opening.id)) {
     const mastery = progress.mastery(opening.id, positionsOf(opening));
     const played = progress.played(opening.id);
+    const { due } = progress.lineCounts(opening.id, opening.lines);
     const meta = [opening.difficulty, ...opening.style.slice(0, 1), count(opening.lines.length, 'line', 'lines')].join(' · ');
+    const playedMeta = [`${percent(mastery)} mastered`, due ? `${due} due` : null].filter(Boolean).join(' · ');
     cardCache.set(opening.id, el('button', {
       type: 'button',
       class: 'opening-card',
@@ -282,7 +312,7 @@ function openingCard(opening) {
     el('span', { class: 'opening-body' },
       el('span', { class: 'opening-name' }, opening.name),
       el('span', { class: 'opening-summary' }, opening.summary),
-      el('span', { class: 'opening-meta' }, played ? `${percent(mastery)} mastered` : meta),
+      el('span', { class: 'opening-meta' }, played ? playedMeta : meta),
       played ? el('span', { class: 'mastery-track' }, el('span', { class: 'mastery-fill', style: `width:${mastery * 100}%` })) : null)));
   }
   const card = cardCache.get(opening.id);
@@ -302,9 +332,7 @@ function selectOpening(id) {
   for (const [openingId, card] of cardCache) markSelected(card, openingId);
   if (state.freeCard) markSelected(state.freeCard, FREE_ID);
   renderPlayBar();
-  $('mode-note').textContent = id === FREE_ID
-    ? 'Free play has no script, so Mode and Moves don\'t apply.'
-    : MODE_NOTES[state.mode];
+  $('mode-note').textContent = modeNote();
 }
 
 function freePlayCard() {
@@ -357,7 +385,14 @@ function renderPlayBar() {
   const opening = openingById(state.openingId);
   $('start').disabled = !opening;
   $('play-name').textContent = opening ? opening.name : 'Choose an opening';
-  $('play-range').textContent = `Opponents ${rangeLabel(currentRange())}`;
+  $('play-range').textContent = lineMode(opening) ? linesSummary(opening) : `Opponents ${rangeLabel(currentRange())}`;
+}
+
+const lineMode = (opening) => Boolean(opening) && !isFree(opening) && state.rival === RIVALS.LINES;
+
+function linesSummary(opening) {
+  const { mastered, due } = progress.lineCounts(opening.id, opening.lines);
+  return [count(opening.lines.length, 'line', 'lines'), `${mastered} mastered`, due ? `${due} due` : null].filter(Boolean).join(' · ');
 }
 
 function surpriseMe() {
@@ -374,20 +409,23 @@ async function startTraining() {
   if (!opening) return;
   progress.saveSettings({
     color: state.color, firstMove: state.firstMove, rating: state.rating, scale: state.scale, level: state.level,
-    mode: state.mode, plies: state.plies, adaptive: state.adaptive, openingId: state.openingId,
+    mode: state.mode, rival: state.rival, plies: state.plies, adaptive: state.adaptive, openingId: state.openingId,
   });
+  Progress.keep();
   const start = $('start');
   start.disabled = true;
   start.textContent = 'Loading…';
   $('setup-error').textContent = '';
   try {
     // Free play can borrow moves from any level once its own runs out of games.
-    const bands = isFree(opening) ? state.meta.bands.map((band) => band.id) : bandsInRange(currentRange(), state.meta.bands);
+    let bands = isFree(opening) ? state.meta.bands.map((band) => band.id) : bandsInRange(currentRange(), state.meta.bands);
+    if (lineMode(opening)) bands = []; // the opponent follows the lines, so only the review's theory check needs data
     const ids = [...bands, 'reference'];
     const entries = await Promise.all(ids.map(async (id) => [id, await loadBand(id)]));
     state.books = Object.fromEntries(entries);
     state.opening = opening;
     state.range = currentRange();
+    state.chosenLine = null;
     $('setup').hidden = true;
     $('training').hidden = false;
     window.scrollTo(0, 0);
@@ -414,12 +452,17 @@ function newSession() {
   state.reviewPanel?.reset();
   state.reviewJob = null;
   const opponent = drawOpponent(state.range, state.meta.bands);
+  const line = lineMode(state.opening) ? pickLine() : null;
+  // A line you haven't seen yet is shown with arrows before you're asked to play it from memory.
+  const fresh = line && progress.lineStatus(state.opening.id, line.moves).status === 'new';
+  const mode = fresh ? MODES.LEARN : state.mode;
   state.trainer = new Trainer({
     opening: state.opening,
     opponent,
     books: state.books,
     progress,
-    mode: state.mode,
+    line,
+    mode,
     plies: state.plies,
     adaptive: state.adaptive,
     free: isFree(state.opening),
@@ -441,14 +484,37 @@ function newSession() {
   state.board.setMarks([]);
   state.board.setPosition(state.trainer.fen);
   $('training-title').textContent = state.opening.name;
-  const modeName = isFree(state.opening) ? 'Free play' : (state.mode === MODES.LEARN ? 'Learn' : 'Practice');
-  $('training-meta').textContent = `Against ${opponentLabel(opponent)} · ${modeName}`;
+  const modeName = isFree(state.opening) ? 'Free play' : (mode === MODES.LEARN ? 'Learn' : 'Practice');
+  $('training-meta').textContent = line
+    ? `${fresh ? 'New line' : 'Your lines'} · ${modeName}`
+    : `Against ${opponentLabel(opponent)} · ${modeName}`;
+  $('lines-block').hidden = !line;
+  $('stats-block').hidden = Boolean(line);
   $('next-line').textContent = isFree(state.opening) ? 'New game' : 'Next line';
   $('finish-card').hidden = true;
   $('session-actions').hidden = false;
   $('resign').hidden = !isFree(state.opening);
   setStatus('', '');
   nextTurn();
+}
+
+/** The line picked from the list, or the one the schedule says comes next. */
+function pickLine() {
+  const { opening } = state;
+  const chosen = state.chosenLine;
+  state.chosenLine = null;
+  if (chosen) return chosen;
+  const previous = state.trainer?.line ?? null;
+  if (state.mode === MODES.LEARN) {
+    const fresh = opening.lines.find((line) => line !== previous && progress.lineStatus(opening.id, line.moves).status === 'new');
+    if (fresh) return fresh;
+  }
+  return progress.nextLine(opening.id, opening.lines, { skip: previous });
+}
+
+function playLine(line) {
+  state.chosenLine = line;
+  newSession();
 }
 
 function capturedIcons(types, color) {
@@ -483,8 +549,12 @@ function renderPlayers(fen) {
     if (lead > 0) parts.push(el('span', { class: 'material-lead' }, `+${lead}`));
     $(id).replaceChildren(...parts);
   };
-  draw('player-top', top, opponentLabel(state.trainer.opponent));
+  draw('player-top', top, rivalName());
   draw('player-bottom', bottom, 'You');
+}
+
+function rivalName() {
+  return state.trainer.line ? 'Opponent' : opponentLabel(state.trainer.opponent);
 }
 
 function opponentLabel(opponent) {
@@ -573,9 +643,9 @@ function promptUser() {
       : `Any common move at ${state.meta.referenceMinElo}+ counts.`;
     setStatus('info', isFirst ? 'Out of your repertoire' : 'Your move', [note, text].filter(Boolean).join(' '));
   } else {
-    setStatus('turn', 'Your move', note || (state.mode === MODES.LEARN ? 'Follow the arrow.' : 'Play from memory.'));
+    setStatus('turn', 'Your move', note || (trainer.mode === MODES.LEARN ? 'Follow the arrow.' : 'Play from memory.'));
   }
-  if (state.mode === MODES.LEARN) revealArrow();
+  if (trainer.mode === MODES.LEARN) revealArrow();
 }
 
 function destsFor(square) {
@@ -613,10 +683,12 @@ function handleUserMove(from, to) {
   board.setPosition(preview.fen());
   board.setMarks([...state.baseMarks, [to, 'mark-wrong']]);
   board.shake();
-  const detail = result.playable
+  let detail = result.playable
     ? `${move.san} is playable (${percent(result.playable.share)} at ${state.meta.referenceMinElo}+), but you're practising another move.`
     : `${move.san} isn't the move you're practising.`;
-  setStatus('bad', 'Try again', detail);
+  if (result.otherLine) detail = `${move.san} belongs to another of your lines. This one goes a different way.`;
+  else if (trainer.line && !result.playable) detail = `${move.san} isn't in this line.`;
+  setStatus(result.otherLine ? 'info' : 'bad', 'Try again', detail);
   renderPanel();
   const generation = state.generation;
   setTimeout(() => {
@@ -682,16 +754,48 @@ function renderPanel() {
     return;
   }
   const lines = trainer.matchingLines();
-  if (lines.length === 1) state.currentLine = lines[0];
+  if (trainer.line) state.currentLine = trainer.line;
+  else if (lines.length === 1) state.currentLine = lines[0];
   $('line-name').textContent = state.currentLine?.name ?? 'The idea';
   // While practising from memory, the plan would give the answer away.
-  const showIdea = state.mode === MODES.LEARN || trainer.done;
+  const showIdea = trainer.mode === MODES.LEARN || trainer.done;
   $('line-idea').textContent = showIdea && state.currentLine
     ? state.currentLine.idea
     : state.opening.summary;
   renderMoves();
-  renderStats();
+  if (trainer.line) renderLineList();
+  else renderStats();
   $('score').textContent = scoreText(trainer.answered, trainer.mistakes, trainer.hintsUsed);
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+function dueText(due) {
+  const days = Math.ceil((due - Date.now()) / DAY);
+  return days <= 1 ? 'Back tomorrow' : `Back in ${days} days`;
+}
+
+/** Every line of the opening with where it stands. Tap one to play it next. */
+function renderLineList() {
+  const { opening, trainer } = state;
+  const { mastered, due } = progress.lineCounts(opening.id, opening.lines);
+  $('lines-title').textContent = `Lines · ${mastered} of ${opening.lines.length} mastered${due ? ` · ${due} due` : ''}`;
+  $('line-list').replaceChildren(...opening.lines.map((line) => {
+    const { status, entry } = progress.lineStatus(opening.id, line.moves);
+    let tag = 'New';
+    if (status === 'due') tag = 'Due';
+    else if (entry) tag = entry.level >= LINE_MASTERED ? 'Mastered' : dueText(entry.due);
+    const kind = entry && entry.level >= LINE_MASTERED ? 'mastered' : status;
+    const current = line === trainer.line;
+    return el('li', {}, el('button', {
+      type: 'button',
+      class: `line-item${current ? ' is-current' : ''}`,
+      'aria-current': current ? 'true' : undefined,
+      onclick: () => playLine(line),
+    },
+    el('span', { class: 'line-item-name' }, line.name),
+    el('span', { class: `line-tag tag-${kind}` }, tag)));
+  }));
 }
 
 function renderMoves() {
@@ -776,6 +880,10 @@ function finish() {
     finishFreeGame();
     return;
   }
+  if (trainer.line) {
+    finishLine();
+    return;
+  }
   const summary = trainer.summary();
   const headlines = {
     complete: summary.clean && state.mode === MODES.PRACTICE ? 'Perfect line' : 'Line complete',
@@ -800,6 +908,31 @@ function finish() {
   $('finish-mastery').textContent = `${now}% of this opening mastered${change}.`;
 }
 
+function finishLine() {
+  const { trainer, opening } = state;
+  const summary = trainer.summary();
+  const { status, entry } = progress.lineStatus(opening.id, trainer.line.moves);
+  const next = progress.nextLine(opening.id, opening.lines, { skip: trainer.line });
+  const again = state.mode === MODES.PRACTICE && next === trainer.line;
+  if (again) state.chosenLine = trainer.line;
+  if (trainer.mode === MODES.LEARN) {
+    setStatus('good', 'Line shown', state.mode === MODES.PRACTICE ? 'Now play it from memory.' : 'Switch to Practice to play it from memory.');
+    $('finish-score').textContent = summary.answered ? `${count(summary.answered, 'move', 'moves')} played.` : '';
+  } else if (summary.clean) {
+    const when = entry.level >= LINE_MASTERED ? 'Mastered.' : `${dueText(entry.due)}.`;
+    setStatus('good', 'Perfect line', `${when} Each clean run spaces it out further.`);
+    $('finish-score').textContent = scoreText(summary.answered, summary.mistakes, summary.hints);
+  } else {
+    setStatus('info', 'Line complete', status === 'due' ? 'It stays due, so you\'ll practise it again soon.' : '');
+    $('finish-score').textContent = scoreText(summary.answered, summary.mistakes, summary.hints);
+  }
+  $('finish-mastery').textContent = linesSummary(opening);
+  const learnAgain = trainer.mode === MODES.LEARN && state.mode === MODES.PRACTICE;
+  $('next-line').textContent = learnAgain || again ? 'Practise it' : 'Next line';
+  // After seeing a new line, the next run is that same line from memory.
+  if (learnAgain) state.chosenLine = trainer.line;
+}
+
 function resign() {
   const { trainer } = state;
   if (!trainer.free || trainer.done) return;
@@ -820,7 +953,9 @@ function reviewPanel() {
 function openReview() {
   const { trainer } = state;
   const panel = reviewPanel();
-  panel.open(trainer.userColor, `${state.opening.name} · against ${opponentLabel(trainer.opponent)}`);
+  panel.open(trainer.userColor, trainer.line
+    ? `${state.opening.name} · ${trainer.line.name}`
+    : `${state.opening.name} · against ${opponentLabel(trainer.opponent)}`);
   if (panel.review) panel.show(panel.review);
   else if (!state.reviewJob) runReview();
 }
@@ -866,7 +1001,9 @@ async function shareResult() {
   }
   const summary = state.trainer.summary();
   const outcome = summary.clean ? 'a perfect line' : `a line with ${count(summary.mistakes, 'mistake', 'mistakes')}`;
-  const text = `I played ${outcome} of the ${state.opening.name} against a ${opponentLabel(state.trainer.opponent)} opponent on ChessGym`;
+  const text = state.trainer.line
+    ? `I played ${outcome} of the ${state.opening.name} (${state.trainer.line.name}) on ChessGym`
+    : `I played ${outcome} of the ${state.opening.name} against a ${opponentLabel(state.trainer.opponent)} opponent on ChessGym`;
   await sendShare(text, `${SITE_URL}#${state.opening.id}`);
 }
 
@@ -984,7 +1121,7 @@ async function main() {
   $('hero-text').textContent = `Your opponent plays what real people at your rating play, from ${(state.meta.games / 1e6).toFixed(1)} million games. ${state.data.openings.length} openings.`;
 
   const saved = progress.settings;
-  for (const key of ['color', 'firstMove', 'rating', 'scale', 'level', 'mode', 'plies', 'adaptive', 'openingId']) {
+  for (const key of ['color', 'firstMove', 'rating', 'scale', 'level', 'mode', 'rival', 'plies', 'adaptive', 'openingId']) {
     if (saved[key] !== undefined) state[key] = saved[key];
   }
   applyDeepLink();
@@ -1017,7 +1154,10 @@ async function main() {
   });
   $('adaptive').addEventListener('change', (event) => { state.adaptive = event.target.checked; });
   $('hint').addEventListener('click', requestHint);
-  $('restart').addEventListener('click', newSession);
+  $('restart').addEventListener('click', () => {
+    state.chosenLine = state.trainer?.line ?? null; // restarting keeps the same line
+    newSession();
+  });
   $('resign').addEventListener('click', resign);
   $('review-open').addEventListener('click', openReview);
   $('next-line').addEventListener('click', newSession);

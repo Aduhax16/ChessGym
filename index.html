@@ -47,17 +47,21 @@
               <div id="color-options"></div>
             </div>
             <div class="row row-stack">
+              <span class="row-label">Opponent plays</span>
+              <div id="rival-options"></div>
+            </div>
+            <div class="row row-stack" data-real-only>
               <label class="row-label" for="rating-input">Your rating</label>
               <div class="rating-control">
                 <input id="rating-input" type="number" inputmode="numeric" min="100" max="3500" step="25">
                 <input id="rating-slider" type="range" min="400" max="2800" step="25" aria-label="Your rating">
               </div>
             </div>
-            <div class="row row-stack">
+            <div class="row row-stack" data-real-only>
               <span class="row-label">Rated on</span>
               <div id="scale-options"></div>
             </div>
-            <div class="row row-stack">
+            <div class="row row-stack" data-real-only>
               <span class="row-label">Opponents</span>
               <div id="level-options"></div>
             </div>
@@ -69,11 +73,11 @@
               <span class="row-label">Mode</span>
               <div id="mode-options"></div>
             </div>
-            <div class="row">
+            <div class="row" data-real-only>
               <span class="row-label">Moves</span>
               <div id="length-options"></div>
             </div>
-            <label class="row">
+            <label class="row" data-real-only>
               <span class="row-label">Repeat weak lines</span>
               <input id="adaptive" class="switch" type="checkbox">
             </label>
@@ -205,7 +209,12 @@
           <p id="line-idea"></p>
         </section>
 
-        <section class="panel-block">
+        <section id="lines-block" class="panel-block" hidden>
+          <h2 id="lines-title">Lines</h2>
+          <ol id="line-list" class="line-list"></ol>
+        </section>
+
+        <section id="stats-block" class="panel-block">
           <h2 id="stats-title"></h2>
           <div id="stats" class="stats"></div>
         </section>

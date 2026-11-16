@@ -764,3 +764,18 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 24px 40px; }
   .captured-group svg + svg { margin-left: -11px; }
   .captured { gap: 3px; padding: 0 5px 0 3px; }
 }
+
+/* Lines of the opening, with where each stands */
+.line-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.line-item {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 10px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+}
+.line-item:hover { background: var(--fill); }
+.line-item.is-current { background: var(--fill); font-weight: 600; }
+.line-item-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.line-tag { flex: none; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--ink-2); background: var(--fill); }
+.line-tag.tag-new { color: var(--accent-text); }
+.line-tag.tag-due { color: var(--accent-ink); background: var(--accent); }
+.line-tag.tag-mastered { color: var(--good); }

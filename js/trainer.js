@@ -49,9 +49,13 @@ export class Trainer {
    * free: no repertoire. Any move goes. When the opponent's level has no data, it
    *   borrows from `nearbyBands` (closest first), and `engine` takes over after that,
    *   with the small bot standing in if there is no working engine.
+   * line: one of the opening's lines. Both sides follow it to its end, and only its
+   *   moves are accepted, like a flashcard.
    */
-  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, free = false, nearbyBands = [], engine = null, random = Math.random }) {
-    Object.assign(this, { opening, opponent, books, progress, mode, plies: free ? Infinity : plies, adaptive, free, nearbyBands, engine, random });
+  constructor({ opening, opponent, books, progress, mode = MODES.PRACTICE, plies = 20, adaptive = true, free = false, nearbyBands = [], engine = null, line = null, random = Math.random }) {
+    Object.assign(this, { opening, opponent, books, progress, mode, plies: free ? Infinity : plies, adaptive, free, nearbyBands, engine, line, random });
+    this.lineMoves = line ? line.moves.split(' ') : null;
+    if (line) this.plies = this.lineMoves.length;
     this.chess = new Chess();
     this.index = buildIndex(opening);
     this.prefix = opening.prefix ? opening.prefix.split(' ') : [];
@@ -75,6 +79,7 @@ export class Trainer {
   /** Moves accepted from the user now, and where that answer comes from. */
   expected() {
     if (this.free) return { moves: this.referenceRows().map((row) => row.san), source: 'free' };
+    if (this.line) return { moves: [this.lineMoves[this.ply]], source: 'line' };
     if (this.inPrefix) return { moves: [this.prefix[this.ply]], source: 'prefix' };
     const entry = this.index.get(keyOf(this.fen));
     if (entry?.user.size) return { moves: [...entry.user], source: 'repertoire' };
@@ -109,6 +114,9 @@ export class Trainer {
     }
     const expected = this.expected();
     if (!expected.moves.includes(san)) {
+      // In a single line, a move from another of the lines isn't a mistake, just a different branch.
+      const otherLine = Boolean(this.line && this.index.get(keyOf(this.fen))?.user.has(san));
+      if (otherLine) return { ok: false, source: expected.source, expected: expected.moves, otherLine };
       this.mistakes += this.attempted ? 0 : 1;
       this.attempted = true;
       const playable = rowsFor(this.books.reference, this.fen)
@@ -138,6 +146,7 @@ export class Trainer {
   }
 
   rivalCandidates() {
+    if (this.line) return [{ san: this.lineMoves[this.ply], weight: 1, forced: true }];
     if (this.inPrefix) return [{ san: this.prefix[this.ply], weight: 1, forced: true }];
     const rows = this._legal(this.levelRows());
     if (rows.length) {
@@ -231,8 +240,10 @@ export class Trainer {
     else if (this.chess.turn() === this.userColor) {
       if (!this.expected()) this.endReason = 'noReference';
     } else if (!this.rivalCandidates().length) this.endReason = 'noData';
-    if (this.endReason && this.mode === MODES.PRACTICE && !this.free) {
-      this.progress?.finish(this.opening.id, this.summary().clean);
+    if (!this.endReason || this.free) return;
+    if (this.mode === MODES.PRACTICE) this.progress?.finish(this.opening.id, this.summary().clean);
+    if (this.line && this.endReason === 'complete') {
+      this.progress?.finishLine?.(this.opening.id, this.line.moves, this.mode, this.summary().clean);
     }
   }
 }
